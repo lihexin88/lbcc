@@ -460,6 +460,6 @@ class User extends ApiBase
 		}else{
 			return rtn(1,lang('guess_success'),$guess_account);
 		}
-    }
+    } 
    
 }
