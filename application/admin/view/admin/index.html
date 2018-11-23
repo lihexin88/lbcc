@@ -1,0 +1,109 @@
+{include file="common/top" /}
+<style type="text/css">
+.main-container .table tr td {
+	vertical-align: middle;
+}
+.main-container .table tr td a{
+	margin-right:10px;
+}
+</style>
+</head>
+<body class="no-skin">
+{include file="common/header" /}
+<div class="main-container" id="main-container"> {include file="common/sidebar" /}
+  <div class="main-content">
+    <div class="main-content-inner">
+      <div class="breadcrumbs" id="breadcrumbs">
+        <ul class="breadcrumb">
+          <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="{:url('Index/index')}">{:config('WEB_SITE_NAME')}</a> </li>
+          <li> <a href="{:url('index')}">权限管理</a> </li>
+          <li class="active">{$pagename}</li>
+          </ul>
+      </div>
+      <div class="page-content">
+        <div class="page-header">
+          <h1> {$pagename} <small> <i class="ace-icon fa fa-angle-double-right"></i> 一共{$info.count}个用户 </small> </h1>
+        </div>
+        <div class="row">
+          <div class="col-xs-12" style="margin-bottom:10px;">
+            <form action="{:url('index')}" method="get" class="form-inline" role="form">
+              <div class="form-group">
+                <label>关键词</label>
+                <input name="keywords" type="text" class="form-control" placeholder="用户名">
+              </div>
+              <button type="submit" class="btn btn-sm btn-primary">查询</button>
+              <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="{:url('add_user')}" >新增用户</a>
+              <button type="reset" class="btn btn-sm btn-danger hidden-xs" style="float:right;margin-right:10px;">清空查询条件</button>
+            </form>
+          </div>
+          <div class="col-xs-12">
+            <table class="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th class="center">用户ID</th>
+                  <th>用户名</th>
+                  <th>用户类型</th>
+                  <th>用户备注</th>>
+                  <th>最后登录时间</th>
+                  <th>最后登录IP</th>
+                  <th>更新时间</th>
+                  <th>登陆次数</th>
+                  <th>用户状态</th>
+                  <th>创建时间</th>
+                  <th>操作</th>>
+                </tr>
+              </thead>
+              <tbody>
+                {volist name="info.list" id="vo" key="k"}
+                  <tr>
+                    <td class="center"> {$vo.id}</td> 
+                    <td> {$vo.username} </td>
+                    <td> {$vo.user_type} </td>
+                    <td> {$vo.description} </td>
+                     <td> {$vo.last_login_time} </td>
+                    <td> {$vo.last_login_ip} </td>
+                    <td> {$vo.update_time}</td>
+                    <td> {$vo.login_number}</td>
+                    <td> {$vo.status}</td>
+                    <td> {$vo.create_time}</td>
+                    <td>
+                    <a class="btn btn-sm btn-success" href="{:url('edit_user?id='.$vo['id'])}">修改</a>
+                    </td>
+                  </tr>
+                {/volist}
+              </tbody>
+            </table>
+            <div style="width:100%;margin: 0 auto; text-align:center;">
+              <ul class="pagination" >
+                {$info.page}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="footer-inner">
+      <div class="footer-content"> <span class="bigger-120"> <span class="blue bolder">{:config('WEB_SITE_NAME')} </span>{$Think.WEB_VERSION}版 </span></div>
+    </div>
+  </div>
+  <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
+<!-- basic scripts --> 
+{include file="common/bottom" /}
+<script type="text/javascript">
+jQuery(function($) {
+	//清除查询条件
+	$(document).on('click', 'button:reset',function() {
+		location.href = '{:url(\'index\')}';
+	});	
+	if('{$Think.get.keywords}'){
+		$('input[name="keywords"]').val('{$Think.get.keywords}');
+	}
+	if('{$Think.get.group_id}'){
+		$('select[name="group_id"]').val('{$Think.get.group_id}');
+	}
+});
+</script>
+</body>
+</html>
