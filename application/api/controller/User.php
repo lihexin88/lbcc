@@ -456,10 +456,10 @@ class User extends ApiBase
     {
     	$guess_account = GuessAccount::get_guess_account($this->userInfo);
 		if($guess_account['code'] == -1){
-			return rtn(-1,lang('guess_error'));
+			return rtn(-1,lang('guess_account_error'));
 		}else{
-			return rtn(1,lang('guess_success'),$guess_account);
+			return rtn(1,lang('guess_account_success'),$guess_account);
 		}
-    } 
+    }
    
 }

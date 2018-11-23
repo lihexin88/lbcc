@@ -43,6 +43,6 @@ return [
 	 'os_error'                                              => '操作失败',
 	 'os_success'                                            => '操作成功',
 	 'number_error'                                          => '数量错误',
-	 'guess_success'                                         => '获取账户信息成功',
-	 'guess_error'                                           => '获取用户信息失败',
+	 'guess_account_success'                                 => '获取账户信息成功',
+	 'guess_account_error'                                   => '获取用户信息失败',
 ];
