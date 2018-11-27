@@ -61,7 +61,7 @@ class GuessAccount extends Model
 		if($GuessAccount['blance'] < $number){
 			throw new Exception('low_blance');
 		}
-		$GuessAccount['blance'] -=$number;
+		$GuessAccount['blance'] -= $number;
 		if(!$GuessAccount->save()){
 			throw new Exception('os_error');
 		}
@@ -81,6 +81,33 @@ class GuessAccount extends Model
 		}else{
 			return ['code'=>1,'data'=>$guess_account];
 		}
+	}
+
+	/**
+	 * 中奖增加用户lbcc
+	 */
+	public function right_income($uid,$number)
+	{
+//		获取游戏手续费
+		$fee = Config::game_fee();
+//      获取当前获奖用户
+		$right_income = self::get(['uid'=>$uid]);
+
+		$right_income['blance']+=$number*(2-$fee);
+		if(!$right_income->save())
+		{
+			throw new Exception('os_error');
+		}
+//		增加资金流水记录
+		$right_income = new GuessOrder();
+		$right_income['uid'] = $uid;
+		$right_income['direction'] = 2;
+		$right_income['number'] = $number*(2-$fee);
+		if(!$right_income->save())
+		{
+			throw new Exception('os_error');
+		}
+		return true;
 	}
 
 }

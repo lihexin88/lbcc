@@ -37,6 +37,8 @@ return [
      'cash_more'                                             => '提现金额需大于',
      'not_password'                                          => '支付密码不正确',
      'not_numebr'                                            => '可用数量不足',
+
+//游戏竞猜中文返回值
 	 'gus_recharged'                                         => '竞猜充值成功',
 	 'recharge_failed'                                       => '竞猜充值失败',
 	 'low_blance'                                            => '余额不足',
@@ -45,4 +47,13 @@ return [
 	 'number_error'                                          => '数量错误',
 	 'guess_account_success'                                 => '获取账户信息成功',
 	 'guess_account_error'                                   => '获取用户信息失败',
+	 'wrong_team'                                            => '投注期号锁定',
+	 'wrong_dir'                                             => '投注方向锁定',
+	 'updated'                                               => '已更新',
+	 'inserted'                                              => '已提交',
+	 'wrong_secret'                                          => '私钥不正确',
+	 'code_sent'                                             => '验证码已发送',
+	 'password_changed'                                      => '密码修改成功',
+	 'not_game_time'                                         => '不在游戏时间内',
+
 ];

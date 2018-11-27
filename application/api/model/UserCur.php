@@ -42,4 +42,26 @@ class UserCur extends Model
 		return ['code'=>1,'msg'=>'gus_recharged'];
 
 	}
+  
+  	/**
+     * 锁仓提现
+     	$uid 用户ID
+        $ratio 手续费比例
+     	$number 提现数量
+        cur_id 1是LBCC
+     */
+    public function operate($uid,$ratio,$number)
+    {
+        $num = $number*(1-$ratio);//数量*(1-比例(单位:%))
+        return $this->where('uid',$uid)->where('cur_id',1)->setInc('number',$num);//自增
+    }
+  //币种信息
+    public function usdt_list($uid)
+    {
+        return 	db('user_cur')->alias('r')
+          		->join('currency y','r.cur_id = y.id')
+          		->where('r.uid',$uid)
+          		->field('r.id,r.number,r.cur_id,y.name')
+          		->select();
+    }
 }

@@ -8,6 +8,8 @@
 // +----------------------------------------------------------------------
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+
+use app\api\controller\Lib;
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 // 应用公共文件
 
@@ -279,4 +281,26 @@ function createQRcode($savePath, $qrData = 'PHP QR Code :)', $qrLevel = 'L', $qr
         return basename($filename);
     else
         return FALSE;
+}
+//火币网或者中币网接口 $cur 币种名称 
+function api_currency($cur){
+	$currency = strtolower($cur);//先转小写
+	if($currency == 'usdt'){
+        $price = 1;
+    }else if($currency == 'doge'){
+        $url = "http://api.zb.cn/data/v1/kline?market=doge_usdt&type=1min&size=1";
+        $zb_data =  json_decode(file_get_contents($url), true);
+        $price =$zb_data['data'][0][4];
+    }else{
+        $Lib = new Lib();
+        $huobi = $Lib->get_market_tickers();//全部symbol的交易行情
+        $huobi_data = $huobi['data'];//取出信息数组
+        foreach ($huobi_data as $k => $v) {//遍历
+            $cur_area = $currency.'usdt';//拼接usdt
+            if($v['symbol'] == $cur_area){
+                $price = $v['close'];//最新单价 = 最新收盘价
+            }
+        }
+    }
+    return $price;
 }

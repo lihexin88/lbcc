@@ -2,6 +2,7 @@
 
 namespace app\api\model;
 
+use think\Exception;
 use think\Model;
 use think\Session;
 use think\Db;
@@ -547,5 +548,56 @@ class User extends Model
         }
         return $return;
     }
+
+	/**
+	 * 修改用户密码
+	 * @param $user 用户信息
+	 * @param $password 密码
+	 * @throws Exception
+	 * @throws \think\exception\DbException
+	 */
+	public function change_passowrd($user,$password)
+	{
+		//获取用户对象
+		$User = self::get(['id'=>$user['id']]);
+		if($_SESSION['think']['authcode']['type'] == 1){
+			$User->password = $password;
+		}else{
+			$User->payment_password = $password;
+		}
+		//保存
+		if(!$User->save()){
+			throw new Exception("os_error");
+		}
+	}
+
+	/**
+	 *
+	 * 我的好友
+	 * @param $user 当前用户
+	 * @return false|\PDOStatement|string|\think\Collection
+	 * @throws \think\db\exception\DataNotFoundException
+	 * @throws \think\db\exception\ModelNotFoundException
+	 * @throws \think\exception\DbException
+	 */
+	public function my_friends($user)
+	{
+		$where['parent_id'] = $user['id'];
+		$frineds = self::where($where)->field('id,account')->select()->toArray();
+		$count = null;
+		foreach ($frineds as $s=>$p){
+			$Money = new StoData();
+			$money = $Money->alias('st')
+				->join('user u','u.id = st.uid')
+				->where(['uid'=>$p['id']])
+				->field('u.account,u.create_time,st.total_number,st.status,st.bonus')
+				->select();
+			foreach ($money as $k=>$v)	$count['total_bonus']+=$v['bonus'];
+			$frineds[$s]['money'] = $money;
+		}
+		$count['friends_number'] = sizeof($frineds);
+		return ['friends'=>$frineds,'count'=>$count];
+	}
+
 
 }

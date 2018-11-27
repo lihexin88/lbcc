@@ -4,8 +4,15 @@ use app\api\model\Config;
 use app\api\model\GuessAccount;
 use app\api\model\GuessOrder;
 use app\api\model\GuessRecode;
+use app\api\model\GuessConfig;
+use app\api\model\UserAuth;
 use app\api\model\UserCur;
+use app\api\model\User as UserModel;
+
 use app\common\controller\ApiBase;
+
+
+use think\Validate;
 use think\Exception;
 use think\Session;
 use think\Request;
@@ -405,7 +412,9 @@ class User extends ApiBase
 	    }
     	$number = intval($_POST['number']);
     	$bet_dir = $_POST['dir'];
-    	if(!($number >0 && $number<2000)){
+//    	获取下注范围
+	    $chip = Config::chip_range();
+    	if(!($number >$chip['min'] && $number < $chip['max'])){
     		return rtn(-1,lang('number_error'));
 	    }
 	    if(!in_array($bet_dir,['0','1'])){
@@ -413,17 +422,17 @@ class User extends ApiBase
 	    }
 	    Db::startTrans();
 	    try{
-//	    	获取押注手续费
-			$fee = Config::get(['key'=>'GUESS_BET_FEE']);
-			$fee = 1 + $fee['value'];
 
 //			账户操作、扣除竞猜资金
 		    $GuessAccount = new GuessAccount();
-		    $GuessAccount->bet_fee($this->userInfo,$number*$fee);
+		    $GuessAccount->bet_fee($this->userInfo,$number);
+
+//		    获取期号
+		    $team = GuessConfig::ThisTeam();
 
 //          写入竞猜表
 		    $GuessRecode = new GuessRecode();
-		    $GuessRecode->create_order($this->userInfo,$number,$bet_dir);
+		    $GuessRecode->create_order($this->userInfo,$number,$bet_dir,$team,$chip);
 
 	    	Db::commit();
 			return rtn(1,lang('os_success'));
@@ -461,5 +470,228 @@ class User extends ApiBase
 			return rtn(1,lang('guess_account_success'),$guess_account);
 		}
     }
-   
+
+
+
+	/**
+	 * @param $type 1、身份证正背面 2、微信二维码 3、支付宝二维码
+	 * 上传图片 ,将url返回给前台
+	 * @return \think\response\Json
+	 */
+	public function upload_pic(){
+			$pic_type = null;
+			if($_POST['type'] == 1){
+				$pic_type = 'id_pic/';
+			}else if($_POST['type'] == 2){
+				$pic_type = 'wechat/';
+			}else if($_POST['type'] == 3){
+				$pic_type = 'alipay/';
+			}
+			$file = request() -> file('file');
+			if($file){
+				$info = $file -> move(ROOT_PATH . 'public' . DS . 'upload/user_auth/'.$pic_type ,true,true,2);
+				if($info){
+					$link = '/upload/user_auth/' .$pic_type. $info -> getSaveName();
+					$ret = ['code' => 1,'msg' => '上传成功!','url' => $link];
+				}else{
+					$ret = ['code' => 0,'msg' => $file -> getError()];
+				}
+			}else{
+				$ret = ['code' => 0,'msg' => '未上传!'];
+			}
+		return json($ret);
+	}
+
+	/**
+	 *
+	 * @paran $name 用户姓名
+	 * @paran $id_number 用户身份证号
+	 * @param $id_f_url 身份证正面url
+	 * @param $id_b_url 身份证背面url
+	 * @paran bank_card 银行卡号
+	 * @paran 银行卡开户姓名
+	 * @return false|string
+	 */
+	public function auth_real_info()
+	{
+//		验证用户信息完整性
+		if(!$_POST){
+			return rtn(-1,'not_null');
+		}
+		$data = null;
+		$data['name'] = $_POST['name'];
+		$data['id_number'] = $_POST['id_number'];
+		$data['bank_card'] = $_POST['bank_card'];
+		$data['id_f_url'] = $_POST['id_f_url'];
+		$data['id_b_url'] = $_POST['id_b_url'];
+		$data['take_bank_name'] =$_POST['take_bank_name'];
+//		pre($data);
+//		exit;
+		foreach ($data as $k=>$v){
+//			print_r($v);
+			if(!$v){
+				return rtn(-1,lang('os_error'));
+			}
+		}
+//		修改用户认证信息
+		Db::startTrans();
+		try{
+			$User = new UserAuth();
+			$result = $User->user_auth($this->userInfo,$data);
+			Db::commit();
+			return rtn(1,lang($result));
+		}catch (\Exception $e){
+			Db::rollback();
+			return rtn(-1,lang('error'));
+		}
+	}
+
+	/**
+	 * 查询用户认证信息
+	 * @param $token
+	 * @return false|string
+	 * @throws \think\exception\DbException
+	 */
+	public function get_auth_info()
+	{
+		$user = $this->userInfo;
+		$AuthInfo = UserAuth::get(['uid'=>$user['id']]);
+		if($AuthInfo){
+			return rtn(1,lang('success'),$AuthInfo);
+		}else{
+			return rtn(1,lang('success'),'暂无用户认证信息');
+		}
+	}
+
+	/**
+	 * 修改密码 1、发送验证码
+	 * @param $token
+	 * @param $secret_key 密钥
+	 * @param $type 1、修改登录密码 2、修改交易密码
+	 */
+	public function send_phone_code()
+	{
+		$user = $this->userInfo;
+//		验证私钥
+		if($user['secret_key'] !=$_POST['secret_key']){
+			return rtn(-1,lang('wrong_secret'));
+		}
+//		验证修改类型
+		if(!in_array($_POST['type'],['1','2'])){
+			return rtn(-1,lang('os_error'));
+		}
+		$code = generate_code(6);
+		Session::set('authcode', ['code' => $code, 'account' => $user['id'],'type'=>$_POST['type'],'auth'=>false]);
+
+		//  短信接口
+		/***********
+		 *   Ａ    *
+		 *   Ｐ    *
+		 *   Ｉ    *
+		 **********/
+
+		return rtn(1,lang('code_sent'),$_SESSION);
+	}
+
+	/**
+	 * 修改密码 2、验证验证码
+	 * @param $phone_code 验证码
+	 * @param $token
+	 */
+	public function confirm_code()
+	{
+//		验证传入数据
+		if(!$_POST){
+			return rtn(-1,lang('os_error'));
+		}
+//		验证验证码
+		if(!($_POST['phone_code'] == $_SESSION['think']['authcode']['code'])){
+			return rtn(-1,lang('phone_error'));
+		}
+		$_SESSION['think']['authcode']['auth'] = true;
+		return rtn(1,lang('os_success'),$_SESSION);
+	}
+
+	/**
+	 * 修改密码
+	 */
+	public function change_password()
+	{
+		if(!$_POST){
+			return rtn(-1,lang('os_error'));
+		}
+		if(!$_SESSION['think']['authcode']['auth']){
+			return rtn(-1,lang('phone_error'));
+		}
+		$password = $_POST['password'];
+		$re_password = $_POST['re_password'];
+		if($password != $re_password){
+			return rtn(-1,lang('pwd_diffent'));
+		}
+//		验证登录密码
+		if($_SESSION['think']['authcode']['type'] == 1){
+				//验证规则
+				$validate_rule['password'] = 'length:8,20|alphaNum';
+
+				//验证提示
+				$validate_msg['password.length'] = lang('pwd_type');
+				$validate_msg['password.alphaNum'] = lang('pwd_type');
+				$validate = new Validate($validate_rule,$validate_msg);
+
+				//验证数据
+				$validate_data['password'] = $password;
+				if (!$validate->check($validate_data)) {
+					return rtn(-1,$validate->getError());
+				}
+//		验证支付密码
+		}else{
+			//验证规则
+			$validate_rule['payment_password'] = 'length:6|number';
+
+			//验证提示
+			$validate_msg['payment_password.length'] = lang('pay_pwd_type');
+			$validate_msg['payment_password.number'] = lang('pay_pwd_type');
+
+			//验证数据
+			$validate_data['payment_password'] = $password;
+			$validate = new Validate($validate_rule,$validate_msg);
+			if (!$validate->check($validate_data)) {
+				return rtn(-1,$validate->getError());
+			}
+		}
+		try{
+			$User = new UserModel();
+			$User->change_passowrd($this->userInfo,$password);
+		}catch (\Exception $e){
+			return rtn(-1,lang($e->getMessage()));
+		}
+		return rtn(1,lang('password_changed'));
+	}
+
+	/**
+	 *
+	 * 我的邀请
+	 * @param $token
+	 */
+	public function invitation()
+	{
+		$user = $this->userInfo;
+		$Invitation['img'] = $user['invitation_img'];
+		$Invitation['inv_code']  = $user['invitation_code'];
+		return rtn(1,lang('os_success'),$Invitation);
+	}
+
+	/**
+	 * 我的好友 一
+	 * @param $token
+	 */
+	public function my_friends()
+	{
+		$User = new UserModel();
+		$friends = $User->my_friends($this->userInfo);
+		return rtn(1,lang('os_success'),$friends);
+	}
+
+
+
 }
