@@ -128,11 +128,24 @@ class GuessRecode extends Model
 	 */
 	static public function get_daily_recode()
 	{
+		$page_size = 15;
 		$today = strtotime(date("Y-m-d"),time());
 		$tomorrow = $today+24*60*60;
 		$where['r.update_time'] = array('between',$today.','.$tomorrow);
 		$where['r.right'] = 1;
-		$Recode = Db::table('sn_guess_recode')->alias('r')->where($where)->join('user u','r.uid = u.id')->field('u.account,r.number')->select();
+		$Recode = Db::table('sn_guess_recode')->alias('r')->where($where)->join('user u','r.uid = u.id')->field('u.account,r.number')->paginate($page_size);
 		return $Recode;
+	}
+	static public function get_all($type)
+	{
+		if($type != 1){
+			$pagesize = 15;
+			$recode['data'] = self::alias('r')->join('user u','r.uid = u.id')->paginate($pagesize);
+			$recode['page'] = $recode['data']->render();
+			return $recode;
+		}else{
+			$recode['data'] = self::get_daily_recode();
+			$recode['page'] = null;
+		}
 	}
 }

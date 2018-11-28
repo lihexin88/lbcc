@@ -104,7 +104,7 @@ class Data extends ApiBase
             
             pre($return_data);exit;
             $data = [];
-            return rtn(0,$data); 
+            return rtn(0,array_reverse($data)); 
         }elseif (in_array($id,$zb_area)) {
             if($time == '60min'){
                 $time = '1hour'; 

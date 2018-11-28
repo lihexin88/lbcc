@@ -24,28 +24,42 @@ class GuessAccount extends Model
 	 */
 	public function exchange($direction,$password,$number,$user)
 	{
+//		获取游戏手续费
+		$fee = Config::game_fee();
 //		验证用户交易密码
 		if($user['payment_password'] != encrypt($password)){
 			throw new Exception('not_password');
 		}
 //		获取用户信息
 		$guessaccount = $this->get(['uid'=>$user['id']]);
-//      充值
-		if($direction < 0){
-			$guessaccount->blance -= $number;
-//		提现
+
+		if($guessaccount){
+			if($direction < 0){
+				if($guessaccount->blance < $number*(1+$fee)){
+					throw new Exception('low_blance');
+				}
+				$guessaccount->blance -= $number*(1+$fee);
+				if(!$guessaccount->save()){
+					throw new Exception('low_blance');
+				}
+			}else{
+				$guessaccount->blance += $number;
+				if(!$guessaccount->save()){
+					throw new Exception('os_error');
+				}
+			}
 		}else{
-			if($guessaccount->blance < $number){
+			$guessaccount['uid'] = $user['id'];
+			$guessaccount['blance'] = $direction<0?0:$number;
+			if($direction>0){
+				if(!$this->save($guessaccount)){
+					throw new Exception('os_error');
+				}
+			}else{
 				throw new Exception('low_blance');
 			}
-			$guessaccount->blance+=$number;
+		}
 
-		}
-		if(!$guessaccount->save()){
-			throw new Exception('os_error');
-		}else{
-			return ['code'=>1,'msg'=>'os_success'];
-		}
 	}
 
 	/**

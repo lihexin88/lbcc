@@ -23,7 +23,6 @@ class Publics extends Base
      */
     function login()
     {
-        
         if (Request::instance()->isPost()) {
             return model('Admin')->userLogin(input('post.'));
         } else {

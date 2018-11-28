@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\UserAuth;
 use app\common\controller\AdminBase;
 use think\Request;
 use think\Db;
@@ -211,5 +212,37 @@ class User extends Admin
             $user['username'] = '暂无';
         }
         return $user;
+    }
+
+	/**
+	 * 获取全部用户认证信息
+	 * @return mixed
+	 * @throws \think\exception\DbException
+	 */
+    public function user_auth()
+    {
+    	$UserAuth = new UserAuth();
+    	$userauth = $UserAuth->all();
+    	$this->assign('info',$userauth);
+    	return $this->fetch();
+    }
+
+	/**
+	 * 用户认证
+	 * @throws \think\db\exception\DataNotFoundException
+	 * @throws \think\db\exception\ModelNotFoundException
+	 * @throws \think\exception\DbException
+	 */
+    public function authenticate()
+    {
+    	$id = $_POST['uid'];
+    	$type = $_POST['type'];
+    	$UserAuth = new UserAuth();
+    	if(!$UserAuth->authenticate($id,$type))
+	    {
+	    	return rtn(-1,'1');
+	    }
+	    return rtn(1,'已审核');
+
     }
 }

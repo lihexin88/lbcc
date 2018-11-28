@@ -52,8 +52,11 @@ return [
 	 'updated'                                               => '已更新',
 	 'inserted'                                              => '已提交',
 	 'wrong_secret'                                          => '私钥不正确',
+    'not_cur'                   =>  '未获取币种信息!',
 	 'code_sent'                                             => '验证码已发送',
 	 'password_changed'                                      => '密码修改成功',
 	 'not_game_time'                                         => '不在游戏时间内',
+	 'fail_cancel'                                           => '撤销失败',
+	 'info_cant_find'                                        => '查询信息不存在',
 
 ];

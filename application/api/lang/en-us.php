@@ -35,9 +35,12 @@ return [
      'application_not_pass'                                  => 'The last application was not passed',
      'bring_more'                                            => 'The upper limit has been raised today',
      'cash_more'                                             => 'The amount required to be raised is more than',
-     'not_password'                                          => 'Payment password incorrect',
-     'not_numebr'                                            => 'Insufficient available quantity',
-	 'gus_recharged'                                         => 'guess-account recharge success',
-	 'recharge_failed'                                       => 'recharge failed',
-	 'low_blance'                                            => 'user blance low',
+
+    // 交易开始
+    'not_cur'                   =>  'Currency information not obtained!',
+    'not_area'                  =>  'Not acquiring trading zone information!',
+    'not_trade_type'            =>  'Unacquired transaction type!',
+    'input_price'               =>  'Please enter the unit price!',
+    'input_number'              =>  'Please enter the quantity!',
+    // 交易结束
 ];

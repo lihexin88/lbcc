@@ -5,6 +5,7 @@ use app\api\model\GuessAccount;
 use app\api\model\GuessOrder;
 use app\api\model\GuessRecode;
 use app\api\model\GuessConfig;
+use app\api\model\Order;
 use app\api\model\UserAuth;
 use app\api\model\UserCur;
 use app\api\model\User as UserModel;
@@ -690,6 +691,44 @@ class User extends ApiBase
 		$User = new UserModel();
 		$friends = $User->my_friends($this->userInfo);
 		return rtn(1,lang('os_success'),$friends);
+	}
+
+	/**
+	 * 获取用户交易订单
+	 * @return false|string
+	 * @throws \think\db\exception\DataNotFoundException
+	 * @throws \think\db\exception\ModelNotFoundException
+	 * @throws \think\exception\DbException
+	 */
+	public function get_trade_order()
+	{
+		$Order = new Order();
+		$orders = $Order->select_order($this->userInfo);
+		return rtn(1,lang('os_success'),$orders);
+	}
+
+
+	/**
+	 * 取消订单
+	 * @return false|string
+	 */
+	public function cancel_trade()
+	{
+		if(!$_POST['order_number']){
+			return rtn(-1,lang('cont_empty'));
+		}
+		$Order = new Order();
+		Db::startTrans();
+		try{
+			if(!$Order->cancel_trade($_POST['order_number'],$this->userInfo)){
+				throw new Exception('fail_cancel');
+			}
+			Db::commit();
+			return rtn(1,lang('os_success'));
+		}catch (\Exception $e){
+			Db::rollback();
+			return rtn(-1,lang($e->getMessage()));
+		}
 	}
 
 
