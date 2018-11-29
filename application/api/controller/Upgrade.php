@@ -21,10 +21,9 @@ class Upgrade extends ApiBase
     /**
 		升级
     **/
-	public function index($user=array())
+	public function index($user)
 	{
 		//因为$user 是 升级后传过来的 所以VIP人数默认为1
-		$user['parent_id'] = 1; 
 		$sum = 1;
 		$parent  = $this->User->where('id',$user['parent_id'])->find();//父级信息
 		$count  = $this->User->where('parent_id',$user['parent_id'])->count();//统计直推人数
@@ -159,7 +158,7 @@ class Upgrade extends ApiBase
 		return $sum;
 	}
 	//人数和
-	public function currency($child)
+	public function count($child)
 	{
 		return $this->User->where('parent_id',$child['id'])->count();
 	}

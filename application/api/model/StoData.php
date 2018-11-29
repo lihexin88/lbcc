@@ -23,11 +23,17 @@ class StoData extends Model
         $time 锁仓持续时间
         $num sto库存数量
      */
-    public function implement($map,$number,$time)
+    public function implement($map,$number,$time,$create)
     {
         $total_number = $this->where($map)->value('total_number');
+      	$create = $this->where($map)->value('create');
         $edit['number'] = $number;//sto库存数量+最新锁仓数量
         $edit['total_number'] = $number+$total_number;//sto库存数量+最新锁仓数量
+      	if($create){
+        	$edit['create'] = $create;
+        }else{
+         	$edit['create'] = time();
+        }
         $edit['time'] = $time;//当前时间+45天
         $edit['status'] = 1;//状态为1
         return $this->where($map)->update($edit);

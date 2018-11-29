@@ -32,31 +32,35 @@ class Trade extends Base
      * @return array      返回列表
      */
     //1买入（DFS），2卖出（DFS），3DFS收益，4组织收益，5提现（USD），6转账（DFS）
-    public function infoList($map, $p)
+    public function infoList($map)
     {
-        $request= Request::instance();
-        $list = $this->where($map)->order('id desc')->page($p, self::PAGE_LIMIT)->select()->toArray();
-        $tradeTypeArr = model('Common/Dict')->showKey('trade_type');
-        $tradetextpeArr = model('Common/Dict')->showKey('trade_status');
-        $moneytextpeArr = model('Common/Dict')->showKey('money_type');
-        $userDataArr = model('User')->showkey();
-         // pre($tradeTypeArr);
-        foreach ($list as $k => $v) {
-             $list[$k]['start_time'] = date("Y-m-d H:i:s",$v['start_time']);
-             $list[$k]['end_time'] = date("Y-m-d H:i:s",$v['end_time']);
-             $list[$k]['trade_type'] = $tradeTypeArr[$v['trade_type']];
-             $list[$k]['trade_status'] = $tradetextpeArr[$v['trade_status']];
-             $list[$k]['user_name'] = $userDataArr[$v['uid']];
-             $list[$k]['money_type'] = $moneytextpeArr[$v['money_type']];
-             if($v['trade_status'] != 3){
-                $list[$k]['end_time'] = '暂无';
-             }
-        }
-        // pre($list);exit;
-        $return['count'] = $this->where($map)->count();
-        $return['list'] = $list;
-        $return['page'] = boot_page($return['count'], self::PAGE_LIMIT, self::PAGE_SHOW, $p,$request->action());
-        return $return;
+//        $request= Request::instance();
+//        $list = $this->where($map)->order('id desc')->page($p, self::PAGE_LIMIT)->select()->toArray();
+//        $tradeTypeArr = model('Common/Dict')->showKey('trade_type');
+//        $tradetextpeArr = model('Common/Dict')->showKey('trade_status');
+//        $moneytextpeArr = model('Common/Dict')->showKey('money_type');
+//        $userDataArr = model('User')->showkey();
+//         // pre($tradeTypeArr);
+//        foreach ($list as $k => $v) {
+//             $list[$k]['start_time'] = date("Y-m-d H:i:s",$v['start_time']);
+//             $list[$k]['end_time'] = date("Y-m-d H:i:s",$v['end_time']);
+//             $list[$k]['trade_type'] = $tradeTypeArr[$v['trade_type']];
+//             $list[$k]['trade_status'] = $tradetextpeArr[$v['trade_status']];
+//             $list[$k]['user_name'] = $userDataArr[$v['uid']];
+//             $list[$k]['money_type'] = $moneytextpeArr[$v['money_type']];
+//             if($v['trade_status'] != 3){
+//                $list[$k]['end_time'] = '暂无';
+//             }
+//        }
+//        // pre($list);exit;
+//        $return['count'] = $this->where($map)->count();
+//        $return['list'] = $list;
+//        $return['page'] = boot_page($return['count'], self::PAGE_LIMIT, self::PAGE_SHOW, $p,$request->action());
+//        return $return;
+	        $pagesize = 10;
+			$trade['data'] = $this->where($map)->paginate($pagesize);
+			$trade['count'] = count($trade['data']);
+			return $trade;
     }
 
     /**

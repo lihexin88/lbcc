@@ -24,17 +24,12 @@ class Order extends Base
         $userDataArr = model('User')->showKey();
         $userDateArr = model('User')->showKey();
         $usertextArr = model('User')->showKey();
-        $orderStatusArr = model('Common/Dict')->showKey('order_status');
         // pre($orderStatusArr);
         foreach ($list as $k => $v) {
-            $list[$k]['buyer_name'] = $userDataArr[$v['buyer_id']];
-            $list[$k]['seller_name'] = $userDateArr[$v['seller_id']]; 
-            $list[$k]['canceler_name'] = isset($v['canceler_id'])?$userDataArr[$v['canceler_id']]:'暂无';
-            $list[$k]['addtime'] = date('Y-m-d H:i:s',$v['addtime']);
-            $list[$k]['pay_time'] = isset($v['pay_time'])?date('Y-m-d H:i:s',$v['pay_time']):'暂无';
-            $list[$k]['done_time'] = isset($v['done_time'])?date('Y-m-d H:i:s',$v['done_time']):'暂无';
-            $list[$k]['cancel_reason'] = isset($v['cancel_reason'])?$v['cancel_reason']:'暂无';
-            $list[$k]['orderTextArr'] = $orderStatusArr[$v['order_status']];
+            $list[$k]['buyer_id'] = db('user')->where('id',$v['buyer_id'])->value('account');
+            $list[$k]['seller_id'] = db('user')->where('id',$v['seller_id'])->value('account');
+          	$list[$k]['trade_type'] =db('dict')->where('type','trade_type')->where('value',$v['trade_type'])->value('key');
+            $list[$k]['create_time'] = date('Y-m-d H:i:s',$v['create_time']);
         }
         // pre($list);exit;
         $return['count'] = $this->where($map)->count();

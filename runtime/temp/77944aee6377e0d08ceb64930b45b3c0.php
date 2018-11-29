@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\index.html";i:1543402951;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\index.html";i:1543474231;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -109,13 +109,13 @@ select{
             <div class="breadcrumbs" id="breadcrumbs">
                 <ul class="breadcrumb">
                     <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-                    <li> <a href="<?php echo url('index'); ?>">用户管理</a> </li>
+                    <li> <a href="<?php echo url('/admin/game/index'); ?>">有奖竞猜</a> </li>
                     <li class="active"><?php echo $pagename; ?></li>
                 </ul>
             </div>
             <div class="page-content">
                 <div class="page-header">
-                    <h1 style="text-align: left;"> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 查询出<?php echo $info['count']; ?>条数据 </small> </h1>
+                    <h1 style="text-align: left;"> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 查询出<small style="color: blue"><?php echo isset($count)?$count:0; ?></small>条数据 </small> </h1>
                 </div>
                 <!-- /.page-header -->
                 <div class="row">
@@ -125,19 +125,17 @@ select{
                             <div class="col-xs-12" style="margin-bottom:10px;">
                                 <form action="<?php echo url('index'); ?>" method="get" class="form-inline" role="form">
                                     <div class="form-group">
-                                        <label>手机号码</label>
-                                        <input name="keywords" type="text" class="form-control" placeholder="请输入手机号">
+                                        <label>用户账户</label>
+                                        <input name="keywords" type="text" class="form-control" placeholder="请输入账户">
                                     </div>
                                     <div class="form-group"><label>状态</label>
                                         <select name="status" class="form-control">
-                                            <option value="">全部</option>
-                                            <?php if(is_array($state) || $state instanceof \think\Collection || $state instanceof \think\Paginator): $i = 0; $__LIST__ = $state;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
-                                            <option value="<?php echo $vo['value']; ?>"><?php echo $vo['key']; ?></option>
-                                            <?php endforeach; endif; else: echo "" ;endif; ?>
+                                            <option value="3">全部</option>
+                                            <option value="1">已开奖</option>
+                                            <option value="0">未开奖</option>
                                         </select>
                                     </div>
                                     <button type="submit" class="btn btn-sm btn-primary">查询</button>
-                                    <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="<?php echo url('add'); ?>" >添加用户</a>
                                     <button type="reset" class="btn btn-sm btn-danger hidden-xs" style="float:right;margin-right:10px;">清空查询条件</button>
                                 </form>
                             </div>
@@ -150,9 +148,10 @@ select{
                                         <th>帐号</th>
                                         <th>期号</th>
                                         <th>押注方向</th>
+                                        <th>押注金额</th>
                                         <th>开奖状态</th>
                                         <th>时间</th>
-                                        <th colspan="2">操作</th>
+                                        <th>操作</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -161,9 +160,20 @@ select{
                                         <td class="center"><?php echo $k; ?></td>
                                         <td class="center"><?php echo $vo['id']; ?></td>
                                         <td class="center"><?php echo $vo['account']; ?></td>
-                                        <td>--</td>
-                                        <td>--</td>
-
+                                        <td class="center"><?php echo $vo['team']; ?></td>
+                                        <td class="center"><?php echo $vo['dir']; ?></td>
+                                        <td class="center"><?php echo $vo['number']; ?></td>
+                                        <td class="center">
+                                            <?php if(($vo['right'] === null)): ?>
+                                                <span style="color: #dedede">待开</span>
+                                            <?php elseif(($vo['right'] === 1)): ?>
+                                                <span style="color: grey">中奖</span>
+                                            <?php elseif(($vo['right'] === 0)): ?>
+                                                <span style="color: #1a1a1a">未中奖</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="center"><?php echo $vo['create_time']; ?></td>
+                                        <td class="center">--</td>
                                     </tr>
                                     <?php endforeach; endif; else: echo "" ;endif; ?>
                                     </tbody>
@@ -301,7 +311,7 @@ select{
 </script>
 <script type="text/javascript">
     // 定位
-    $('a[href="/Admin/User/index"]').parents().filter('li').addClass('open active');
+    $('a[href="/Admin/Game/recode.html"]').parents().filter('li').addClass('open active');
 </script>
 <script type="text/javascript">
     <?php if(input('get.keywords')): ?>

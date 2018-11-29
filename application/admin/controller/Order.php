@@ -16,16 +16,22 @@ class Order extends Admin
         $map = [];
         $keywords = input('get.keywords') ? input('get.keywords') : null;
         if ($keywords) {
-            $map['order_sn'] = array('like', '%' . trim($keywords) . '%');
+            $map['order'] = array('like', '%' . trim($keywords) . '%');
         }
-        if (is_numeric(input('get.order_status'))) {
-            $map['order_status'] = input('get.order_status');
+      	$type = input('get.type') ? input('get.type') : null;
+      	if($type){
+        	 $map['trade_type'] = $type;
         }
-    
-        // pre($map);exit;
+        if (is_numeric(input('get.id'))) {
+          	if( $map['trade_type'] ==1){
+            	$map['sell_id'] = input('get.id');
+            }else{
+            	$map['buy_id'] = input('get.id');
+            }
+        }
         $this->assign("info", model('Order')->infoList($map, $p));
-        $this->assign("order_status", model("Common/Dict")->showList('order_status'));//状态
-        $this->assign("userlist", model("User")->showList());
+        $this->assign("trade_type", model("Common/Dict")->showList('trade_type'));//状态
+      	$this->assign("user", model("User")->showList());
         return $this->fetch();
     }
 

@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:71:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\config\index.html";i:1525334656;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:71:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\config\index.html";i:1543452921;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -57,9 +57,9 @@ select{
     </div>
   </div>
 </div>
-<div class="main-container" id="main-container"> 
-  <!-- #section:basics/sidebar -->
-  <div id="sidebar" class="sidebar ">
+<div class="main-container" id="main-container">
+    <!-- #section:basics/sidebar -->
+    <div id="sidebar" class="sidebar ">
   <div class="sidebar-shortcuts" id="sidebar-shortcuts">
     <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
       <button class="btn btn-success">
@@ -98,90 +98,142 @@ select{
     <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
   </div>
 </div>
-  <!-- /section:basics/sidebar -->
-  <div class="main-content">
-    <div class="main-content-inner"> 
-      <!-- #section:basics/content.breadcrumbs -->
-      <div class="breadcrumbs" id="breadcrumbs"> 
-        <ul class="breadcrumb">
-          <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-          <li> <a href="<?php echo url('index'); ?>">系统设置</a> </li>
-          <li class="active"><?php echo $pagename; ?></li>
-        </ul>
-        <!-- /.breadcrumb --> 
-      </div>
-      <!-- /section:basics/content.breadcrumbs -->
-      <div class="page-content"> 
-        <div class="page-header">
-          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 设置站点信息 </small> </h1>
-        </div>
-        <!-- /.page-header -->
-        <div class="row">
-          <div class="col-xs-12"> 
-            <!-- PAGE CONTENT BEGINS -->
-            <form class="form-horizontal form-post" role="form">
-              <!-- #section:elements.form -->
-              <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
-              <div class="form-group">
-                <label class="col-sm-3 control-label no-padding-right"> <?php echo $vo['info']; ?> </label>
-                <div class="col-sm-9">
-                  <?php switch($vo['type']): case "0": ?><input name="<?php echo $vo['key']; ?>" type="text" class="col-xs-10 col-sm-5" placeholder="此处填写<?php echo $vo['info']; ?>" value="<?php echo $vo['value']; ?>" /><?php break; case "1": ?>
-                      <textarea name="<?php echo $vo['key']; ?>" class="col-xs-10 col-sm-5" placeholder="这里填写<?php echo $vo['info']; ?>" ><?php echo $vo['value']; ?></textarea>
-                    <?php break; case "2": ?>
-                      <div class="col-sm-9">
-                        <div class="radio" style="float:left">
-                          <label> <input name="<?php echo $vo['key']; ?>" type="radio" class="ace" value="1" <eq name="vo['value']" value="1">checked</eq> > <span class="lbl"> 开启</span> </label>
-                        </div>
-                        <div class="radio" style="float:left">
-                          <label> <input name="<?php echo $vo['key']; ?>" type="radio" class="ace" value="0" <eq name="vo['value']" value="0">checked</eq> > <span class="lbl"> 关闭</span> </label>
-                        </div>
-                      </div>
-                    <?php break; endswitch; ?>
+    <!-- /section:basics/sidebar -->
+    <div class="main-content">
+        <div class="main-content-inner">
+            <!-- #section:basics/content.breadcrumbs -->
+            <div class="breadcrumbs" id="breadcrumbs">
+                <ul class="breadcrumb">
+                    <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
+                    <li> <a href="<?php echo url('index'); ?>">系统设置</a> </li>
+                    <li class="active"><?php echo $pagename; ?></li>
+                </ul>
+                <!-- /.breadcrumb -->
+            </div>
+            <!-- /section:basics/content.breadcrumbs -->
+            <div class="page-content">
+                <div class="page-header">
+                    <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 设置站点信息 </small> </h1>
                 </div>
-              </div>
-              <?php endforeach; endif; else: echo "" ;endif; ?>     
-              <div class="space-4"></div>
-              <div class="clearfix form-actions">
-                <div class="col-md-offset-3 col-md-9">
-                  <button class="btn btn-info" type="submit" id="btn"> <i class="ace-icon fa fa-check bigger-110"></i> 保存 </button>
+                <!-- /.page-header -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- PAGE CONTENT BEGINS -->
+                        <form class="form-horizontal form-post" role="form">
+                            <!-- #section:elements.form -->
+                            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right"> <?php echo $vo['info']; ?> </label>
+                                <div class="col-sm-9">
+                                    <?php switch($vo['type']): case "0": ?>
+                                    <input name="<?php echo $vo['key']; ?>" type="text" class="col-xs-10 col-sm-5" placeholder="此处填写<?php echo $vo['info']; ?>" value="<?php echo $vo['value']; ?>" <?php echo $vo['state']==1?'' : 'disabled'; ?> />
+                                    <?php break; case "1": ?>
+                                    <textarea name="<?php echo $vo['key']; ?>" class="col-xs-10 col-sm-5" placeholder="这里填写<?php echo $vo['info']; ?>" ><?php echo $vo['value']; ?></textarea>
+                                    <?php break; case "2": ?>
+                                    <div class="col-sm-9">
+                                        <div class="radio" style="float:left">
+                                            <label> <input name="<?php echo $vo['key']; ?>" type="radio" class="ace" value="1" <?php echo $vo['value']==1?'checked' : ''; ?>> <span class="lbl"> 开启</span> </label>
+                                        </div>
+                                        <div class="radio" style="float:left">
+                                            <label> <input name="<?php echo $vo['key']; ?>" type="radio" class="ace" value="0" <?php echo $vo['value']==0?'checked' : ''; ?> > <span class="lbl"> 关闭</span> </label>
+                                        </div>
+                                    </div>
+                                    <?php break; case "3": ?>
+                                    <div class="form-group">
+                                        <div class="col-sm-3 col-lg-3" style="padding-right: 0px;">
+                                            <input name="<?php echo $vo['key']; ?>" type="text" class="form-control" placeholder="此处是<?php echo $vo['info']; ?>路径" value="<?php echo $vo['value']; ?>" disabled>
+                                        </div>
+                                        <div class="col-sm-2 col-lg-2" style="padding-left: 0px;">
+                                            <a href="javascript:void(0);" class="btn btn-sm btn-success" id="test1" data-type="headimg">点击上传<?php echo $vo['info']; ?></a>
+                                        </div>
+                                    </div>
+                                    <?php break; case "4": ?>
+                                    <div class="form-group">
+                                        <br>
+                                        <div class="col-sm-10 col-lg-5" style="padding-right: 0px;">
+                                            <script id="container" name="<?php echo $vo['key']; ?>" text="text/plain"><?php echo !empty($vo['value'])?$vo['value']:""; ?></script>
+                                        </div>
+                                    </div>
+                                    <?php break; endswitch; ?>
+                                </div>
+                            </div>
+                            <?php endforeach; endif; else: echo "" ;endif; ?>
+                            <div class="space-4"></div>
+                            <div class="clearfix form-actions">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button class="btn btn-info" type="submit" id="btn"> <i class="ace-icon fa fa-check bigger-110"></i> 保存 </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.col -->
                 </div>
-              </div>              
-            </form>
-          </div>
-          <!-- /.col --> 
+                <!-- /.row -->
+            </div>
+            <!-- /.page-content -->
         </div>
-        <!-- /.row --> 
-      </div>
-      <!-- /.page-content --> 
     </div>
-  </div>
-  <!-- /.main-content -->
-  <div class="footer">
-    <div class="footer-inner"> 
-      <div class="footer-content"> <span class="bigger-120"> <span class="blue bolder"><?php echo config('WEB_SITE_NAME'); ?> </span><?php echo WEB_VERSION; ?>版 </span></div>
+    <!-- /.main-content -->
+    <div class="footer">
+        <div class="footer-inner">
+            <div class="footer-content"> <span class="bigger-120"> <span class="blue bolder"><?php echo config('WEB_SITE_NAME'); ?> </span><?php echo WEB_VERSION; ?>版 </span></div>
+        </div>
     </div>
-  </div>
-  <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i> </a>
+    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i> </a>
 </div>
-<!-- /.main-container --> 
-<!-- basic scripts --> 
+<!-- /.main-container -->
+<!-- basic scripts -->
 <script type="text/javascript">if($(window).width()<1024)  $("#sidebar").addClass('menu-min');</script>
 <script src="/static/ace/js/bootstrap.js"></script>
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
+<link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+
+<script src="/static/layui/layui.js"></script>
+<script src="/js/jquery-1.11.0.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/static/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/static/ueditor/ueditor.all.js"></script>
 <script type="text/javascript">
-$(".form-post").find('button:submit').click(function() {
-    var btn = $(this);
-    $.post("<?php echo url('index'); ?>", $(".form-post").serialize()).success(function(data) {
-		$('#btn').text('正在保存').attr('disabled',"true");
-    if (data){
-      setTimeout(function() {
-        location.href=self.location.href;
-      },1000);
-    }
-  });
-    return false;
-});
-</script> 
+    $(document).ready(function (){
+        var ue = UE.getEditor('container');
+    });
+</script>
+<script>
+    layui.use('upload', function(){
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1' //绑定元素
+            ,accept:"file"
+            ,url: "<?php echo url('Currency/upload'); ?>" //上传接口
+            ,data: {type: 'surface'}
+            ,done: function(res){
+                // console.log(res)
+                //上传完毕回调
+                if(res.status == 0){
+                    layer.msg(res.info, {icon: res.status,time: 1500});
+                }else{
+                    //返回路径
+                    $("input[name=<?php echo $vo['key']; ?>]").val(res.msg);
+
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(".form-post").find('button:submit').click(function() {
+        var btn = $(this);
+        $.post("<?php echo url('index'); ?>", $(".form-post").serialize()).success(function(data) {
+            $('#btn').text('正在保存').attr('disabled',"true");
+            if (data){
+                setTimeout(function() {
+                    location.href=self.location.href;
+                },1000);
+            }
+        });
+        return false;
+    });
+</script>
 </body>
 </html>

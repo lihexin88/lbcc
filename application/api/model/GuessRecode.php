@@ -104,19 +104,11 @@ class GuessRecode extends Model
 	 */
 	static public function lottery($this_team,$dir)
 	{
-		$flag = false;
 		$where_array['team'] = array('eq',$this_team['id']);
 		$where_array['dir'] = array('eq',$dir);
-		if(self::where($where_array)->update(['right'=>1,'announce'=>1]))
-		{
-			$where_array['dir'] = array('neq',$dir);
-			if(self::where($where_array)->update(['right'=>0,'announce'=>1])){
-				$flag = true;
-			}
-		}
-		if(!$flag){
-			throw new Exception('os_error');
-		}
+		self::where($where_array)->update(['right'=>1,'announce'=>1]);
+		$where_array['dir'] = array('neq',$dir);
+		self::where($where_array)->update(['right'=>0,'announce'=>1]);
 	}
 
 	/**
@@ -136,16 +128,27 @@ class GuessRecode extends Model
 		$Recode = Db::table('sn_guess_recode')->alias('r')->where($where)->join('user u','r.uid = u.id')->field('u.account,r.number')->paginate($page_size);
 		return $Recode;
 	}
-	static public function get_all($type)
+
+	/**
+	 * 后台获取用户竞猜信息
+	 * @param $info
+	 * @return mixed
+	 * @throws \think\exception\DbException
+	 */
+	static public function get_all($info)
 	{
-		if($type != 1){
+			$where['u.account'] = $info['keywords'];
+			if($where['u.account'] == null){
+				unset($where['u.account']);
+			}
+			$where['r.announce'] = $info['status'];
+			if(($where['r.announce'] == 3)||($where['r.announce'] == null)){
+				unset($where['r.announce']);
+			}
 			$pagesize = 15;
-			$recode['data'] = self::alias('r')->join('user u','r.uid = u.id')->paginate($pagesize);
+			$recode['data'] = self::alias('r')->join('user u','r.uid = u.id')->where($where)->paginate($pagesize);
 			$recode['page'] = $recode['data']->render();
+			$recode['count'] = count($recode['data']);
 			return $recode;
-		}else{
-			$recode['data'] = self::get_daily_recode();
-			$recode['page'] = null;
-		}
 	}
 }

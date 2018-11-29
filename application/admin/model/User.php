@@ -146,16 +146,17 @@ class User extends Base
     /* 根据键名取键值 用于foreach */
     public function showKey()
     {
-        $list = $this->field('id,username')->order('id desc')->select()->toArray();
+        $list = $this->field('id,account')->order('id desc')->select()->toArray();
         foreach ((array)$list as $k => $v) {
-            $return[$v['id']] = $v['username'];
+            $return[$v['id']] = $v['id'];
+          	$return[$v['account']] = $v['account'];
         }
         return $return;
     }
 
     public function showList()
     {
-        $list = $this->field('id,username')->order('id asc')->select()->toArray();
+        $list = $this->field('id,account')->order('id asc')->select()->toArray();
         return $list;
     }
 

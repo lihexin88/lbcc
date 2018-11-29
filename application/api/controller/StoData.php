@@ -84,10 +84,11 @@ class StoData extends ApiBase
 		}else{
 			$time = config('LOCK_TIME');//设置时间
 			$num = $this->StoData->where($map)->value('number');//STO数量
-			$times = time()+$time*24*60*60;
+          	$timess = time()+$time*24*60*60;
+			$times =$this->StoData->where($map)->value('create');//STO数量
           	$numbers = $num + $number;//sto库存数量+最新锁仓数量
-			//$situation = $this->StoData->implement($map,$numbers,$times);
-          	$situation = 1;
+			$situation = $this->StoData->implement($map,$numbers,$timess,$times);
+          	//$situation = 1;
 			if($situation){
               	$lock_num = config('LOCK_NUMBER');//设置升级数量
               	if($numbers >= $lock_num && $res['level'] == 0 && time()>=$times){
@@ -96,7 +97,7 @@ class StoData extends ApiBase
                   	$upgrade = new Upgrade();
                 	$upgrade_data = $upgrade->index($res);
                 }
-				$r = rtn(1,lang('success'));
+              	$r = rtn(1,lang('success'));
 			}else{
 				$r = rtn(0,lang('error'));
 			}

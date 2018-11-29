@@ -32,12 +32,7 @@
               <div class="col-xs-12" style="margin-bottom:10px;">
                 <form action="{:url('index')}" method="get" class="form-inline" role="form">
                   <div class="form-group"><label>用户</label>
-                    <select name="uid" class="form-control">
-                    <option value="">全部</option>
-                      {volist name="userlist" id="vo"}
-                        <option value="{$vo.id}">{$vo.username}</option>
-                      {/volist}
-                    </select>
+                    <input type="text" name="uid" value="" placeholder="请输入用户信息">
                   </div>
                   <div class="form-group"><label>交易类型</label>
                     <select name="trade_type" class="form-control">
@@ -83,17 +78,17 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {volist name="info.list" id="vo" key="k"}
+                    {volist name="info.data" id="vo" key="k"}
                       <tr>
                         <td class="center">{$vo.id}</td>
-                         <td>{$vo.user_name}</td>
+                         <td>{$vo.uid}</td>
                           <td>{$vo.number}</td>
                         <td>{$vo.price}</td>
                         <td>{$vo.trade_status}</td>
-                        <td> {$vo.start_time}</td>
-                        <td>{$vo.end_time}</td>
-                        <td>{$vo.trade_type} </td>
-                        <td>{$vo.money_type} </td>
+                        <td> {:date("Y-m-d H:i:s",$vo.start_time)}</td>
+                        <td>{:date("Y-m-d H:i:s",$vo.end_time)}</td>
+                        <td>{$vo.trade_type}</td>
+                        <td>{$vo.cur_id} </td>
                       </tr>
                     {/volist}
                   </tbody>

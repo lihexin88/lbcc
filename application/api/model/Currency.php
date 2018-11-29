@@ -24,4 +24,13 @@ class Currency extends Model
 		$name = self::get(['id'=>$id]);
 		return $name['name'];
 	}
+
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \think\exception\DbException
+     */
+    public function get_cur_text($id){
+        return self::get_name_by_id($id);
+    }
 }

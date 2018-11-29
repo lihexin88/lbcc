@@ -7,6 +7,7 @@ use think\Request;
 use think\Db;
 use app\api\model\Trade;
 use app\api\model\CurrencyArea;
+use app\api\model\Order;
 
 /**
  * 交易页面功能
@@ -75,17 +76,46 @@ class Transaction extends ApiBase
     }
 
     /**
-     * controller 买入
+     * 本人买入 匹配人是卖出 本人卖出 匹配人是买入
+     * @return false|string|\think\response\Json
      */
-    public function Buy(){
+    public function user_order(){
         if(Request::instance() -> isPost()) {
-            $Trade = new Trade();
-            // 获取行情
-            $Lib = new Lib();
-            $huobi = $Lib -> get_market_tickers();  // 全部symbol的交易行情
-            $huobi_data = $huobi['data'];   // 取出信息数组
-            return json($Trade -> buy($this -> userInfo, input('post.'),$huobi_data));
+            $data = input('post.');
+            if(!$data['number'] || !$data['price'] || !$data['cur_id'] || !$data['area_id'] || !$data['trade_type'] || !$data['currency_area_id']){
+                $r = rtn(-1,lang(not_null));
+            }else{
+                $Trade = new Trade();
+                $return = $Trade->orders($this->userInfo,$data,$data['trade_type']);
+                if($return['code'] == -5){
+                    //如果状态是1 走挂卖 否则 走挂买
+                    $return['data']['trade_type']==1?$this->Sell($return['data'],$return['user']):$this->Buy($return['data'],$return['user']);
+                }else{
+                    $r = json($return);
+                }
+            }
         }
+        return $r;
+    }
+
+    /**
+     * controller 执行挂单买入
+     */
+    public function Buy($data,$user){
+        $Trade = new Trade();
+        // 获取行情
+        $Lib = new Lib();
+        $huobi = $Lib -> get_market_tickers();  // 全部symbol的交易行情
+        $huobi_data = $huobi['data'];   // 取出信息数组
+        return json($Trade -> buy($user, $data,$huobi_data));
+    }
+
+    /**
+     * controller 执行挂单卖出
+     */
+    public function Sell($data,$user){
+        $Trade = new Trade();
+        return json($Trade->sell($user,$data));
     }
 
 
