@@ -122,59 +122,62 @@ class Trade extends Model
         $CurrencyArea = new CurrencyArea();
         switch($data['block_type']){
             case 1: // 卖出
-
-                $return['need'] = $data['number'] * (1 + config('SERVICE_SELL'));
-                $return['all_price'] = $data['number'];
+                $return['need'] = $data['number'] * (1 + config('SERVICE_SELL'));   // 需要
+                $return['all_price'] = $data['number'];     //  总价
                 // 获取交易币种名称
                 $cur = $CurrencyArea -> trade_pairs($data['currency_area_id']);
                 $cur_text = $Currency -> get_cur_text($cur['cur_id']);
                 $price = api_currency($cur_text) * $data['number'];
                 if($price >= 150){
-                    $return['service'] = $data['number'] * config('SERVICE_SELL');
+                    $service = $data['number'] * config('SERVICE_SELL');
                 }else{
-                    $return['service'] = 150 * config('SERVICE_SELL');
+                    $service = 150 * config('SERVICE_SELL');
+                }
+                // 获取 锁仓总数据 表判断用户购买是否大于 5000 或 1000
+                $Lock_count = new LockCount();
+                $data = $Lock_count -> where('uid',$data['token']['id']) -> value('count_number');
+                if($data > 5000){
+                    $return['service'] = $service * config('FIVE_THOUSAND');
+                }elseif($data>=10000){
+                    $return['service'] = $service * config('TEM_THOUSAND');
+                }else{
+                    $return['service'] = $service;
                 }
 
                 break;
             case 2: // 买入
-                $return['service'] = ($data['price'] * $data['number']) * config('SERVICE_BUY');
-                $return['need'] = $data['price'] * $data['number'] * (1 + config('SERVICE_BUY'));
-                $return['all_price'] = $data['price'] * $data['number'];
+                $return['need'] = $data['price'] * $data['number'] * (1 + config('SERVICE_BUY'));   // 需要
+                $return['all_price'] = $data['price'] * $data['number'];    // 总价
                 // 获取交易币种名称
                 $cur = $CurrencyArea -> trade_pairs($data['currency_area_id']);
                 $cur_text = $Currency -> get_cur_text($cur['cur_id']);
                 $price = api_currency($cur_text) * ($data['price'] * $data['number']);
                 if($price >= 150){
-                    $return['service'] = $data['number'] * config('SERVICE_SELL');
+                    $service = $data['price'] * $data['number'] * config('SERVICE_SELL');
                 }else{
-                    $return['service'] = 150 * config('SERVICE_SELL');
+                    $service = 150 * config('SERVICE_SELL');
+                }
+                // 获取 锁仓总数据 表判断用户购买是否大于 5000 或 1000
+                $Lock_count = new LockCount();
+                $data = $Lock_count -> where('uid',$data['token']['id']) -> value('count_number');
+                if($data > 5000){
+                    $return['service'] = $service * config('FIVE_THOUSAND');
+                }elseif($data>=10000){
+                    $return['service'] = $service * config('TEM_THOUSAND');
+                }else{
+                    $return['service'] = $service;
                 }
 
                 break;
         }
 
+        return $return;
     }
 
     /**
      * model 挂单买入
      */
     public function buy($user,$data,$huobi_data){
-        if(!$data['cur_id']){
-            return ['code' => 0,'msg' => lang('not_cur')];
-        }
-        if(!$data['area_id']){
-            return ['code' => 0,'msg' => lang('not_area')];
-        }
-        if(!$data['trade_type']){
-            return ['code' => 0,'msg' => lang('not_trade_type')];
-        }
-        if(!$data['price']){
-            return ['code' => 0,'msg' => lang('input_price')];
-        }
-        if(!$data['number']){
-            return ['code' => 0,'msg' => lang('input_number')];
-        }
-
         // 设置插入 交易表 的基本信息
         $in_trade['uid'] = $user['id'];
         $in_trade['number'] = $data['number'];
@@ -216,7 +219,7 @@ class Trade extends Model
                 }
             }
         }
-        $all_price = $data['price'] * $data['number'];  // 获取交易总价
+        $all_price = $price * $data['number'];  // 获取交易总价
 
         // 判断用户交易金额是否小于 150 美元(手续费最低按照150美元的0.2%收取)
         if($all_price <= 150){
@@ -226,38 +229,186 @@ class Trade extends Model
         }
 
         // 判断用户交易手续费是否打折
-        $lookCount = new lookCount();
-        $look_count = $lookCount -> where('uid',$user['id']) -> field('count_number,time') -> find();
+        $lockCount = new LockCount();
+        $lock_count = $lockCount -> where('uid',$user['id']) -> field('count_number,time') -> find();
         $time = time();
-        if($look_count['count_number'] >= 5000 && $time > $look_count['time']){
+        if($lock_count['count_number'] >= 5000 && $time > $lock_count['time']){
             $service = $service_charge * config('FIVE_THOUSAND');
-        }else if($look_count['count_number'] >= 10000 && $time > $look_count['time']){
+        }else if($lock_count['count_number'] >= 10000 && $time > $lock_count['time']){
             $service = $service_charge * config('TEM_THOUSAND');
         }else{
             $service = $service_charge;
         }
 
         // 判断用户账户中的相应的币种是否足够
-        $price = $data['price'] * $data['number'] + ($service/$price);
-
-        // 在交易表中插入数据
-        Db::startTrans();
-        try{
-            // 在 交易表 中插入数据
-            if(!$this -> allowField(true) -> save($in_trade)){
-                throw new Exception(lang('os_error'));
+        $price = $data['price'] * $data['number'] + ($service/$price);//输入的单价*输入的数量+（手续费美元除以该币种对应的美元单价)=总价+该币种应该扣除的手续费=应扣钱
+        $UserCur = new UserCur();//实例化资产表
+        $maps['uid'] = $user['id'];
+        $maps['cur_id'] = $data['cur_id'];
+        $assets = $UserCur->where($maps)->value('number');//数量
+        if($price <= $assets){
+            // 在交易表中插入数据
+            Db::startTrans();
+            try{
+                // 在 交易表 中插入数据
+                $return = $this -> allowField(true) -> save($in_trade);
+                if(!$return){
+                    throw new Exception(lang('os_error'));
+                }else{
+                    $UserCur->where($maps)->setDec('number',$data['number']);
+                }
+                Db::commit();
+                return ['code' => 1,'msg' => lang('os_success')];
+            }catch(\Exception $e){
+                Db::rollback();
+                return ['code' => 0,'msg' => $e -> getMessage()];
             }
-
-
-
-
-
-            Db::commit();
-            return ['code' => 1,'msg' => lang('os_success')];
-        }catch(\Exception $e){
-            Db::rollback();
-            return ['code' => 0,'msg' => $e -> getMessage()];
+        }else{
+            return ['code' => 0,'msg' => lang('not_numebr')];
         }
+    }
 
+
+    // 挂单卖出
+    public function sell($user,$data){
+
+        // 设置插入 交易表 的基本信息
+        $in_trade['uid'] = $user['id'];
+        $in_trade['number'] = $data['number'];
+        $in_trade['price'] = $data['price'];
+        $in_trade['trade_status'] = 1;
+        $in_trade['cur_id'] = $data['cur_id'];
+        $in_trade['create_time'] = time();
+        $in_trade['update_time'] = time();
+        $in_trade['trade_type'] = $data['trade_type'];
+        $in_trade['cur_area_id'] = $data['area_id'];
+        $count_number = $data['number']*(1+config('SERVICE_SELL'));//挂单数量*（1+手续费） = 总共需要的钱
+        $UserCur = new UserCur();//实例化资产表
+        $maps['uid'] = $user['id'];
+        $maps['cur_id'] = $data['cur_id'];
+        $assets = $UserCur->where($maps)->value('number');//数量
+        if($count_number>$assets){
+            return ['code' => 0,'msg' => lang('not_numebr')];
+        }else{
+            $return = $this -> insert($in_trade);//插入
+            if($return){
+                $UserCur->where($maps)->setDec('number',$count_number);//自减少总共需要的钱
+                return ['code' => 1,'msg' => lang('success')];
+            }
+        }
+    }
+
+    //执行交易 $user 用户信息 $data会员输入的数据 $type 本人是1买2卖
+    public function orders($user,$data,$type){
+        $map = $this->maps($data,$type);
+        if($map){
+            $usercur = new UserCur();
+            $cur_area = new CurrencyArea();
+            $cur = $cur_area->where('id',$data['currency_area_id'])->value('area_id');
+            $cur_id = $cur_area->where('id',$data['currency_area_id'])->value('cur_id');
+            $number = $usercur->where('uid',$user['id'])->where('cur_id',$cur)->value('number');
+            $Currency = new Currency();
+            // 通过交易类型判断获取交易币种,并获取交易币种名称
+            if($type === 2){
+                $cur_name = $Currency -> get_cur_text($data['cur_id']);
+            }else{
+                $cur_name = $Currency -> get_cur_text($data['area_id']);
+            }
+            $count_number = $this->fees($data['price'],$data['number'],$type,$cur_name,$user);//算上手续费
+            if($number >= $count_number){
+                $order = new Order();
+                // 本人全额交易(获得数量 $data['number'] 支付数量$count_number)
+                $member['order'] = generateOrderNumber();
+                $member['order_number'] = $data['number'];
+                $member['price'] = $data['price'];
+                $member['order_status'] = 3;
+                $member['create_time'] = time();
+                $member['pay_time'] = time();
+                $member['done_time'] = time();
+                $member['trade_type'] = $data['trade_type'];
+                $member['buyer_id'] = $data['trade_type']==1?$map['uid']:$user['id'];//三元 如果本人状态是1 那么买方是匹配人ID 卖方是本人
+                $member['seller_id'] = $data['trade_type']==1?$user['id']:$map['uid'];//三元 如果本人状态是1 那么买方是匹配人ID 卖方是本人
+                $member['trade_id'] = $map['id'];//匹配数据的ID
+                $member['cur_id'] = $map['cur_id'];//当前交易的虚拟币ID
+                $member['cur_area_id'] = $map['cur_area_id'];//交易区ID
+                //进订单表
+                $order->insert($member);//添加数据
+                $usercur->where('uid',$user['id'])->where('cur_id',$cur)->setDec('number',$count_number);//自减算上手续费的数量
+                $usercur->where('uid',$user['id'])->where('cur_id',$cur_id)->setInc('number',$data['number']);//自增输入的数量
+                //匹配人
+                $match['number'] = $map['number']-$data['number'];//挂单数量减少
+                $match['update_time'] = time();//修改时间
+                if($map['number'] > $data['number']){
+                    //匹配数量如果大于本人输入数量
+                    $match['trade_status'] = 5;//部分交易
+                }else{
+                    //否则等于
+                    $match['trade_status'] = 3;//交易完成
+                }
+                $usercur->where('uid',$map['uid'])->where('cur_id',$cur)->setInc('number',$data['number']);
+                $this->where('id',$map['id'])->update($match);//执行修改
+                return ['code' => 1,'msg'=>lang('success')];
+            }else{
+                return ['code' => 0,'msg'=>lang('not_numebr')];
+            }
+        }else{
+            return ['code' => -5,'data'=> $data,'user' => $user];
+        }
+    }
+
+    //封装查询条件 并返回 查询数据
+    public function maps($data,$type){
+        $map['price'] = $data['price'];//单价等于
+        $map['number'] = array('>=',$data['number']);//数量大于等于
+        $map['trade_status'] = array('in','1,5');//查询挂单 或者 部分成交
+        $map['cur_area_id'] = $data['currency_area_id'];//查询对应货币交易区ID
+        $map['trade_type'] = $type==2?1:2;//三元 如果type==2走真trade_type =1 否则走假trade_type=2
+        $trade = $this->where($map)->find();    // 获取交易信息
+        return $trade;
+    }
+
+    //计算手续费
+    public function fees($price,$number,$type,$cur_name,$user){
+//        echo $price.'-'.$number.'-'.$type.'-'.$cur_name.'-'.$user;exit;
+        // 通过币种名称获取当前币种对 USDT 时的价格
+        if($cur_name != 'LBCC'){
+            $prices = api_currency($cur_name);//该币种的USDT单价 10:1
+        }else{
+            $order = new Order();
+            $order_status = 3;
+            $cur_id = 1;    // 交易币
+            $prices = $order -> last_order_price($order_status,$cur_id);
+            if(!$prices){
+                $prices = 1;
+            }
+        }
+        if($type == 1){
+            $usdt = $prices * $number;//该币种数量对应的USDT价钱10*num
+            if($usdt >= 150){
+                $fee = $number * config('SERVICE_SELL');//卖 数量*(1+手续费)
+            }else{
+                $num = (150-$usdt)/$prices;//(150-该币种数量对应的USDT价钱)/该币种的USDT单价 = 该币种还需要多少数量
+                $fee = ($number+$num)*config('SERVICE_SELL');//卖 150*手续费+数量
+            }
+        }else{
+            $usdt = $prices*$number*$price;//该币种数量对应的USDT价钱10*num
+            if($usdt >= 150){
+                $fee = $price*$number*config('SERVICE_BUY');//买 数量*单价*(1+手续费);
+            }else{
+                $num = (150-$usdt)/$prices;//(150-该币种数量对应的USDT价钱)/该币种的USDT单价 = 该币种还需要多少数量
+                $fee = $price*($number+$num)*config('SERVICE_SELL');//卖 150*手续费+数量
+            }
+        }
+        $Lock_count = new LockCount();
+        $data = $Lock_count -> where('uid',$user['id']) -> value('count_number');
+        if($data>5000){
+            $fee = $fee * config('FIVE_THOUSAND');
+        }elseif($data>=10000){
+            $fee = $fee * config('TEM_THOUSAND');
+        }else{
+            $fee = $fee;
+        }
+        $count = $type==1?$number+$fee:$number*$price+$fee;
+        return $count;
     }
 }

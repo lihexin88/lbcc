@@ -371,8 +371,14 @@ class User extends ApiBase
 		$password = $data['password'];
 		$number = $data['charge_number'];
 		$direction = $data['direction'];
+		$type = null;
 		if(!in_array($direction,['1','-1'])){
 			return rtn(-1,lang('os_error'));
+		}
+		if($direction > 0){
+			$type = 1;
+		}else{
+			$type = 2;
 		}
 //		开启事务
 		Db::startTrans();

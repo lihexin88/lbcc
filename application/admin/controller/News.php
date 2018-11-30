@@ -37,6 +37,7 @@ class News extends Admin
      */
     public function edit($id)
     {
+
         if (Request::instance()->isPost()) {
             return json(model('News')->changeState(input('post.')));
         }

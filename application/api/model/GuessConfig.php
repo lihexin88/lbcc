@@ -81,7 +81,7 @@ class GuessConfig extends Model
 	 * @return mixed
 	 * @throws \think\exception\DbException
 	 */
-	static public function get_recode($where)
+	static public function get_recode($where = null)
 	{
 		$pagesize = 15;
 		$query = null;
@@ -96,6 +96,7 @@ class GuessConfig extends Model
 		$recode = self::where($where)->order('create_time desc')->paginate($pagesize,false,$configs);
 		$r['data'] = $recode;
 		$r['page'] = $recode->render();
+		$r['count'] = self::where($where)->count();
 		return $r;
 	}
 }

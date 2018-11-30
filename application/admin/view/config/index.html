@@ -104,6 +104,7 @@
 <script src="/js/jquery-1.11.0.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="__EDITOR__/ueditor.config.js"></script>
 <script type="text/javascript" src="__EDITOR__/ueditor.all.js"></script>
+<script type="text/javascript" src="__EDITOR__/ueditor.parse.js"></script>
 <script type="text/javascript">
     $(document).ready(function (){
         var ue = UE.getEditor('container');
@@ -139,7 +140,8 @@
             $('#btn').text('正在保存').attr('disabled',"true");
             if (data){
                 setTimeout(function() {
-                    location.href=self.location.href;
+                    layer.msg("已保存");
+                    $('#btn').text('保存').removeAttr('disabled');
                 },1000);
             }
         });

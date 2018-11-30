@@ -106,22 +106,18 @@ class GuessAccount extends Model
 		$fee = Config::game_fee();
 //      获取当前获奖用户
 		$right_income = self::get(['uid'=>$uid]);
-
 		$right_income['blance']+=$number*(2-$fee);
+		$user['id'] = $uid;
+
 		if(!$right_income->save())
 		{
 			throw new Exception('os_error');
 		}
 //		增加资金流水记录
 		$right_income = new GuessOrder();
-		$right_income['uid'] = $uid;
-		$right_income['direction'] = 2;
-		$right_income['number'] = $number*(2-$fee);
-		if(!$right_income->save())
-		{
-			throw new Exception('os_error');
-		}
+		$right_income->create_order(2,$number * (2-$fee),$user);
 		return true;
 	}
+
 
 }

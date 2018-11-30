@@ -60,8 +60,14 @@
                                     <tr>
                                         <td class="center">{$k}</td>
                                         <td class="center">{$vo.id}</td>
-                                        <td class="center">{$vo.status}</td>
-                                        <td class="center">{$vo.right}</td>
+                                        <td class="center">{$vo.status==1?"未开奖":"已开奖"}</td>
+                                        <td class="center">
+                                            {if condition = "in_array($vo.right,['0','1'])"}
+                                                {$vo.right==0?"<span class='red'>红</span>":"<span class='blue'>蓝</span>"}
+                                            {else}
+                                                <span class="grey">未开奖</span>
+                                            {/if}
+                                        </td>
                                         <td class="center">{$vo.chip_money}</td>
                                         <td class="center">{$vo.red_money}</td>
                                         <td class="center">{$vo.blue_money}</td>

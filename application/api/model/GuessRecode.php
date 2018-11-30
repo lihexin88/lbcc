@@ -26,10 +26,10 @@ class GuessRecode extends Model
 
 	public function create_order($user,$number,$bet_dir,$team,$chip)
 	{
-//		判断押注时间 9:00~21:00
+//		判断押注时间 9:01~20:59  - 下注时间延迟，提前 1 分钟
 		$now = time();
-		$today_start = strtotime(date("Y-m-d",time())) + 9 * 60 * 60;
-		$today_end = strtotime(date("Y-m-d",time())) + 21 * 60 * 60;
+		$today_start = strtotime(date("Y-m-d",time())) + 9 * 60 * 60 + 1 * 60;
+		$today_end = strtotime(date("Y-m-d",time())) + 21 * 60 * 60 - 1 * 60;
 		if(($now < $today_start) || ($now > $today_end)){
 			return rtn(-1,lang('not_game_time'));
 		}

@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\game_info.html";i:1543483068;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\game_info.html";i:1543565637;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -36,7 +36,6 @@ select{
 }
 </style>
 </head>
-
 <body class="no-skin">
 <div id="navbar" class="navbar navbar-default">
   <div class="navbar-container" id="navbar-container">
@@ -108,12 +107,12 @@ select{
             </div>
             <div class="page-content">
                 <div class="page-header">
-                    <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 设置游戏有关信息 </small> </h1>
+                    <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 设置游戏公告信息 </small> </h1>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <form class="form-horizontal form-post" role="form">
-                            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $k = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right"> <?php echo $vo['info']; ?> </label>
                                 <div class="col-sm-9">
@@ -143,7 +142,7 @@ select{
                                     <div class="form-group">
                                         <br>
                                         <div class="col-sm-10 col-lg-5" style="padding-right: 0px;">
-                                            <script id="container" name="<?php echo $vo['key']; ?>" text="text/plain"><?php echo !empty($vo['value'])?$vo['value']:""; ?></script>
+                                            <script id="container<?php echo $k; ?>" name="<?php echo $vo['key']; ?>" text="text/plain"><?php echo !empty($vo['value'])?$vo['value']:""; ?></script>
                                         </div>
                                     </div>
                                     <?php break; endswitch; ?>
@@ -174,25 +173,59 @@ select{
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
 <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
-
 <script src="/static/layui/layui.js"></script>
 <script src="/js/jquery-1.11.0.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="/static/ueditor/ueditor.config.js"></script>
 <script type="text/javascript" src="/static/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="/static/ueditor/ueditor.parse.js"></script>
 <script type="text/javascript">
     $(document).ready(function (){
-        var ue = UE.getEditor('container');
+        <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $k = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
+            var ue = UE.getEditor('container<?php echo $k; ?>');
+        <?php endforeach; endif; else: echo "" ;endif; ?>
     });
+</script>
+<script>
+    layui.use('upload', function(){
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1' //绑定元素
+            ,accept:"file"
+            ,url: "<?php echo url('Currency/upload'); ?>" //上传接口
+            ,data: {type: 'surface'}
+            ,done: function(res){
+                // console.log(res)
+                //上传完毕回调
+                if(res.status == 0){
+                    layer.msg(res.info, {icon: res.status,time: 1500});
+                }else{
+                    //返回路径
+                    $("input[name=<?php echo $vo['key']; ?>]").val(res.msg);
+
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    // 定位
+    $('a[href="/Admin/Game/game_info.html"]').parents().filter('li').addClass('open active');
 </script>
 <script type="text/javascript">
     $(".form-post").find('button:submit').click(function() {
         var btn = $(this);
-        $.post("<?php echo url('index'); ?>", $(".form-post").serialize()).success(function(data) {
+        $.post("<?php echo url('edit_info'); ?>", $(".form-post").serialize()).success(function(data) {
+            data = JSON.parse(data);
             $('#btn').text('正在保存').attr('disabled',"true");
-            if (data){
+            if (data['code'] == 1){
                 setTimeout(function() {
-                    location.href=self.location.href;
+                    layer.msg("数据已更新");
+                    $('#btn').text('保存').removeAttr('disabled');
                 },1000);
+            }else{
+                layer.alert("未更新任何信息");
+                $('#btn').text('保存').removeAttr('disabled');
             }
         });
         return false;

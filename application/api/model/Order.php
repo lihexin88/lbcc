@@ -12,10 +12,11 @@ class Order extends Model
     /**
      * model 查看某一币种最后一笔成交订单的价格
      */
-    public function last_order_price($order_status,$cur_id){
+    public function last_order_price($order_status, $cur_id)
+    {
         $order_price_where['order_status'] = $order_status;
         $order_price_where['cur_id'] = $cur_id;
-        $price = $this -> where($order_price_where) -> order('id DESC') -> value('price');
+        $price = $this->where($order_price_where)->order('id DESC')->value('price');
         return $price;
     }
 

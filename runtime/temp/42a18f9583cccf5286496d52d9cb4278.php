@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:77:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\config_recode.html";i:1543477908;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:77:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\config_recode.html";i:1543566414;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -152,8 +152,13 @@ select{
                                     <tr>
                                         <td class="center"><?php echo $k; ?></td>
                                         <td class="center"><?php echo $vo['id']; ?></td>
-                                        <td class="center"><?php echo $vo['status']; ?></td>
-                                        <td class="center"><?php echo $vo['right']; ?></td>
+                                        <td class="center"><?php echo $vo['status']==1?"未开奖":"已开奖"; ?></td>
+                                        <td class="center">
+                                            <?php if(in_array($vo['right'],['0','1'])): ?>
+                                                <?php echo $vo['right']==0?"<span class='red'>红</span>":"<span class='blue'>蓝</span>"; else: ?>
+                                                <span class="grey">未开奖</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="center"><?php echo $vo['chip_money']; ?></td>
                                         <td class="center"><?php echo $vo['red_money']; ?></td>
                                         <td class="center"><?php echo $vo['blue_money']; ?></td>

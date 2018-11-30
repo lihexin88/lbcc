@@ -89,7 +89,7 @@ class Transaction extends ApiBase
                 $return = $Trade->orders($this->userInfo,$data,$data['trade_type']);
                 if($return['code'] == -5){
                     //如果状态是1 走挂卖 否则 走挂买
-                    $return['data']['trade_type']==1?$this->Sell($return['data'],$return['user']):$this->Buy($return['data'],$return['user']);
+                    $r = json($return['data']['trade_type']==1?$this->Sell($return['data'],$return['user']):$this->Buy($return['data'],$return['user']));
                 }else{
                     $r = json($return);
                 }
@@ -107,7 +107,8 @@ class Transaction extends ApiBase
         $Lib = new Lib();
         $huobi = $Lib -> get_market_tickers();  // 全部symbol的交易行情
         $huobi_data = $huobi['data'];   // 取出信息数组
-        return json($Trade -> buy($user, $data,$huobi_data));
+        $msg = $Trade -> buy($user, $data,$huobi_data);
+        return $msg;
     }
 
     /**
@@ -115,9 +116,8 @@ class Transaction extends ApiBase
      */
     public function Sell($data,$user){
         $Trade = new Trade();
-        return json($Trade->sell($user,$data));
+        $msg = $Trade->sell($user,$data);
+        return $msg;
     }
-
-
 
 }

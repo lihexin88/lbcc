@@ -1,6 +1,5 @@
 {include file="common/top" /}
 </head>
-
 <body class="no-skin">
 {include file="common/header" /}
 <div class="main-container" id="main-container">
@@ -16,12 +15,12 @@
             </div>
             <div class="page-content">
                 <div class="page-header">
-                    <h1> {$pagename} <small> <i class="ace-icon fa fa-angle-double-right"></i> 设置游戏有关信息 </small> </h1>
+                    <h1> {$pagename} <small> <i class="ace-icon fa fa-angle-double-right"></i> 设置游戏公告信息 </small> </h1>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <form class="form-horizontal form-post" role="form">
-                            {volist name="list" id="vo"}
+                            {volist name="list" id="vo" key = "k"}
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right"> {$vo.info} </label>
                                 <div class="col-sm-9">
@@ -56,7 +55,7 @@
                                     <div class="form-group">
                                         <br>
                                         <div class="col-sm-10 col-lg-5" style="padding-right: 0px;">
-                                            <script id="container" name="{$vo.key}" text="text/plain">{$vo.value?$vo.value:""}</script>
+                                            <script id="container{$k}" name="{$vo.key}" text="text/plain">{$vo.value?$vo.value:""}</script>
                                         </div>
                                     </div>
                                     {/case}
@@ -85,25 +84,59 @@
 </div>
 {include file="common/bottom" /}
 <link rel="stylesheet" href="__LAYUI__/css/layui.css" media="all">
-
 <script src="__LAYUI__/layui.js"></script>
 <script src="/js/jquery-1.11.0.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="__EDITOR__/ueditor.config.js"></script>
 <script type="text/javascript" src="__EDITOR__/ueditor.all.js"></script>
+<script type="text/javascript" src="__EDITOR__/ueditor.parse.js"></script>
 <script type="text/javascript">
     $(document).ready(function (){
-        var ue = UE.getEditor('container');
+        {volist name="list" id="vo" key = "k" }
+            var ue = UE.getEditor('container{$k}');
+        {/volist}
     });
+</script>
+<script>
+    layui.use('upload', function(){
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1' //绑定元素
+            ,accept:"file"
+            ,url: "{:url('Currency/upload')}" //上传接口
+            ,data: {type: 'surface'}
+            ,done: function(res){
+                // console.log(res)
+                //上传完毕回调
+                if(res.status == 0){
+                    layer.msg(res.info, {icon: res.status,time: 1500});
+                }else{
+                    //返回路径
+                    $("input[name={$vo.key}]").val(res.msg);
+
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    // 定位
+    $('a[href="/Admin/Game/game_info.html"]').parents().filter('li').addClass('open active');
 </script>
 <script type="text/javascript">
     $(".form-post").find('button:submit').click(function() {
         var btn = $(this);
-        $.post("{:url('index')}", $(".form-post").serialize()).success(function(data) {
+        $.post("{:url('edit_info')}", $(".form-post").serialize()).success(function(data) {
+            data = JSON.parse(data);
             $('#btn').text('正在保存').attr('disabled',"true");
-            if (data){
+            if (data['code'] == 1){
                 setTimeout(function() {
-                    location.href=self.location.href;
+                    layer.msg("数据已更新");
+                    $('#btn').text('保存').removeAttr('disabled');
                 },1000);
+            }else{
+                layer.alert("未更新任何信息");
+                $('#btn').text('保存').removeAttr('disabled');
             }
         });
         return false;

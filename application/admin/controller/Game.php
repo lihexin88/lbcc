@@ -10,10 +10,13 @@
 namespace app\admin\controller;
 
 use app\admin\model\GuessInfo;
+use app\api\model\GuessAccount;
 use app\api\model\GuessConfig;
+use app\api\model\GuessOrder;
 use app\api\model\GuessRecode;
 use app\common\controller\AdminBase;
 use think\Controller;
+use think\Db;
 
 class Game extends AdminBase
 {
@@ -52,13 +55,63 @@ class Game extends AdminBase
 		$recode = GuessConfig::get_recode($where);
 		$this->assign('all_recode',$recode['data']);
 		$this->assign('page',$recode['page']);
+		$this->assign('count',$recode['count']);
 		return $this->fetch();
 	}
 
+	/**
+	 * 游戏公告信息
+	 * @return mixed
+	 * @throws \think\exception\DbException
+	 */
 	public function game_info()
 	{
 		$guess_info = GuessInfo::get_info();
 		$this->assign('list',$guess_info);
+		return $this->fetch();
+	}
+
+	/**
+	 * 修改游戏公告信息
+	 * @return false|string
+	 */
+	public function edit_info()
+	{
+		if(!$_POST){
+			return rtn(-1,lang('os_error'));
+		}
+		$data = null;
+		foreach ($_POST as $k=>$v){
+			$data[$k] = $v;
+		}
+		$GameInfo = new GuessInfo();
+		$result = $GameInfo->edit_info($data);
+		if($result){
+			return rtn(1 ,'更新成功');
+		}else{
+			return rtn(-1,'未更新任何字段');
+		}
+	}
+
+	/**
+	 * 用户精彩账户信息
+	 * @return mixed
+	 * @throws \think\exception\DbException
+	 */
+ 	public function account_recode()
+	{
+		$where = null;
+		if($_GET['keywords']){
+			$where['u.account'] = $_GET['keywords'];
+		}
+		if($_GET['direction']){
+			$where['direction'] = $_GET['direction'];
+		}
+		$order = GuessOrder::get_order($where);
+//		exit;
+		$this->assign('all_recode',$order['data']);
+		$this->assign('page',$order['page']);
+		$this->assign('count',$order['count']);
 		return $this->fetch();
 	}
 

@@ -23,8 +23,6 @@ function rtn($code = 0, $msg = '', $data = array())
         'msg' => $msg,
         'data' => $data
     ));
-     //echo json_encode($r);
-     //return true;
 }
 
 /**

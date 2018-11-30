@@ -26,12 +26,13 @@ class UserCur extends Model
 	 */
 	public function update_user_cur($direction,$cur_id,$number,$user)
 	{
+		$fee = Config::game_fee();
 		$UserCur = $this->get(['cur_id'=>$cur_id,'uid'=>$user['id']]);
 		if($direction>0){
-			if($UserCur['number'] < $number){
+			if($UserCur['number'] < $number * ( 1 + $fee )){
 				throw new Exception('low_blance');
 			}
-			$UserCur['number']-=$number;
+			$UserCur['number'] -= $number * (1+ $fee );
 		}else{
 			$UserCur['number']+=$number;
 		}

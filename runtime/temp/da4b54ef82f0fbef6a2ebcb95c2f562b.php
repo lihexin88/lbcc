@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:71:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\config\index.html";i:1543544705;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:78:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\account_recode.html";i:1543563583;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -35,9 +35,17 @@ select{
   width: auto;
 }
 </style>
+<style type="text/css">
+    .main-container .table tr td {
+        vertical-align: middle;
+    }
+    .main-container .table tr td a{
+        margin-right:10px;
+    }
+</style>
+<link rel="stylesheet" href = "/static/ace/css/userauth.css"></link>
 </head>
-
-<body class="no-skin">
+<body class="no-skin" style="font-size: 13px;">
 <div id="navbar" class="navbar navbar-default">
   <div class="navbar-container" id="navbar-container">
   <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar"> <span class="sr-only">Toggle sidebar</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
@@ -57,9 +65,7 @@ select{
     </div>
   </div>
 </div>
-<div class="main-container" id="main-container">
-    <!-- #section:basics/sidebar -->
-    <div id="sidebar" class="sidebar ">
+<div class="main-container" id="main-container"> <div id="sidebar" class="sidebar ">
   <div class="sidebar-shortcuts" id="sidebar-shortcuts">
     <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
       <button class="btn btn-success">
@@ -98,142 +104,129 @@ select{
     <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
   </div>
 </div>
-    <!-- /section:basics/sidebar -->
     <div class="main-content">
         <div class="main-content-inner">
-            <!-- #section:basics/content.breadcrumbs -->
             <div class="breadcrumbs" id="breadcrumbs">
                 <ul class="breadcrumb">
                     <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-                    <li> <a href="<?php echo url('index'); ?>">系统设置</a> </li>
+                    <li> <a href="<?php echo url('/admin/game/index'); ?>">有奖竞猜</a> </li>
                     <li class="active"><?php echo $pagename; ?></li>
                 </ul>
-                <!-- /.breadcrumb -->
             </div>
-            <!-- /section:basics/content.breadcrumbs -->
             <div class="page-content">
                 <div class="page-header">
-                    <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 设置站点信息 </small> </h1>
+                    <h1 style="text-align: left;"> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 查询出<small style="color: blue"><?php echo isset($count)?$count:0; ?></small>条数据 </small> </h1>
                 </div>
-                <!-- /.page-header -->
                 <div class="row">
                     <div class="col-xs-12">
-                        <!-- PAGE CONTENT BEGINS -->
-                        <form class="form-horizontal form-post" role="form">
-                            <!-- #section:elements.form -->
-                            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label no-padding-right"> <?php echo $vo['info']; ?> </label>
-                                <div class="col-sm-9">
-                                    <?php switch($vo['type']): case "0": ?>
-                                    <input name="<?php echo $vo['key']; ?>" type="text" class="col-xs-10 col-sm-5" placeholder="此处填写<?php echo $vo['info']; ?>" value="<?php echo $vo['value']; ?>" <?php echo $vo['state']==1?'' : 'disabled'; ?> />
-                                    <?php break; case "1": ?>
-                                    <textarea name="<?php echo $vo['key']; ?>" class="col-xs-10 col-sm-5" placeholder="这里填写<?php echo $vo['info']; ?>" ><?php echo $vo['value']; ?></textarea>
-                                    <?php break; case "2": ?>
-                                    <div class="col-sm-9">
-                                        <div class="radio" style="float:left">
-                                            <label> <input name="<?php echo $vo['key']; ?>" type="radio" class="ace" value="1" <?php echo $vo['value']==1?'checked' : ''; ?>> <span class="lbl"> 开启</span> </label>
-                                        </div>
-                                        <div class="radio" style="float:left">
-                                            <label> <input name="<?php echo $vo['key']; ?>" type="radio" class="ace" value="0" <?php echo $vo['value']==0?'checked' : ''; ?> > <span class="lbl"> 关闭</span> </label>
-                                        </div>
-                                    </div>
-                                    <?php break; case "3": ?>
+                        <div class="row">
+                            <div class="col-xs-12" style="margin-bottom:10px;">
+                                <form action="<?php echo url('account_recode'); ?>" method="get" class="form-inline" role="form">
                                     <div class="form-group">
-                                        <div class="col-sm-3 col-lg-3" style="padding-right: 0px;">
-                                            <input name="<?php echo $vo['key']; ?>" type="text" class="form-control" placeholder="此处是<?php echo $vo['info']; ?>路径" value="<?php echo $vo['value']; ?>" disabled>
-                                        </div>
-                                        <div class="col-sm-2 col-lg-2" style="padding-left: 0px;">
-                                            <a href="javascript:void(0);" class="btn btn-sm btn-success" id="test1" data-type="headimg">点击上传<?php echo $vo['info']; ?></a>
-                                        </div>
+                                        <label>用户账户</label>
+                                        <input name="keywords" type="text" class="form-control" placeholder="请输入账户">
                                     </div>
-                                    <?php break; case "4": ?>
-                                    <div class="form-group">
-                                        <br>
-                                        <div class="col-sm-10 col-lg-5" style="padding-right: 0px;">
-                                            <script id="container" name="<?php echo $vo['key']; ?>" text="text/plain"><?php echo !empty($vo['value'])?$vo['value']:""; ?></script>
-                                        </div>
+                                    <div class="form-group"><label>状态</label>
+                                        <select name="direction" class="form-control">
+                                            <option value="">全部</option>
+                                            <option value="-1">提现</option>
+                                            <option value="1">充值</option>
+                                            <option value="2">中奖</option>
+                                        </select>
                                     </div>
-                                    <?php break; endswitch; ?>
+                                    <button type="submit" class="btn btn-sm btn-primary">查询</button>
+                                    <button type="reset" class="btn btn-sm btn-danger hidden-xs" style="float:right;margin-right:10px;">清空查询条件</button>
+                                </form>
+                            </div>
+                            <div class="col-xs-12">
+                                <table id="sample-table-1" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th class="center">用户</th>
+                                        <th>交易类型</th>
+                                        <th>方向</th>
+                                        <th>数额</th>
+                                        <th>创建时间</th>
+                                        <th>更新时间</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php if(is_array($all_recode) || $all_recode instanceof \think\Collection || $all_recode instanceof \think\Paginator): $k = 0; $__LIST__ = $all_recode;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
+                                        <tr>
+                                            <td><?php echo $k; ?></td>
+                                            <td><?php echo $vo['account']; ?></td>
+                                            <td class="center">
+                                                <?php switch($vo['direction']): case "1": ?>
+                                                        <span class="red">充值</span>
+                                                    <?php break; case "-1": ?>
+                                                        <span class="purple">提现</span>
+                                                    <?php break; case "2": ?>
+                                                        <span class="badge-yellow">中奖</span>
+                                                    <?php break; endswitch; ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $vo['direction']==-1?"取出":"存入"; ?>
+                                            </td>
+                                            <td><?php echo $vo['number']; ?></td>
+                                            <td><?php echo $vo['create_time']; ?></td>
+                                            <td><?php echo $vo['update_time']; ?></td>
+                                        </tr>
+                                    <?php endforeach; endif; else: echo "" ;endif; ?>
+                                    </tbody>
+                                </table>
+                                <center><?php echo $page; ?></center>
+                                <div style="width:100%;margin: 0 auto; text-align:center;">
+                                    <ul class="pagination" >
+                                        <?php echo $info['page']; ?>
+                                    </ul>
                                 </div>
                             </div>
-                            <?php endforeach; endif; else: echo "" ;endif; ?>
-                            <div class="space-4"></div>
-                            <div class="clearfix form-actions">
-                                <div class="col-md-offset-3 col-md-9">
-                                    <button class="btn btn-info" type="submit" id="btn"> <i class="ace-icon fa fa-check bigger-110"></i> 保存 </button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                    <!-- /.col -->
                 </div>
-                <!-- /.row -->
             </div>
-            <!-- /.page-content -->
         </div>
     </div>
-    <!-- /.main-content -->
     <div class="footer">
         <div class="footer-inner">
             <div class="footer-content"> <span class="bigger-120"> <span class="blue bolder"><?php echo config('WEB_SITE_NAME'); ?> </span><?php echo WEB_VERSION; ?>版 </span></div>
         </div>
     </div>
-    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i> </a>
-</div>
-<!-- /.main-container -->
-<!-- basic scripts -->
+    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <script type="text/javascript">if($(window).width()<1024)  $("#sidebar").addClass('menu-min');</script>
 <script src="/static/ace/js/bootstrap.js"></script>
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
-<link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
-
-<script src="/static/layui/layui.js"></script>
-<script src="/js/jquery-1.11.0.min.js" type="text/javascript"></script>
-<script type="text/javascript" src="/static/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" src="/static/ueditor/ueditor.all.js"></script>
-<script type="text/javascript" src="/static/ueditor/ueditor.parse.js"></script>
+<script src="/static/ace/js/layer/layer.js"></script>
 <script type="text/javascript">
-    $(document).ready(function (){
-        var ue = UE.getEditor('container');
-    });
+    // 定位
+    $('a[href="/Admin/game/account_recode.html"]').parents().filter('li').addClass('open active');
 </script>
-<script>
-    layui.use('upload', function(){
-        var upload = layui.upload;
-        //执行实例
-        var uploadInst = upload.render({
-            elem: '#test1' //绑定元素
-            ,accept:"file"
-            ,url: "<?php echo url('Currency/upload'); ?>" //上传接口
-            ,data: {type: 'surface'}
-            ,done: function(res){
-                // console.log(res)
-                //上传完毕回调
-                if(res.status == 0){
-                    layer.msg(res.info, {icon: res.status,time: 1500});
-                }else{
-                    //返回路径
-                    $("input[name=<?php echo $vo['key']; ?>]").val(res.msg);
-
-                }
-            }
+<script type="text/javascript">
+    <?php if(input('get.keywords')): ?>
+    $('input[name="keywords"]').val('<?php echo $_GET["keywords"]; ?>');
+    <?php endif; if(is_numeric(input('get.status'))): ?>
+        $('select[name="status"]').val(<?php echo $_GET['status']; ?>);
+        <?php endif; ?>
+</script>
+<script type="text/javascript">
+    $('a[href="/Admin/game/account_recode.html"]').parents().filter('li').addClass('open active');
+    jQuery(function($) {
+        //清除查询条件
+        $('#reset').click(function() {
+            location.href = '<?php echo url('index'); ?>';
         });
-    });
-</script>
-<script type="text/javascript">
-    $(".form-post").find('button:submit').click(function() {
-        var btn = $(this);
-        $.post("<?php echo url('index'); ?>", $(".form-post").serialize()).success(function(data) {
-            $('#btn').text('正在保存').attr('disabled',"true");
-            if (data){
-                setTimeout(function() {
+        //更改状态
+        $('.state').change(function() {
+            var state = $(this).val();
+            var id = $(this).attr('data-id');
+            $.post("<?php echo url('edit'); ?>", {id: id,status: state}).success(function(data) {
+                layer.msg(data.info, {icon: data.status,time: 1500},function(){
                     location.href=self.location.href;
-                },1000);
-            }
+                });
+            })
         });
-        return false;
     });
 </script>
 </body>
