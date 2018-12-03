@@ -33,7 +33,41 @@ class Data extends ApiBase
         $huobi_area = [7,8,9,10,13];
         $zb_area = [11];
         if(in_array($id,$lbcc_area)){
-
+			if($time == '1min'){
+                $times = 60;
+            }elseif($time == '5min'){
+                $times = 300;
+            }elseif($time == '15min'){
+                $times = 900;
+            }elseif($time == '30min'){
+                $times = 1800;
+            }elseif($time == '60min'){
+                $times = 3600;
+            }else{
+                $times = 86400;
+            }
+            for($i=0;$i<=100;$i++){
+                $close = time()-$times*$i;
+                $open = $close-$times;
+                $arr = db('kline')->where('time','between',[$open,$close])->order('time DESC')->find();
+                if($arr){
+                    $list[$i] = $arr;
+                }
+            }
+          	if($list){
+            	foreach ($list as $key => $value) {
+                    $data[$key][0] = date('Y-m-d H:i:s',$value['time']);
+                    $data[$key][1] = $value['open_price'];
+                    $data[$key][2] = $value['max_price'];
+                    $data[$key][3] = $value['min_price'];
+                    $data[$key][4] = $value['close_price'];
+                    $data[$key][5] = $value['vol'];
+                }
+                return rtn(0,array_reverse($data));
+            }else{
+            	 return rtn(0,lang('null'));
+            }
+            
         }elseif (in_array($id,$huobi_area)) {
             $cur_name = db('currency_area')->alias('a')->join('currency b','a.cur_id = b.id')->where('a.id',$id)->value('name');
             $area_name = db('currency_area')->alias('a')->join('currency b','a.area_id = b.id')->where('a.id',$id)->value('name');

@@ -720,13 +720,13 @@ class User extends ApiBase
 	 */
 	public function cancel_trade()
 	{
-		if(!$_POST['order_number']){
+		if(!$_POST['order']){
 			return rtn(-1,lang('cont_empty'));
 		}
 		$Order = new Order();
 		Db::startTrans();
 		try{
-			if(!$Order->cancel_trade($_POST['order_number'],$this->userInfo)){
+			if(!$Order->cancel_trade($_POST['order'],$this->userInfo)){
 				throw new Exception('fail_cancel');
 			}
 			Db::commit();
@@ -736,7 +736,6 @@ class User extends ApiBase
 			return rtn(-1,lang($e->getMessage()));
 		}
 	}
-
 
 
 }

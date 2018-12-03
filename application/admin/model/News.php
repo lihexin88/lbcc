@@ -52,21 +52,21 @@ class News extends Base
             if(!empty($id)){
                 $where = true;
                 $save['id'] = $data['id'];
+              	if($data['lang'] == 'cn'){
+                    $save['title'] = $data['title'];
+                    $save['content'] = $data['content'];
+                }else{
+                    $save['en_title'] = $data['title'];
+                    $save['en_content'] = $data['content'];
+                }
             }else{
                 $where = false;
             }
         }else{
             $where = false;
-        }     
-        $Notice = new Notice;
-      	if($data['lang'] == 'cn'){
-        	$save['title'] = $data['title'];
-          	$save['content'] = $data['content'];
-        }else{
-        	$save['en_title'] = $data['title'];
-          	$save['en_content'] = $data['content'];
         }
-        $result = $Notice->allowField(true)->isUpdate($where)->save($save);
+        $News = new News;
+        $result = $News->allowField(true)->isUpdate($where)->save($save);
         if(false === $result){
             return ['status'=>0,'info'=>$AuthGroup->getError()];
         }else{

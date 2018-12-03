@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\admin\index.html";i:1525334480;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\admin\index.html";i:1543643564;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -36,12 +36,15 @@ select{
 }
 </style>
 <style type="text/css">
+.search {text-indent:0.5em;}
 .main-container .table tr td {
 	vertical-align: middle;
 }
 .main-container .table tr td a{
 	margin-right:10px;
 }
+.state_red {float:right;width:50px;height:26px;line-height:26px;text-align:center;color:white;border-radius:10px;background-color:red;cursor:pointer;box-shadow:#006666 1px 1px 2px;}
+.state_green {float:left;width:50px;height:26px;line-height:26px;text-align:center;color:white;border-radius:10px;background-color:green;cursor:pointer;box-shadow:#18A665 1px 1px 2px;}
 </style>
 </head>
 <body class="no-skin">
@@ -108,58 +111,40 @@ select{
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-          <li> <a href="<?php echo url('index'); ?>">权限管理</a> </li>
+          <li> <a href="<?php echo url('index'); ?>">管理员</a> </li>
           <li class="active"><?php echo $pagename; ?></li>
           </ul>
       </div>
       <div class="page-content">
         <div class="page-header">
-          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 一共<?php echo $info['count']; ?>个用户 </small> </h1>
+          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 一共<?php echo $list['count']; ?>个用户 </small> </h1>
         </div>
         <div class="row">
-          <div class="col-xs-12" style="margin-bottom:10px;">
-            <form action="<?php echo url('index'); ?>" method="get" class="form-inline" role="form">
-              <div class="form-group">
-                <label>关键词</label>
-                <input name="keywords" type="text" class="form-control" placeholder="用户名">
-              </div>
-              <button type="submit" class="btn btn-sm btn-primary">查询</button>
-              <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="<?php echo url('add_user'); ?>" >新增用户</a>
-              <button type="reset" class="btn btn-sm btn-danger hidden-xs" style="float:right;margin-right:10px;">清空查询条件</button>
-            </form>
-          </div>
           <div class="col-xs-12">
             <table class="table table-striped table-bordered table-hover">
               <thead>
                 <tr>
                   <th class="center">用户ID</th>
-                  <th>用户名</th>
-                  <th>用户类型</th>
-                  <th>用户备注</th>>
-                  <th>最后登录时间</th>
-                  <th>最后登录IP</th>
+                  <th>管理员</th>
+                  <th>管理员类型</th>
+                  <!--<th>管理状态</th>-->
                   <th>更新时间</th>
-                  <th>登陆次数</th>
-                  <th>用户状态</th>
-                  <th>创建时间</th>
-                  <th>操作</th>>
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody>
-                <?php if(is_array($info['list']) || $info['list'] instanceof \think\Collection || $info['list'] instanceof \think\Paginator): $k = 0; $__LIST__ = $info['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
+                <?php if(is_array($list['list']) || $list['list'] instanceof \think\Collection || $list['list'] instanceof \think\Paginator): $k = 0; $__LIST__ = $list['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                   <tr>
                     <td class="center"> <?php echo $vo['id']; ?></td> 
                     <td> <?php echo $vo['username']; ?> </td>
-                    <td> <?php echo $vo['user_type']; ?> </td>
-                    <td> <?php echo $vo['description']; ?> </td>
-                     <td> <?php echo $vo['last_login_time']; ?> </td>
-                    <td> <?php echo $vo['last_login_ip']; ?> </td>
-                    <td> <?php echo $vo['update_time']; ?></td>
-                    <td> <?php echo $vo['login_number']; ?></td>
-                    <td> <?php echo $vo['status']; ?></td>
-                    <td> <?php echo $vo['create_time']; ?></td>
+                    <td> <?php echo $vo['userTypeTxt']; ?> </td>
+                    <!--<td><div class='<?php echo $vo['status_button']; ?>' onclick='change_status(<?php echo $vo['id']; ?>,<?php echo $vo['status']; ?>)'> <?php echo $vo['statusTxt']; ?> </div></td>-->
+                    <td> <?php echo $vo['update_time']; ?> </td>
                     <td>
-                    <a class="btn btn-sm btn-success" href="<?php echo url('edit_user?id='.$vo['id']); ?>">修改</a>
+                    	<a class="btn btn-sm btn-primary" href="javascript:void(0);" onclick="edit_pwd(this,<?php echo $vo['id']; ?>)">重置密码</a>
+                    	<?php if($vo['id'] != 1): ?>
+                    	<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,<?php echo $vo['id']; ?>)">删除</a>
+                    	<?php endif; ?>
                     </td>
                   </tr>
                 <?php endforeach; endif; else: echo "" ;endif; ?>
@@ -167,7 +152,7 @@ select{
             </table>
             <div style="width:100%;margin: 0 auto; text-align:center;">
               <ul class="pagination" >
-                <?php echo $info['page']; ?>
+                <?php echo $list['page']; ?>
               </ul>
             </div>
           </div>
@@ -186,6 +171,10 @@ select{
 <script src="/static/ace/js/bootstrap.js"></script>
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
+<script src="/static/ace/js/layer/layer.js"></script>
+<script type="text/javascript">
+	$('a[href="/Admin/Admin/index"]').parents().filter('li').addClass('open active');
+</script>
 <script type="text/javascript">
 jQuery(function($) {
 	//清除查询条件
@@ -199,6 +188,63 @@ jQuery(function($) {
 		$('select[name="group_id"]').val('<?php echo \think\Request::instance()->get('group_id'); ?>');
 	}
 });
+
+// 切换管理员状态
+function change_status(id,status){
+	layer.confirm('确定要修改吗?',{
+		btn:['确定','关闭']
+	},function(){
+		$.post('<?php echo url("change_status"); ?>',{id:id,status:status}).success(function(data){
+			if(data.code == 0){
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}else{
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}
+		});
+	});
+}
+
+// 重置管理员密码
+function edit_pwd(obj,id){
+	layer.confirm('确定要重置密码吗？<br>该用户的登陆密码重置为123456！',{
+		btn:['确定','关闭']
+	},function(){
+		$.post('<?php echo url("edit_pwd"); ?>',{id:id}).success(function(data){
+			if(data.code == 1){
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}else{
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}
+		});
+	});
+}
+
+// 删除管理员
+function deleteInfo(obj,id){
+	layer.confirm('确定要删除吗？<br>该管理员所有的信息都将被完全删除，不可恢复！',{
+		btn:['确定','关闭']
+	},function(){
+		$.post('<?php echo url("delete_admin"); ?>',{id:id}).success(function(data){
+			if(data.code == 1){
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}else{
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}
+		});
+	});
+}
 </script>
 </body>
 </html>

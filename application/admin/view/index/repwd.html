@@ -62,21 +62,24 @@
 <!-- basic scripts --> 
 {include file="common/bottom" /} 
 <script type="text/javascript">
-$('a[href="/Index/index.html"]').parents().filter('li').addClass('active');
-$(".form-post").find('button:submit').click(function() {
-    $.post("{:url('repwd')}", $(".form-post").serialize()).success(function(data) {
-  		$('#btn').text('正在保存').attr('disabled',"true");
-      if (data.code === 0){
-			  $(".form-post .alert").addClass('alert-danger').text(data.msg).show();
-		  	setTimeout(function() {location.href=self.location.href;},1000);	
-      }else{
-  			$(".form-post .alert").addClass('alert-success').text(data.msg).show();
-  			setTimeout(function() {location.href=data.url;},1000);
-		  }
-	 }
-);
-return false;
-});
-</script> 
+    $('a[href="/Admin/Index/repwd.html"]').parents().filter('li').addClass('active');
+    $(".form-post").find('button:submit').click(function() {
+        $.post("{:url('repwd')}", $(".form-post").serialize()).success(function(data) {
+                $('#btn').text('正在保存').attr('disabled',"true");
+                if (data.code === 0){
+                    $(".form-post .alert").addClass('alert-danger').text(data.msg).show();
+                    setTimeout(function() {
+                        $('#btn').text('保存').removeAttr('disabled');
+                        $(".form-post .alert").hide();
+                    },1000);
+                }else{
+                    $(".form-post .alert").addClass('alert-success').text(data.msg).show();
+                    setTimeout(function() {location.href=data.url;},1000);
+                }
+            }
+        );
+        return false;
+    });
+</script>
 </body>
 </html>

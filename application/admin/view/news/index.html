@@ -52,9 +52,7 @@
                       <tr>
                         <td class="center">{$vo.id}</td>
                         <td>{$vo.title}</td>
-                        <td>
-                            {$vo.content}
-                        </td>
+                        <td>{$vo.content}</td>
                         <td>{$vo.create_time}</td>
                         <td>{$vo.update_time}</td>
                         <td>
@@ -97,7 +95,7 @@
 {include file="common/bottom" /}
 <script src="__JS__/layer/layer.js"></script>
 <script type="text/javascript">
-  $('a[href="/Admin/Notice/index.html"]').parents().filter('li').addClass('open active');
+  $('a[href="/Admin/News/index.html"]').parents().filter('li').addClass('open active');
   {if condition="input('get.keywords')"}
     $('input[name="keywords"]').val('{$_GET["keywords"]}');
   {/if}

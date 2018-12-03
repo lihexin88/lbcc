@@ -1,10 +1,10 @@
 <?php
 namespace app\api\controller;
+use think\Controller;
 use think\Session;
 use think\Request;
 use think\Captcha;
 use think\Db;
-use think\Controller;
 /**
  * 公告功能
  *
@@ -107,5 +107,43 @@ class Bonus extends Controller
                 return array('msg'=>'已经返利10轮');
             }		
       }
+    }
+  
+  //KLine定时 只定时 LBCC交易区
+    public function kline()
+    {
+        $area = db('currency_area')->where('area_id',1)->select();
+        $time = time();
+        $old_time = time()-60;
+        foreach ($area as $k => $v) {
+            $open = db('kline')->where('cur_area_id',$v['id'])->order('time desc')->find();
+            if($open){
+                $data['open_price'] = $open['open_price']==null?0:$open['close_price'];//最后一个收盘价等于最新开盘价
+            }else{
+            	$data['open_price'] = 0;
+            }
+            $list = db('order')->where('cur_area_id',$v['id'])->where('create_time','between',[$old_time,$time])->order('create_time desc')->find();
+            if($list){
+                $data['close_price'] = $list['price'];
+            }else{
+                $data['close_price'] = $data['open_price']==null?0:$data['open_price'];
+            }
+            $max = db('order')->where('cur_area_id',$v['id'])->where('create_time','between',[$old_time,$time])->max('price');
+            if($max){
+                $data['max_price'] = $max;
+            }else{
+                $data['max_price'] = $open['max_price']==null?0:$open['max_price'];
+            }
+            $min = db('order')->where('cur_area_id',$v['id'])->where('create_time','between',[$old_time,$time])->min('price');
+            if($min){
+                $data['min_price'] = $min;
+            }else{
+                $data['min_price'] = $open['min_price']==null?0:$open['min_price'];
+            }
+            $data['vol'] = db('order')->where('cur_area_id',$v['id'])->where('create_time','between',[$old_time,$time])->count();
+            $data['cur_area_id'] = $v['id'];
+            $data['time'] = time();
+            db('kline')->insert($data);
+        }
     }
 }

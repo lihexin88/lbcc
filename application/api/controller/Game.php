@@ -20,9 +20,14 @@ class Game extends Controller
 {
 	/**
 	 * 开奖、生成下一期信息
+	 * @return false|string
 	 */
 	public function lottery()
 	{
+		$access = PlanTaskAccessLimit::planTaskAccesslimit();
+		if($access['code'] !=1){
+			return rtn(-1,$access['msg']);
+		}
 //		开奖时间提前1分、推后3分，确保当前全部开奖
 		$now = time();
 		$start_time = strtotime(date("Y-m-d",time())) + 9 *60 *60 - 1 * 60;
@@ -65,7 +70,6 @@ class Game extends Controller
 		$guess_info = GuessInfo::get_info();
 		return rtn(1,lang('获取成功'),$guess_info);
 	}
-
 
 	/**
 	 * 获取系统开奖记录

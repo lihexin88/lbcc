@@ -12,7 +12,7 @@ class Dict extends Base
     public function infoList($map, $p)
     {
         $request= Request::instance();
-        $list = $this->where($map)->order('type desc,id desc')->page($p, self::PAGE_LIMIT)->select()->toArray();
+        $list = $this->where($map)->order('type asc,value asc')->page($p, self::PAGE_LIMIT)->select()->toArray();
         foreach ((array)$list as $k => $v) {
             $list[$k]['stateTxt'] = $v['state'] ? '启用' : '禁用';
         }
@@ -29,7 +29,7 @@ class Dict extends Base
     }
 
     public function saveInfo($data)
-    {     
+    {
         if(array_key_exists('id',$data)){
             $id = $data['id'];
             if(!empty($id)){
@@ -39,11 +39,11 @@ class Dict extends Base
             }
         }else{
             $where = false;
-        }     
+        }
         $Dict = new Dict;
         $result = $Dict->allowField(true)->isUpdate($where)->save($data);
         if(false === $result){
-            return ['status'=>0,'info'=>$AuthGroup->getError()];
+            return ['status'=>0,'info'=>$Dict->getError()];
         }else{
             return array('status' => 1, 'info' => '保存成功', 'url' => url('index'));
         }

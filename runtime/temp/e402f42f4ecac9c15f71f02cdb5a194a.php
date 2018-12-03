@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\user_auth.html";i:1543397907;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\user_auth.html";i:1543630801;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -179,7 +179,7 @@ select{
                                         <td><?php echo $vo['we_receive_name']; ?></td>
                                         <td><?php echo $vo['we_code']; ?></td>
                                         <td id = "status<?php echo $vo['id']; ?>"><?php if(($vo['status'] == 1)): ?>已通过<?php elseif(($vo['status'] == 2)): ?>已拒绝<?php else: ?>待审核<?php endif; ?></td>
-                                        <?php if(($vo['status'] == 0)): ?>}
+                                        <?php if(($vo['status'] == 0)): ?>
                                         <td id = "pass<?php echo $vo['id']; ?>"><button class="btn-success" onclick="authenticate(<?php echo $vo['id']; ?>,3)">通过</button></td>
                                         <td id = "reject<?php echo $vo['id']; ?>"><button class="btn-warning" onclick="authenticate(<?php echo $vo['id']; ?>,4)">拒绝</button></td>
                                         <?php else: ?>

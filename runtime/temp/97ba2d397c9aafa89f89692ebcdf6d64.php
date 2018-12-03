@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:67:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\news\add.html";i:1543572610;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:67:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\news\add.html";i:1543625055;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -120,7 +120,7 @@ select{
                 <div class="form-group">
                   <label class="col-sm-3 control-label no-padding-right"> 状态 </label>
                   	<div class="col-sm-1">
-                      <select name="lang" id = "lang"  class="form-control">
+                      <select name="lang" id = "lang" onclick="change_en_zn()"   class="form-control">
                           <option selected value="cn">中文</option>
                           <option value="en">英文</option>
                       </select>
@@ -170,6 +170,25 @@ select{
 
 <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
 
+
+
+
+<script type='text/javascript'>
+    $(document).ready(function(){
+        $('#lang').change(function(){
+            var val = $(this).val();
+            if(val == 0){
+                alert('option选择是');
+            }else{
+                alert('option选择否');
+            }
+        });
+    };
+</script>
+
+
+
+
 <script src="/static/layui/layui.js"></script>
 <script src="/js/jquery-1.11.0.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="/static/ueditor/ueditor.config.js"></script>
@@ -181,18 +200,13 @@ select{
         var ue1 = UE.getEditor('container1');
         var ue2 = UE.getEditor('container2');
     });
-    $("#lang").onchange = function () {
-        if(flags == 1){
-            $("input['name'] = 'lang'")[0].val("aaaa");
-            console.log($("input['name'] = 'lang'"));
+    function change_en_zn()
+    {
+          console.log(111111);
+
             $("#container1").show();
             $("#container2").hide();
             flags = 2;
-        }else{
-            $("#container1").hide();
-            $("#container2").show();
-            flags = 1;
-        }
     }
 </script>
 <!-- 上传单图片 -->

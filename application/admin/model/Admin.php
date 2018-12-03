@@ -6,7 +6,7 @@ use think\db;
 use think\Validate;
 class Admin extends Base
 {
-    
+
     protected function setPasswordAttr($value)
     {
         return encrypt(trim($value));
@@ -29,7 +29,13 @@ class Admin extends Base
             return array('status'=>0,'info'=>'验证码输入错误！');
         }
         if(false == ($info = $this->where(['username'=>$data['username']])->find()) ){
-            return array('status'=>0,'info'=>'账号不存在！');
+            if(false == ($info = db('user')->where(['username'=>$data['username']])->find())){
+                return array('status'=>0,'info'=>'账号不存在！');
+            }else{
+                session('user_type', $info['user_type']);
+            }
+        }else{
+            session('user_type', $info['user_type']);
         }
         if($info['status'] == 0){
             return array('status'=>0,'info'=>'账号被禁用！');
@@ -39,16 +45,14 @@ class Admin extends Base
         }
         if(!$info['id']){
             return array('status'=>0,'info'=>'不存在此用户！');
-        } 
+        }
         session('aid', $info['id']);
         session('username', $info['username']);
         if($info['id'] != 1){
-            session('user_type', $info['user_type']);
-            //session('group_id',M('AuthGroupAccess')->getFieldByUid($info['id'],'group_id'));
             session('group_id',db('AuthGroupAccess')->where('uid',$info['id'])->column('group_id'));
         }
         $this->lastLogin($info['id']);
-        return array('status'=>1,'info'=>'登录系统成功','url'=>url('Index/index'));
+        return array('status'=>1,'info'=>'登录系统成功','url'=>url('/admin/index/index'));
     }
 
     /**
@@ -127,12 +131,13 @@ class Admin extends Base
         if($id == 1){
             $info['groupName'] = '超级管理员';
         }else{
-            $info['groupName'] = M("AuthGroup")->where(['id'=>M("AuthGroupAccess")->where(['uid'=>$id])->getField('group_id')])->getField('title');
+            $info['groupName'] = model("AuthGroup")->where(['id'=>model("AuthGroupAccess")->where(['uid'=>$id])->value('group_id')])->value('title');
         }
+
         $info['statusTxt'] = $info['status'] == 1 ? "启用" : "禁用";
-        $info['last_login_time'] = time_format($info['last_login_time']);
+        $info['last_login_time'] =date('Y-m-d h:i:s',$info['last_login_time']);
         $info['last_login_ip'] = long2ip($info['last_login_ip']);
-        $info['update_time'] = time_format($info['update_time']);
+        $info['update_time'] = date('Y-m-d h:i:s',$info['update_time']);
         return $info;
     }
 
@@ -195,23 +200,120 @@ class Admin extends Base
     }
 
 
-    public function adminList($p, $map)
-    {
+
+    /**
+     * model 管理员列表
+     */
+    public function adminList($p, $map){
         $request= Request::instance();
-        if(!array_key_exists('id',$map)){
-            $map['id'] = array('neq', 1);//超管没有用户组
+
+        $list = $this -> where($map) -> page($p, self::PAGE_LIMIT) -> order('id DESC') -> select() -> toArray();
+        $count = $this -> where($map) -> count();
+        foreach ($list as $k => $v) {
+            // 管理员类型
+            if($v['id'] === 1){
+                $userType['type'] = 'admin_type';
+                $userType['value'] = $v['user_type'];
+                $list[$k]['userTypeTxt'] = Db::name('dict') -> where($userType) -> value('key');
+            }else{
+                $auth_group_where['id'] = $v['user_type'];
+                $list[$k]['userTypeTxt'] = Db::name('auth_group') -> where($auth_group_where) -> value('title');
+            }
+
+            // 管理员状态
+            $userStatus['type'] = 'common_state';
+            $userStatus['value'] = $v['status'];
+            $list[$k]['statusTxt'] = Db::name('dict') -> where($userStatus) -> value('key');
+            switch($v['status']){
+                case 1:
+                    $list[$k]['status_button'] = 'state_green';
+                    break;
+                case 2:
+                    $list[$k]['status_button'] = 'state_red';
+                    break;
+            }
+
         }
-        $groupArr = Db::name('AuthGroup')->column('id,title');
-        $userTypeArr = model('Common/Dict')->showKey('admin_type');
-        $list = $this->alias('a')->where($map)->page($p, self::PAGE_LIMIT)->join('sn_auth_group_access b','a.id = b.uid')->order('id desc')->select()->toArray();
-        foreach ((array)$list as $k => $v) {
-            $list[$k]['statusTxt'] = $v['status'] == 1 ? "启用" : "禁用";
-            $list[$k]['groupTxt'] = $groupArr[$v['group_id']];
-            $list[$k]['userTypeTxt'] = $userTypeArr[$v['user_type']];
-        }
-        $return['count'] = $this->where($map)->count();
+        $return['count'] = $count;
         $return['list'] = $list;
         $return['page'] = boot_page($return['count'], self::PAGE_LIMIT, self::PAGE_SHOW, $p,$request->action());
         return $return;
     }
+
+    /**
+     * model 改变管理员状态
+     * @param  array $data 传入数组
+     */
+    public function changeStatus($data){
+        $mod['update_time'] = time();
+        $id = $data['id'];
+        if(!$id){
+            return array('code' => 0,'msg' => '未获取管理员信息!');
+        }
+        $status = $data['status'];
+        if(!$status){
+            return array('code' => 0,'msg' => '未获取管理员状态!');
+        }
+
+        if($status == 1){
+            $mod['status'] = 2;
+        }else{
+            $mod['status'] = 1;
+        }
+
+        $result = $this -> where('id',$id) -> update($mod);
+
+        if ($result) {
+            return array('code' => 1, 'msg' => '更改状态成功');
+        } else {
+            return array('code' => 0, 'msg' => '更改状态失败');
+        }
+    }
+
+    /**
+     * model 重置管理员密码
+     */
+    public function resetPwd($id){
+        if(!$id){
+            return ['code' => 0,'msg' => '未获取管理员信息!'];
+        }
+
+        $map['password'] = encrypt('123456');
+        $map['update_time'] = time();
+        $result = $this -> where(array('id' => $id)) -> update($map);
+        if($result){
+            return ['code' => 1,'msg' => '更改成功!'];
+        }else{
+            return ['code' => 0,'msg' => '更改失败!'];
+        }
+    }
+
+    /**
+     * model 删除管理员
+     * @param  string $id ID
+     */
+    public function deleteAdmin($id){
+        if(!$id){
+            return ['code' => 1,'msg' => '未获取管理员信息!'];
+        }
+
+        $condition = 0;
+        try{
+
+            $this -> where(array('id' => $id)) -> delete();
+            Db::name('auth_group_access') -> where(array('uid' => $id)) -> delete();
+
+            Db::commit();
+            $condition = 1;
+        }catch(\PDOException $e){
+            Db::rollback();
+        }
+
+        if($condition == 1){
+            return ['code' => 1,'msg' => '用户删除成功'];
+        }else{
+            return ['code' => 0,'msg' => '用户删除失败,请重试'];
+        }
+    }
+
 }

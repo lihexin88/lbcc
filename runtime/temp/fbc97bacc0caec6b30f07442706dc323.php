@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\index\index.html";i:1543643825;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\external\index.html";i:1543481600;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -35,6 +35,14 @@ select{
   width: auto;
 }
 </style>
+<style type="text/css">
+.main-container .table tr td {
+  vertical-align: middle;
+}
+.main-container .table tr td a{
+  margin-right:10px;
+}
+</style>
 </head>
 <body class="no-skin">
 <div id="navbar" class="navbar navbar-default">
@@ -56,8 +64,7 @@ select{
     </div>
   </div>
 </div>
-<div class="main-container" id="main-container"> 
-  <div id="sidebar" class="sidebar ">
+<div class="main-container" id="main-container"> <div id="sidebar" class="sidebar ">
   <div class="sidebar-shortcuts" id="sidebar-shortcuts">
     <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
       <button class="btn btn-success">
@@ -101,19 +108,59 @@ select{
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-          <li class="active">后台首页</li>
+          <li> <a href="<?php echo url('index'); ?>">用户外部地址管理</a> </li>
+          <li class="active"><?php echo $pagename; ?></li>
         </ul>
       </div>
       <div class="page-content">
         <div class="page-header">
-          <h1> 后台首页 <small> <i class="ace-icon fa fa-angle-double-right"></i> 在这里显示汇总信息 </small> </h1>
+          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 查询出<?php echo $info['count']; ?>条数据 </small> </h1>
         </div>
+        <!-- /.page-header -->
         <div class="row">
-          <div class="col-xs-12"> 
-            <!-- PAGE CONTENT BEGINS -->
-            <div class="alert alert-block alert-success">
-              <button type="button" class="close" data-dismiss="alert"> <i class="ace-icon fa fa-times"></i> </button>
-              <i class="ace-icon fa fa-check green"></i> 欢迎使用<?php echo config('WEB_SITE_NAME'); ?>网站管理系统！ (特别提示：请使用谷歌内核浏览器访问本网站！如chrome，360极速，搜狗浏览器高速模式等)</div>
+          <div class="col-xs-12">
+<!-- PAGE CONTENT BEGINS -->
+            <div class="row">
+              <div class="col-xs-12" style="margin-bottom:10px;">
+                <form action="<?php echo url('index'); ?>" method="get" class="form-inline" role="form">
+                  <button type="submit" class="btn btn-sm btn-primary">查询</button>
+                  <button type="reset" class="btn btn-sm btn-danger hidden-xs" style="float:right;margin-right:10px;">清空查询条件</button>
+                </form>
+              </div>
+              <div class="col-xs-12">
+                <table id="sample-table-1" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th class="center">编号</th>
+                      <th>用户帐号</th>
+                       <th>币种名称</th>
+                      <th>外部地址</th>
+                      <th>备注信息</th>
+                      <th>创建时间</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if(is_array($external['list']) || $external['list'] instanceof \think\Collection || $external['list'] instanceof \think\Paginator): $k = 0; $__LIST__ = $external['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
+                      <tr>
+                        <td class="center"><?php echo $vo['id']; ?></td>
+                         <td><?php echo $vo['account']; ?></td>
+                         <td><?php echo $vo['cur_name']; ?></td>
+                         <td><?php echo $vo['address']; ?></td>
+                         <td><?php echo $vo['ps']; ?></td>
+                         <td><?php echo $vo['create_time']; ?></td>
+                      </tr>
+                    <?php endforeach; endif; else: echo "" ;endif; ?>
+                  </tbody>
+                </table>
+                <div style="width:100%;margin: 0 auto; text-align:center;">
+                  <ul class="pagination" >
+                    <?php echo $info['page']; ?>
+                  </ul>
+                </div>
+              </div>
+              <!-- /.span --> 
+            </div>
+            <!-- /.row --> 
             <!-- PAGE CONTENT ENDS --> 
           </div>
           <!-- /.col --> 
@@ -131,16 +178,33 @@ select{
       <!-- /section:basics/footer --> 
     </div>
   </div>
-  <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i> </a> </div>
+  <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <!-- /.main-container --> 
 <!-- basic scripts --> 
 <script type="text/javascript">if($(window).width()<1024)  $("#sidebar").addClass('menu-min');</script>
 <script src="/static/ace/js/bootstrap.js"></script>
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
+<script src="/static/ace/js/layer/layer.js"></script>
+<script type="text/javascript">
+  $('a[href="/Admin/Trade/index"]').parents().filter('li').addClass('open active');
+  <?php if(is_numeric(input('get.uid'))): ?>
+    $('select[name="uid"]').val(<?php echo $_GET['uid']; ?>);
+  <?php endif; if(is_numeric(input('get.trade_type'))): ?>
+    $('select[name="trade_type"]').val(<?php echo $_GET['trade_type']; ?>);
+  <?php endif; if(is_numeric(input('get.trade_status'))): ?>
+    $('select[name="trade_status"]').val(<?php echo $_GET['trade_status']; ?>);
+  <?php endif; if(is_numeric(input('get.money_type'))): ?>
+    $('select[name="money_type"]').val(<?php echo $_GET['money_type']; ?>);
+  <?php endif; ?>
+</script>
+<script type="text/javascript">
+jQuery(function($) {
+  //清除查询条件
+  $(document).on('click', 'button:reset',function() {
+    location.href = '<?php echo url('index'); ?>';
+  }); 
+});
+</script>
 </body>
 </html>
-<script type="text/javascript">
-    $('a[href="/Admin/Index/index.html"]').parents().filter('li').addClass('active');
-</script>
-

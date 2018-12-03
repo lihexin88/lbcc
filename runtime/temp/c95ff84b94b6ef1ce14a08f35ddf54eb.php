@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\news\index.html";i:1543569886;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\news\index.html";i:1543643851;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -144,9 +144,7 @@ select{
                       <tr>
                         <td class="center"><?php echo $vo['id']; ?></td>
                         <td><?php echo $vo['title']; ?></td>
-                        <td>
-                            <?php echo $vo['content']; ?>
-                        </td>
+                        <td><?php echo $vo['content']; ?></td>
                         <td><?php echo $vo['create_time']; ?></td>
                         <td><?php echo $vo['update_time']; ?></td>
                         <td>
@@ -192,7 +190,7 @@ select{
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
 <script src="/static/ace/js/layer/layer.js"></script>
 <script type="text/javascript">
-  $('a[href="/Admin/Notice/index.html"]').parents().filter('li').addClass('open active');
+  $('a[href="/Admin/News/index.html"]').parents().filter('li').addClass('open active');
   <?php if(input('get.keywords')): ?>
     $('input[name="keywords"]').val('<?php echo $_GET["keywords"]; ?>');
   <?php endif; if(is_numeric(input('get.state'))): ?>

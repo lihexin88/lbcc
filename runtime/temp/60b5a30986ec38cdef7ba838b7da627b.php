@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\config\setting.html";i:1543643762;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\order\index.html";i:1543627916;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -33,6 +33,14 @@ select{
 #preview{
   height: 120px;
   width: auto;
+}
+</style>
+<style type="text/css">
+.main-container .table tr td {
+  vertical-align: middle;
+}
+.main-container .table tr td a{
+  margin-right:10px;
 }
 </style>
 </head>
@@ -100,43 +108,75 @@ select{
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-          <li> <a href="<?php echo url('index'); ?>">系统设置</a> </li>
+          <li> <a href="<?php echo url('index'); ?>">订单管理</a> </li>
           <li class="active"><?php echo $pagename; ?></li>
         </ul>
       </div>
       <div class="page-content">
         <div class="page-header">
-          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 添加后台所有的配置项 </small> <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="<?php echo url('add'); ?>" >新增配置</a></h1>
+          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 查询出<?php echo $info['count']; ?>条数据 </small> </h1>
         </div>
         <!-- /.page-header -->
         <div class="row">
           <div class="col-xs-12"> 
             <!-- PAGE CONTENT BEGINS -->
             <div class="row">
+              <div class="col-xs-12" style="margin-bottom:10px;">
+                <form action="<?php echo url('index'); ?>" method="get" class="form-inline" role="form">
+                  <div class="form-group">
+                    <label>订单查询</label>
+                    <input name="keywords" type="text" class="form-control" placeholder="订单号">
+                  </div>
+                  <div class="form-group"><label>交易类型</label>
+                    <select name="type" class="form-control">
+                    <option value="">全部</option>
+                      <?php if(is_array($trade_type) || $trade_type instanceof \think\Collection || $trade_type instanceof \think\Paginator): $i = 0; $__LIST__ = $trade_type;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                        <option value="<?php echo $vo['value']; ?>"><?php echo $vo['key']; ?></option>
+                      <?php endforeach; endif; else: echo "" ;endif; ?>
+                    </select>
+                  </div>
+                  <div class="form-group"><label>用户</label>
+                    <select name="uid" class="form-control">
+                    <option value="">全部</option>
+                      <?php if(is_array($user) || $user instanceof \think\Collection || $user instanceof \think\Paginator): $i = 0; $__LIST__ = $user;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                        <option value="<?php echo $vo['id']; ?>"><?php echo $vo['account']; ?></option>
+                      <?php endforeach; endif; else: echo "" ;endif; ?>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-sm btn-primary">查询</button>
+                  <button type="reset" class="btn btn-sm btn-danger hidden-xs" style="float:right;margin-right:10px;">清空查询条件</button>
+                </form>
+              </div>
               <div class="col-xs-12">
                 <table id="sample-table-1" class="table table-striped table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th class="center">排序</th>
-                      <th>配置名称</th>
-                      <th>配置描述</th>
-                      <th>配置模块</th>
-                      <th>配置类型</th>
+                      <th class="center">订单ID</th>
+                      <th>订单号</th>
+                      <th>购买个数</th>
+                      <th>单价</th>
+                      <th>创建时间</th>
+                      <th>交易状态</th>
+                      <th>买家帐号</th>
+                      <th>卖家帐号</th>
+                       <th>挂单ID</th>
                       <th>操作</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php if(is_array($info['list']) || $info['list'] instanceof \think\Collection || $info['list'] instanceof \think\Paginator): $i = 0; $__LIST__ = $info['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                    <?php if(is_array($info['list']) || $info['list'] instanceof \think\Collection || $info['list'] instanceof \think\Paginator): $k = 0; $__LIST__ = $info['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                       <tr>
-                        <td class="center"><?php echo $i; ?></td>
-                        <td><?php echo $vo['key']; ?></td>
-                        <td><?php echo $vo['info']; ?></td>
-                        <td><?php echo $vo['urlTxt']; ?></td>
-                        <td><?php echo $vo['typeTxt']; ?></td>
-                        <td>
-                        <div class="action-buttons">
-                        <a class="green" href="<?php echo url('edit',array('id'=>$vo['id'])); ?>" title="修改配置"> <i class="ace-icon fa fa-pencil bigger-130"></i> </a> 
-                        </div>
+                        <td class="center"><?php echo $vo['id']; ?></td>
+                        <td><?php echo $vo['order']; ?></td>
+                        <td><?php echo $vo['order_number']; ?></td>
+                        <td><?php echo $vo['price']; ?></td>
+                        <td><?php echo $vo['create_time']; ?></td>
+                        <td><?php echo $vo['trade_type']; ?></td>
+                        <td><?php echo $vo['buyer_id']; ?></td>
+                        <td><?php echo $vo['seller_id']; ?></td>
+                        <td><?php echo $vo['trade_id']; ?></td>
+                          <td>
+                          <a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,<?php echo $vo['id']; ?>)">删除</a>
                         </td>
                       </tr>
                     <?php endforeach; endif; else: echo "" ;endif; ?>
@@ -161,7 +201,6 @@ select{
     </div>
   </div>
   <!-- /.main-content -->
-  
   <div class="footer">
     <div class="footer-inner"> 
       <!-- #section:basics/footer -->
@@ -171,14 +210,53 @@ select{
   </div>
   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <!-- /.main-container --> 
-
 <!-- basic scripts --> 
 <script type="text/javascript">if($(window).width()<1024)  $("#sidebar").addClass('menu-min');</script>
 <script src="/static/ace/js/bootstrap.js"></script>
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
+<script src="/static/ace/js/layer/layer.js"></script>
+<script type="text/javascript">
+  $('a[href="/Admin/Order/index.html"]').parents().filter('li').addClass('open active');
+  <?php if(input('get.keywords')): ?>
+    $('input[name="keywords"]').val('<?php echo $_GET["keywords"]; ?>');
+  <?php endif; if(is_numeric(input('get.order_status'))): ?>
+    $('select[name="order_status"]').val(<?php echo $_GET['order_status']; ?>);
+  <?php endif; if(is_numeric(input('get.buyer_id'))): ?>
+    $('select[name="buyer_id"]').val(<?php echo $_GET['buyer_id']; ?>);
+  <?php endif; if(is_numeric(input('get.seller_id'))): ?>
+    $('select[name="seller_id"]').val(<?php echo $_GET['seller_id']; ?>);
+  <?php endif; ?>
+
+</script>
+<script type="text/javascript">
+jQuery(function($) {
+  //清除查询条件
+  $(document).on('click', 'button:reset',function() {
+    location.href = '<?php echo url('index'); ?>';
+  }); 
+
+
+});
+  //删除用户
+  function deleteInfo(obj,id){
+    layer.confirm('确定要删除吗？<br>所有的信息都将被完全删除，不可恢复！', {
+        btn: ['确定','关闭'] //按钮
+      }, function(){
+         $.post("<?php echo url('delete'); ?>", {id: id}).success(function(data) {
+          if (data.code == 0) {
+            layer.msg(data.msg, {icon: data.code,time: 1500},function(){
+              location.href=self.location.href;
+            });
+          }else{
+            layer.msg(data.info, {icon: data.status,time: 1500},function(){
+              location.href=self.location.href;
+            });
+          }
+        });
+      }
+    );
+  }
+</script>
 </body>
 </html>
-<script>
-    $('a[href="/Admin/Config/setting.html"]').parents().filter('li').addClass('open active');
-</script>

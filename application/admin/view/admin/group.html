@@ -1,4 +1,8 @@
 {include file="common/top" /}
+<style type='text/css'>
+.status_red {float:right;width:50px;height:26px;line-height:26px;text-align:center;color:white;border-radius:10px;background-color:red;cursor:pointer;box-shadow:#006666 1px 1px 2px;}
+.status_green {float:left;width:50px;height:26px;line-height:26px;text-align:center;color:white;border-radius:10px;background-color:green;cursor:pointer;box-shadow:#18A665 1px 1px 2px;}
+</style>
 </head>
 <body class="no-skin">
 {include file="common/header" /}
@@ -39,10 +43,11 @@
                         <td class="center">{$vo.id}</td>
                         <td>{$vo.title}</td>
                         <td>{$vo.description}</td>
-                        <td class="hidden-480">{$vo.statusTxt}</td>
+                        <td class="hidden-480"><div class='{$vo.status_btn}' onclick='change_status({$vo.id},{$vo.status})'>{$vo.statusTxt}</div></td>
                         <td>
-                        <a class="btn btn-sm btn-success" href="{:url('edit_group?id='.$vo['id'])}">修改</a>
-                        <a class="btn btn-sm btn-info" href="{:url('group_auth?id='.$vo['id'])}">用户组授权</a>
+                        	<a class="btn btn-sm btn-success" href="{:url('edit_group?id='.$vo['id'])}">修改</a>
+                        	<a class="btn btn-sm btn-info" href="{:url('group_auth?id='.$vo['id'])}">用户组授权</a>
+                        	<a class="btn btn-danger btn-sm" href="javascript:void(0);" onclick="deleteInfo(this,{$vo.id})">删除</a>
                         </td>
                       </tr>
                     {/volist}
@@ -72,7 +77,49 @@
   </div>
   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <!-- /.main-container --> 
+<script src="__JS__/layer/layer.js"></script>
+<script type="text/javascript">
+	$('a[href="/Admin/Admin/group.html"]').parents().filter('li').addClass('open active');
+</script>
+<script type='text/javascript'>
+// 修改用户组状态
+function change_status(id,status){
+	layer.confirm('确定要修改吗？',{
+		btn:['确定','关闭']
+	},function(){
+		$.post('{:url("change_group_status")}',{id:id,status:status}).success(function(data){
+			if(data.code == 0){
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}else{
+				layer.msg(data.msg,{icon:data.code,time:1000},function(){
+					location.href = self.location.href;
+				});
+			}
+		});
+	});
+}
 
+// 删除用户组
+function deleteInfo(obj,id){
+	layer.confirm('确定要删除该用户组吗？', {
+		btn: ['确定','关闭'] //按钮
+	}, function(){
+		$.post("{:url('delete_group')}", {id: id}).success(function(data) {
+			if (data.code == 0) {
+				layer.msg(data.msg, {icon: data.code,time: 1500},function(){
+					location.href=self.location.href;
+				});
+			}else{
+				layer.msg(data.msg, {icon: data.code,time: 1500},function(){
+					location.href=self.location.href;
+				});
+			}
+		})
+	});
+}
+</script>
 <!-- basic scripts --> 
 {include file="common/bottom" /}
 </body>

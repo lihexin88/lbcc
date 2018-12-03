@@ -1,4 +1,8 @@
 {include file="common/top" /}
+<style type='text/css'>
+.father_label {margin-left:150px;width:150px;font-family: "微软雅黑";font-size:18px;}
+.child_label {line-height:30px;font-family: "微软雅黑";}
+</style>
 </head><body class="no-skin">
 {include file="common/header" /}
 <div class="main-container" id="main-container"> 
@@ -19,22 +23,27 @@
       <!-- /section:basics/content.breadcrumbs -->
       <div class="page-content">
         <div class="page-header">
-          <h1> {$pagename} </h1>
+          <h1> {$pagename} <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="{:url('group')}"><img src='__IMG__/back.png'/>&nbsp;返&nbsp;回&nbsp;</a></h1>
         </div>
           <!-- 角色组授权 -->
           <div class="row">
             <div class="col-xs-12">
               <form class="form-horizontal form-post" role="form">
-                 {volist name="list" id="vo"}
-                 <div class="form-group">
-                 <label class="col-sm-3 control-label no-padding-right"><input name="rules[]" class="auth_rules ace ace-checkbox-2" type="checkbox" value="{$vo.id}"><span class="lbl">{$vo.title}</span></label>
-                 <div class="col-sm-9">
-                 {volist name="vo['child']" id="sub"}
-                 <label class="checkbox-inline"><input name="rules[]" class="auth_rules ace ace-checkbox-2" type="checkbox" value="{$sub.id}"><span class="lbl">{$sub.title}</span></label>
-                 {/volist}
-                 </div>
-                 </div>
-                 {/volist}
+                {volist name="list" id="vo"}
+	                <div class="form-group">
+		                <label class="col-sm-3 control-label no-padding-right father_label" style='text-align:left;'>
+		                	<input name="rules[]" class="auth_rules ace ace-checkbox-2" type="checkbox" value="{$vo.id}"><span class="lbl">&nbsp;{$vo.title}</span>：
+		                </label>
+		                <div class="col-sm-9">
+		                {volist name="vo['child']" id="sub"}
+		                	<label class="checkbox-inline child_label">
+		                		<input name="rules[]" class="auth_rules ace ace-checkbox-2" type="checkbox" value="{$sub.id}"><span class="lbl">&nbsp;{$sub.title}</span>
+		                	</label>
+		                {/volist}
+		                <hr />
+		                </div>
+	                </div>
+                {/volist}
                 <div class="space-4"></div>
                 <div class="alert alert-danger" style="display:none;"></div>
                 <div class="clearfix form-actions">
@@ -61,26 +70,34 @@
 
 <!-- basic scripts --> 
 <include file="common/bottom" />
+<script src="__JS__/layer/layer.js"></script>
 <script type="text/javascript">
 $('a[href="/Admin/Admin/group.html"]').parents().filter('li').addClass('open active');
-//选择验证节点
+// 选择验证节点
 var rules = [{$info.rules}];
 $('.auth_rules').each(function(){
-	 if( $.inArray( parseInt(this.value,10),rules )>-1 ){
-		 $(this).prop('checked',true);
-		 }
-		 if(this.value==''){
-			 $(this).closest('span').remove();
+	if( $.inArray( parseInt(this.value,10),rules )>-1 ){
+		$(this).prop('checked',true);
+	}
+	if(this.value==''){
+		$(this).closest('span').remove();
 	}
 });
+
+// 提交更新用户组授权
 $(".form-post").find('button:submit').click(function() {
     $.post("{:url('group_auth')}", $(".form-post").serialize()).success(function(data) {
-		$('#btn').text('正在保存').attr('disabled',"true");
-    if (data.status === 0){
-      $(".form-post .alert").text(data.info).show();	
-    }
-    setTimeout(function() {location.href=self.location.href;},1000);
-  });
+			$('#btn').text('正在保存').attr('disabled',"true");
+	    if (data.code === 0){
+	      layer.msg(data.msg,{icon:data.code,time:1000},function(){
+	      	location.href = self.location.href;
+	      });
+	    }else{
+	    	layer.msg(data.msg,{icon:data.code,time:1000},function(){
+	      	location.href = self.location.href;
+	      });
+	    }
+	  });
 		return false;
 });
 </script> 

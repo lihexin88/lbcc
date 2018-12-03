@@ -245,4 +245,20 @@ class User extends Admin
 	    return rtn(1,'已审核');
 
     }
+  //锁仓记录
+    public function lock()
+    {
+        $id = trim(input('id'));
+        $this->assign("user", db('user')->where('id',$id)->value('account'));
+        $this->assign("info", model('LockPosition')->infoLists($id,$p));
+        return $this->fetch();
+    }
+  	//STO
+    public function sto()
+    {
+        $id = trim(input('id'));
+        $this->assign("user", db('user')->where('id',$id)->value('account'));
+        $this->assign("info", model('StoData')->infoLists($id,$p));
+        return $this->fetch();
+    }
 }

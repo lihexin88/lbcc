@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\trade\index.html";i:1543470097;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\trade\index.html";i:1543643863;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -123,8 +123,13 @@ select{
             <div class="row">
               <div class="col-xs-12" style="margin-bottom:10px;">
                 <form action="<?php echo url('index'); ?>" method="get" class="form-inline" role="form">
-                  <div class="form-group"><label>用户</label>
-                    <input type="text" name="uid" value="" placeholder="请输入用户信息">
+                  <div class="form-group"><label>交易状态</label>
+                    <select name="trade_status" class="form-control">
+                    <option value="">全部</option>
+                      <?php if(is_array($trade_status) || $trade_status instanceof \think\Collection || $trade_status instanceof \think\Paginator): $i = 0; $__LIST__ = $trade_status;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                        <option value="<?php echo $vo['value']; ?>"><?php echo $vo['key']; ?></option>
+                      <?php endforeach; endif; else: echo "" ;endif; ?>
+                    </select>
                   </div>
                   <div class="form-group"><label>交易类型</label>
                     <select name="trade_type" class="form-control">
@@ -134,19 +139,11 @@ select{
                       <?php endforeach; endif; else: echo "" ;endif; ?>
                     </select>
                   </div>
-                  <div class="form-group"><label>交易状态</label>
-                    <select name="trade_status" class="form-control">
+                  <div class="form-group"><label>用户</label>
+                    <select name="uid" class="form-control">
                     <option value="">全部</option>
-                      <?php if(is_array($trade_status) || $trade_status instanceof \think\Collection || $trade_status instanceof \think\Paginator): $i = 0; $__LIST__ = $trade_status;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
-                        <option value="<?php echo $vo['value']; ?>"><?php echo $vo['key']; ?></option>
-                      <?php endforeach; endif; else: echo "" ;endif; ?>
-                    </select>
-                  </div>
-                  <div class="form-group"><label>交易区</label>
-                    <select name="money_type" class="form-control">
-                    <option value="">全部</option>
-                      <?php if(is_array($money_type) || $money_type instanceof \think\Collection || $money_type instanceof \think\Paginator): $i = 0; $__LIST__ = $money_type;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
-                        <option value="<?php echo $vo['value']; ?>"><?php echo $vo['key']; ?></option>
+                      <?php if(is_array($user) || $user instanceof \think\Collection || $user instanceof \think\Paginator): $i = 0; $__LIST__ = $user;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                        <option value="<?php echo $vo['id']; ?>"><?php echo $vo['account']; ?></option>
                       <?php endforeach; endif; else: echo "" ;endif; ?>
                     </select>
                   </div>
@@ -159,28 +156,30 @@ select{
                   <thead>
                     <tr>
                       <th class="center">交易ID</th>
-                      <th>挂卖人名称</th>
+                      <th>挂卖人帐号</th>
                        <th>挂卖数量</th>
                       <th>挂卖单价</th>
                       <th>挂卖状态</th>
                       <th>挂卖开始时间</th>
                       <th>挂卖结束时间</th>
                       <th>交易类型</th>
+                      <th>交易币种</th>
                       <th>交易区</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php if(is_array($info['data']) || $info['data'] instanceof \think\Collection || $info['data'] instanceof \think\Paginator): $k = 0; $__LIST__ = $info['data'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
+                    <?php if(is_array($info['list']) || $info['list'] instanceof \think\Collection || $info['list'] instanceof \think\Paginator): $k = 0; $__LIST__ = $info['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                       <tr>
                         <td class="center"><?php echo $vo['id']; ?></td>
-                         <td><?php echo $vo['uid']; ?></td>
+                         <td><?php echo $vo['account']; ?></td>
                           <td><?php echo $vo['number']; ?></td>
                         <td><?php echo $vo['price']; ?></td>
                         <td><?php echo $vo['trade_status']; ?></td>
-                        <td> <?php echo date("Y-m-d H:i:s",$vo['start_time']); ?></td>
-                        <td><?php echo date("Y-m-d H:i:s",$vo['end_time']); ?></td>
-                        <td><?php echo $vo['trade_type']; ?></td>
-                        <td><?php echo $vo['cur_id']; ?> </td>
+                        <td> <?php echo $vo['create_time']; ?></td>
+                        <td><?php echo $vo['update_time']; ?></td>
+                        <td><?php echo $vo['trade_type']; ?> </td>
+                        <td><?php echo $vo['cur_id']; ?></td>
+                        <td><?php echo $vo['cur_area_id']; ?> </td>
                       </tr>
                     <?php endforeach; endif; else: echo "" ;endif; ?>
                   </tbody>
@@ -220,7 +219,7 @@ select{
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
 <script src="/static/ace/js/layer/layer.js"></script>
 <script type="text/javascript">
-  $('a[href="/Admin/Trade/index"]').parents().filter('li').addClass('open active');
+  $('a[href="/Admin/Trade/index.html"]').parents().filter('li').addClass('open active');
   <?php if(is_numeric(input('get.uid'))): ?>
     $('select[name="uid"]').val(<?php echo $_GET['uid']; ?>);
   <?php endif; if(is_numeric(input('get.trade_type'))): ?>

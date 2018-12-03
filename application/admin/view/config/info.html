@@ -72,6 +72,8 @@
 <!-- basic scripts --> 
 <include file="common/bottom" /> 
 <script type="text/javascript">
+    $('a[href="/Admin/Config/info.html"]').parents().filter('li').addClass('open active');
+
 $(".form-post").find('button:submit').click(function() {
     var btn = $(this);
     $.post("{:url('index')}", $(".form-post").serialize()).success(function(data) {

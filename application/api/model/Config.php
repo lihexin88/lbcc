@@ -70,4 +70,16 @@ class Config extends Model
 		$chip['max'] = $max['value'];
 		return $chip;
 	}
+
+
+	/**
+	 * 注册协议
+	 * @return Config|null
+	 * @throws \think\exception\DbException
+	 */
+	static public function reg_protocol()
+	{
+		$reg_pro = self::get(['key'=>'REGISTER_PROTOCLO']);
+		return $reg_pro;
+	}
 }

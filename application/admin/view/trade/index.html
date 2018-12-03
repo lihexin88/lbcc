@@ -31,8 +31,13 @@
             <div class="row">
               <div class="col-xs-12" style="margin-bottom:10px;">
                 <form action="{:url('index')}" method="get" class="form-inline" role="form">
-                  <div class="form-group"><label>用户</label>
-                    <input type="text" name="uid" value="" placeholder="请输入用户信息">
+                  <div class="form-group"><label>交易状态</label>
+                    <select name="trade_status" class="form-control">
+                    <option value="">全部</option>
+                      {volist name="trade_status" id="vo"}
+                        <option value="{$vo.value}">{$vo.key}</option>
+                      {/volist}
+                    </select>
                   </div>
                   <div class="form-group"><label>交易类型</label>
                     <select name="trade_type" class="form-control">
@@ -42,19 +47,11 @@
                       {/volist}
                     </select>
                   </div>
-                  <div class="form-group"><label>交易状态</label>
-                    <select name="trade_status" class="form-control">
+                  <div class="form-group"><label>用户</label>
+                    <select name="uid" class="form-control">
                     <option value="">全部</option>
-                      {volist name="trade_status" id="vo"}
-                        <option value="{$vo.value}">{$vo.key}</option>
-                      {/volist}
-                    </select>
-                  </div>
-                  <div class="form-group"><label>交易区</label>
-                    <select name="money_type" class="form-control">
-                    <option value="">全部</option>
-                      {volist name="money_type" id="vo"}
-                        <option value="{$vo.value}">{$vo.key}</option>
+                      {volist name="user" id="vo"}
+                        <option value="{$vo.id}">{$vo.account}</option>
                       {/volist}
                     </select>
                   </div>
@@ -67,28 +64,30 @@
                   <thead>
                     <tr>
                       <th class="center">交易ID</th>
-                      <th>挂卖人名称</th>
+                      <th>挂卖人帐号</th>
                        <th>挂卖数量</th>
                       <th>挂卖单价</th>
                       <th>挂卖状态</th>
                       <th>挂卖开始时间</th>
                       <th>挂卖结束时间</th>
                       <th>交易类型</th>
+                      <th>交易币种</th>
                       <th>交易区</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {volist name="info.data" id="vo" key="k"}
+                    {volist name="info.list" id="vo" key="k"}
                       <tr>
                         <td class="center">{$vo.id}</td>
-                         <td>{$vo.uid}</td>
+                         <td>{$vo.account}</td>
                           <td>{$vo.number}</td>
                         <td>{$vo.price}</td>
                         <td>{$vo.trade_status}</td>
-                        <td> {:date("Y-m-d H:i:s",$vo.start_time)}</td>
-                        <td>{:date("Y-m-d H:i:s",$vo.end_time)}</td>
-                        <td>{$vo.trade_type}</td>
-                        <td>{$vo.cur_id} </td>
+                        <td> {$vo.create_time}</td>
+                        <td>{$vo.update_time}</td>
+                        <td>{$vo.trade_type} </td>
+                        <td>{$vo.cur_id}</td>
+                        <td>{$vo.cur_area_id} </td>
                       </tr>
                     {/volist}
                   </tbody>
@@ -125,7 +124,7 @@
 {include file="common/bottom" /}
 <script src="__JS__/layer/layer.js"></script>
 <script type="text/javascript">
-  $('a[href="/Admin/Trade/index"]').parents().filter('li').addClass('open active');
+  $('a[href="/Admin/Trade/index.html"]').parents().filter('li').addClass('open active');
   {if condition="is_numeric(input('get.uid'))"}
     $('select[name="uid"]').val({$_GET['uid']});
   {/if}

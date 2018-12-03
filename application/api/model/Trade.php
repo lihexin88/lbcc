@@ -298,76 +298,124 @@ class Trade extends Model
         }
     }
 
-    //执行交易 $user 用户信息 $data会员输入的数据 $type 本人是1买2卖
+    /**
+     * 执行交易 $user 用户信息 $data会员输入的数据 $type 本人是1买2卖
+     * @param $user
+     * @param $data
+     * @param $type
+     * @return array
+     * @throws Exception
+     * @throws \think\exception\DbException
+     */
     public function orders($user,$data,$type){
+        // 获取匹配的数据信息(价格和数量相同,可能是卖,也可能是买)
         $map = $this->maps($data,$type);
+        // 判断信息是否存在,如果存在则执行交易,并生成订单
+
         if($map){
-            $usercur = new UserCur();
-            $cur_area = new CurrencyArea();
-            $cur = $cur_area->where('id',$data['currency_area_id'])->value('area_id');
-            $cur_id = $cur_area->where('id',$data['currency_area_id'])->value('cur_id');
-            $number = $usercur->where('uid',$user['id'])->where('cur_id',$cur)->value('number');
-            $Currency = new Currency();
-            // 通过交易类型判断获取交易币种,并获取交易币种名称
-            if($type === 2){
-                $cur_name = $Currency -> get_cur_text($data['cur_id']);
-            }else{
-                $cur_name = $Currency -> get_cur_text($data['area_id']);
-            }
-            $count_number = $this->fees($data['price'],$data['number'],$type,$cur_name,$user);//算上手续费
-            if($number >= $count_number){
+            Db::startTrans();
+            try{
+                $usercur = new UserCur();
+                $cur_area = new CurrencyArea();
+                $cur = $cur_area->where('id',$data['currency_area_id'])->value('area_id');      // 获取交易对右边币种ID
+                $cur_id = $cur_area->where('id',$data['currency_area_id'])->value('cur_id');    // 获取交易对左边币种ID
+
+                $Currency = new Currency();
+                // 通过交易类型判断获取交易币种,并获取交易币种名称
+                if($type === 2){
+                    $cur_name = $Currency -> get_cur_text($data['cur_id']);
+                }else{
+                    $cur_name = $Currency -> get_cur_text($data['area_id']);
+                }
+                $count_number = $this->fees($data['price'],$data['number'],$type,$cur_name,$user);  // 算上手续费
+
                 $order = new Order();
                 // 本人全额交易(获得数量 $data['number'] 支付数量$count_number)
-                $member['order'] = generateOrderNumber();
-                $member['order_number'] = $data['number'];
-                $member['price'] = $data['price'];
-                $member['order_status'] = 3;
-                $member['create_time'] = time();
-                $member['pay_time'] = time();
-                $member['done_time'] = time();
-                $member['trade_type'] = $data['trade_type'];
-                $member['buyer_id'] = $data['trade_type']==1?$map['uid']:$user['id'];//三元 如果本人状态是1 那么买方是匹配人ID 卖方是本人
-                $member['seller_id'] = $data['trade_type']==1?$user['id']:$map['uid'];//三元 如果本人状态是1 那么买方是匹配人ID 卖方是本人
-                $member['trade_id'] = $map['id'];//匹配数据的ID
-                $member['cur_id'] = $map['cur_id'];//当前交易的虚拟币ID
-                $member['cur_area_id'] = $map['cur_area_id'];//交易区ID
-                //进订单表
-                $order->insert($member);//添加数据
-                $usercur->where('uid',$user['id'])->where('cur_id',$cur)->setDec('number',$count_number);//自减算上手续费的数量
-                $usercur->where('uid',$user['id'])->where('cur_id',$cur_id)->setInc('number',$data['number']);//自增输入的数量
-                //匹配人
-                $match['number'] = $map['number']-$data['number'];//挂单数量减少
-                $match['update_time'] = time();//修改时间
-                if($map['number'] > $data['number']){
-                    //匹配数量如果大于本人输入数量
-                    $match['trade_status'] = 5;//部分交易
-                }else{
-                    //否则等于
-                    $match['trade_status'] = 3;//交易完成
+                $member['order'] = generateOrderNumber();       // 订单编号
+                $member['order_number'] = $data['number'];      // 订单数量
+                $member['price'] = $data['price'];              // 订单价格
+                $member['order_status'] = 3;                    // 订单状态 1待支付 2已支付 3已确认支付
+                $member['create_time'] = time();                // 订单创建时间
+                $member['pay_time'] = time();                   // 订单支付时间
+                $member['done_time'] = time();                  // 订单结束时间
+                $member['trade_type'] = $data['trade_type'];    // 交易类型 1出售 2求购
+                $member['buyer_id'] = $data['trade_type']==1?$map['uid']:$user['id'];   // 1卖 2买 如果本人状态是卖 那么买方是匹配人ID 卖方是本人
+                $member['seller_id'] = $data['trade_type']==1?$user['id']:$map['uid'];  // 1卖 2买 如果本人状态是卖 那么买方是匹配人ID 卖方是本人
+                $member['trade_id'] = $map['id'];               // 匹配的交易挂单ID
+                $member['cur_id'] = $map['cur_id'];             // 当前交易的虚拟币币种ID
+                $member['cur_area_id'] = $map['cur_area_id'];   // 交易区ID
+                // 在订单表插入成交数据
+                if(!$order->insert($member)){    // 添加数据
+                    throw new Exception(lang('sub_order'));
                 }
+                if(!$usercur->where('uid',$user['id'])->where('cur_id',$cur)->setDec('number',$count_number)){       // 自减算上手续费的数量
+                    throw new Exception(lang('service_failed'));
+                }
+                if(!$usercur->where('uid',$user['id'])->where('cur_id',$cur_id)->setInc('number',$data['number'])){  // 自增输入的数量
+                    throw new Exception(lang('add_num_failed'));
+                }
+
+                // 修改匹配到的挂单信息
+                $match['update_time'] = time();                     // 修改时间
+                $match['trade_status'] = 3;                         // 交易完成
                 $usercur->where('uid',$map['uid'])->where('cur_id',$cur)->setInc('number',$data['number']);
-                $this->where('id',$map['id'])->update($match);//执行修改
-                return ['code' => 1,'msg'=>lang('success')];
-            }else{
-                return ['code' => 0,'msg'=>lang('not_numebr')];
+                if(!$this->where('id',$map['id'])->update($match)){  // 修改匹配到的交易挂单表信息
+                    throw new Exception(lang('mod_trade_failed'));
+                }
+
+                // 在交易表中插入当前用户交易信息
+                $in_trade['uid'] = $user['id'];
+                $in_trade['number'] = $data['number'];
+                $in_trade['price'] = $data['price'];
+                $in_trade['trade_status'] = 3;
+                $in_trade['cur_id'] = $data['cur_id'];
+                $in_trade['create_time'] = time();
+                $in_trade['update_time'] = time();
+                $in_trade['trade_type'] = $data['trade_type'];
+                $in_trade['cur_area_id'] = $data['area_id'];
+                if(!$this -> insert($in_trade)){  // 插入当前交易挂单表信息
+                    throw new Exception(lang('in_trade_failed'));
+                }
+
+                Db::commit();
+                return ['code' => 1,'msg' => lang('success')];
+            }catch(\Exception $e){
+                Db::rollback();
+                return ['code' => 1,'msg' => $e -> getMessage()];
             }
         }else{
             return ['code' => -5,'data'=> $data,'user' => $user];
         }
     }
 
-    //封装查询条件 并返回 查询数据
+    /**
+     * 封装查询条件 并返回 查询数据
+     * @param $data     基本数据
+     * @param $type     交易类型 1卖 2买
+     * @return array|false|\PDOStatement|string|Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function maps($data,$type){
-        $map['price'] = $data['price'];//单价等于
-        $map['number'] = array('>=',$data['number']);//数量大于等于
-        $map['trade_status'] = array('in','1,5');//查询挂单 或者 部分成交
-        $map['cur_area_id'] = $data['currency_area_id'];//查询对应货币交易区ID
-        $map['trade_type'] = $type==2?1:2;//三元 如果type==2走真trade_type =1 否则走假trade_type=2
-        $trade = $this->where($map)->find();    // 获取交易信息
+        $map['price'] = $data['price'];                     // 单价等于
+        $map['number'] = $data['number'];                   // 数量等于
+        $map['trade_status'] = array('in','1,5');           // 查询挂单 或者 部分成交
+        $map['cur_area_id'] = $data['currency_area_id'];    // 查询对应货币交易区ID
+        $map['trade_type'] = $type==2?1:2;                  // 三元 如果type==2走真trade_type =1 否则走假trade_type=2
+        $trade = $this->where($map)->find();                // 获取交易信息
         return $trade;
     }
 
-    //计算手续费
+    /**
+     * 计算手续费
+     * @param $price        价格
+     * @param $number       数量
+     * @param $type         交易类型 1卖 2买
+     * @param $cur_name     币种名称
+     * @param $user         当前用户信息
+     * @return float|int
+     */
     public function fees($price,$number,$type,$cur_name,$user){
 //        echo $price.'-'.$number.'-'.$type.'-'.$cur_name.'-'.$user;exit;
         // 通过币种名称获取当前币种对 USDT 时的价格

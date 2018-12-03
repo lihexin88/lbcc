@@ -1,4 +1,8 @@
 {include file="common/top" /}
+<style type='text/css'>
+.one_level {font-size:16px;font-weight:bold;}
+.two_level {text-indent:2em;}
+</style>
 </head>
 <body class="no-skin">
 {include file="common/header" /}
@@ -11,14 +15,14 @@
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="{:url('Index/index')}">{:config('WEB_SITE_NAME')}</a> </li>
-          <li> <a href="{:url('index')}">权限管理</a> </li>
+          <li> <a href="{:url('rule')}">权限管理</a> </li>
           <li class="active">{$pagename}</li>
         </ul>
         <!-- /.breadcrumb --> 
       </div>
       <div class="page-content">
         <div class="page-header">
-          <h1> {$pagename} <small> <i class="ace-icon fa fa-angle-double-right"></i> 后台权限列表，同时可作为右侧导航使用 </small> <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="{:url('add_rule')}" >添加权限</a></h1>
+          <h1> {$pagename} <small> <i class="ace-icon fa fa-angle-double-right"></i> 后台权限列表，同时可作为右侧导航使用 </small> <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="{:url('add')}" >添加权限</a></h1>
         </div>
         <!-- /.page-header -->
         
@@ -44,7 +48,7 @@
                     {volist name="list" id="vo"}
                       <tr>
                         <td class="center">{$vo.id}</td>
-                        <td><i class="menu-icon fa fa-{$vo.icon}"> {$vo.title}</td>
+                        <td class='one_level'><i class="menu-icon fa fa-{$vo.icon}"></i> {$vo.title}</td>
                         <td>{$vo.name}</td>
                         <td><input class="col-xs-10 sort" value="{$vo.sort}" data-id="{$vo.id}"></td>
                         <td><input class="col-xs-10 icon" value="{$vo.icon}" data-id="{$vo.id}"></td>
@@ -62,12 +66,17 @@
                             {/volist}
                           </select>
                         </td>
-                        <td><a class="btn btn-sm btn-success" href="{:url('edit_rule?id='.$vo['id'])}">修改</a></td>
+                        <td>
+                        	<a class="btn btn-sm btn-success" href="{:url('edit_rule?id='.$vo['id'])}">修改</a>
+                        	{if condition='$vo.have == 0'}
+                        		<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,{$vo.id})">删除</a>
+                        	{/if}
+                        </td>
                       </tr>
                       {volist name="vo['child']" id="sub"}
                       <tr>
                         <td class="center">{$sub.id}</td>
-                        <td> ∟ {$sub.title}</td>
+                        <td class='two_level'> ∟ {$sub.title}</td>
                         <td>{$sub.name}</td>
                         <td><input class="col-xs-10 sort" value="{$sub.sort}" data-id="{$sub.id}"></td>
                         <td> -- </td>
@@ -85,7 +94,10 @@
                             {/volist}
                           </select>
                         </td>
-                        <td><a class="btn btn-sm btn-success" href="{:url('edit_rule?id='.$sub['id'])}">修改</a></td>
+                        <td>
+                        	<a class="btn btn-sm btn-success" href="{:url('edit_rule?id='.$sub['id'])}">修改</a>
+                        	<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,{$sub.id})">删除</a>
+                        </td>
                       </tr>
                       {/volist}
                     {/volist}
@@ -116,8 +128,11 @@
   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <!-- /.main-container --> 
 <!-- basic scripts --> 
-<include file="common/bottom" />
+{include file="common/bottom" /}
 <script src="__JS__/layer/layer.js"></script>
+<script type="text/javascript">
+	$('a[href="/Admin/Admin/rule.html"]').parents().filter('li').addClass('open active');
+</script>
 <script type="text/javascript">
   jQuery(function($) { 
     //更改显示状态
@@ -153,6 +168,26 @@
       })
     });
   });
+
+// 删除权限
+function deleteInfo(obj,id){
+	layer.confirm('确定要删除吗？<br>该友情链接所有的信息都将被完全删除，不可恢复！',{
+		btn: ['确定','关闭']
+	},function(){
+		$.post('{:url("delete")}',{id:id}).success(function(data){
+			if(data.code == 0){
+				layer.msg(data.msg,{icon:data.info,time:1500},function(){
+					location.href = self.location.href;
+				});
+			}else{
+				layer.msg(data.msg,{icon:data.info,time:1500},function(){
+					location.href = self.location.href;
+				})
+			}
+		});
+	});
+}
+
 </script>
 </body>
 </html>

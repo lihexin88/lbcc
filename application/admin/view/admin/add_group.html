@@ -19,42 +19,56 @@
       <!-- /section:basics/content.breadcrumbs -->
       <div class="page-content">
         <div class="page-header">
-          <h1> {$pagename} </h1>
+          <h1> {$pagename} <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="{:url('group')}"><img src='__IMG__/back.png'/>&nbsp;返&nbsp;回&nbsp;</a></h1>
         </div>
         
           <!-- 添加角色 -->
           <div class="row">
             <div class="col-xs-12">
               <form class="form-horizontal form-post" role="form">
+                
                 <div class="form-group">
                   <label class="col-sm-3 control-label no-padding-right"> 用户组名称 </label>
                   <div class="col-sm-9">
                     <input name="title" type="text" class="col-xs-10 col-sm-5" placeholder="此处填写用户组名称" value="{$info.title}" />
                   </div>
                 </div>
+                
                 <div class="form-group">
                   <label class="col-sm-3 control-label no-padding-right"> 用户组描述 </label>
                   <div class="col-sm-9">
                     <input name="description" type="text" class="col-xs-10 col-sm-5" placeholder="此处备注用户组用途" value="{$info.description}" />
                   </div>
                 </div>
-                {if condition="isset($info['status'])"}
+                
                 <div class="form-group">
-                  <label class="col-sm-3 control-label no-padding-right">用户组状态</label>
+                  <label class="col-sm-3 control-label no-padding-right"> 是否启用</label>
                   <div class="col-sm-9">
-                    <div class="radio" style="float:left">
-                      <label>
-                        <input name="status" type="radio" class="ace" value="1" {eq name="info['status']" value="1"}checked{/eq} >
-                        <span class="lbl"> 启用</span> </label>
-                    </div>
-                    <div class="radio" style="float:left">
-                      <label>
-                        <input name="status" type="radio" class="ace" value="0" {eq name="info['status']" value="0"}checked{/eq}>
-                        <span class="lbl"> 禁用</span> </label>
-                    </div>
+                    <div class="radio">
+											<label>
+												<input name="status" type="radio" class="ace status_radio" value='1' {if condition="$info.status == 1"}checked='checked'{/if} />
+												<span class="lbl"> 启用</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input name="status" type="radio" class="ace status_radio" value='2' 
+												<?php
+													if(isset($info['status'])){
+														if($info['status'] == 2){
+															echo "checked='checked'";
+														}
+													}else{
+														echo "checked='checked'";
+													}
+												?>
+												/>
+												<span class="lbl"> 禁用</span>
+											</label>
+										</div>
                   </div>
                 </div>
-                {/if}
+                
                 <div class="space-4"></div>
                 <div class="alert alert-danger" style="display:none;"></div>
                 <div class="clearfix form-actions">
@@ -83,18 +97,27 @@
 <!-- basic scripts --> 
 {include file="common/bottom" /}
 <script type="text/javascript">
-//锁定菜单显示位置
-$('a[href="{:url(\'Admin\/Admin\/group\')}"]').parents().filter('li').addClass('open active');
-//提交表单
+	$('a[href="/Admin/Admin/group.html"]').parents().filter('li').addClass('open active');
+</script>
+<script type="text/javascript">
 $(".form-post").find('button:submit').click(function() {
-    $.post("{:url('add_group')}", $(".form-post").serialize()).success(function(data) {
-		$('#btn').text('正在保存').attr('disabled',"true");
-    if (data.status === 0){
-      $(".form-post .alert").text(data.info).show();
-    }
-		setTimeout(function() {location.href=self.location.href;},1000);
-  });
-		return false;
+	$.post("{:url('add_group')}", $(".form-post").serialize()).success(function(data) {
+	    $('#btn').text('正在保存').attr('disabled', "true");
+	    if (data.status === 0) {
+	      $(".form-post .alert").text(data.info).show();
+	      setTimeout(function() {
+	        $('#btn').text('保存').removeAttr('disabled');
+	        $(".form-post .alert").empty().hide();
+	      },
+	      1000);
+	    }else{
+	      setTimeout(function() {
+	        location.href = data.url;
+	      },
+	      1000);
+	    }
+	});
+	return false;
 });
 </script> 
 </body>

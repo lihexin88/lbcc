@@ -18,27 +18,40 @@ class Index extends AdminBase
         return $this->fetch();
     }
 
-    public function repwd()
-    {
-        if (Request::instance()->isPost()) {
+    /**
+     * controller 修改当前登陆管理员密码
+     */
+    public function repwd(){
+        if (Request::instance() -> isPost()) {
             if (!input('post.oldpassword')) {
-                $this->error('请输入当前密码！');
+                $this -> error('请输入当前密码!');
             }
-            $pwd = db('Admin')->where('id=' . AID)->value('password');
-            if ($pwd != encrypt(trim(input('post.oldpassword')))) {//去除前后空格
-                $this->error('操作失败:原密码不符！');
-            }
-            if (!input('post.password')) {
-                $this->error('请输入新密码！');
-            }
-            if (input('post.password') != input('post.password')) {
-                $this->error('两次输入的新密码不一致！');
-            }
-            $data['password'] = encrypt(trim(input('post.password')));
 
-            $data['id'] = AID;
-            model('Admin')->saveInfo($data);
-            $this->success('操作成功,请重新登录!', url('Publics/logout'));
+            // 验证管理员原密码是否正确
+            $pwd = Db::name('admin') -> where('id =' . AID) -> value('password');
+            if ($pwd != encrypt(trim(input('post.oldpassword')))) {
+                return json(array('code' => 0,'msg' => '操作失败:原密码不符!'));
+            }
+
+            // 判断新密码是否为空
+            if (!trim(input('post.password'))) {
+                return json(array('code' => 0,'msg' => '请输入新密码!'));
+            }
+
+            // 判断两次输入的密码是否一致
+            if (trim(input('post.password')) != trim(input('post.repassword'))) {
+                return json(array('code' => 0,'msg' => '两次输入的新密码不一致!'));
+            }
+
+            $data['password'] = encrypt(input('post.password'));
+            $id = AID;
+
+            $result = Db::name('admin') -> where('id',$id) -> update($data);
+            if($result){
+                return json(array('code' => 1,'msg' => '修改密码成功,请重新登录!','url' => url('Publics/logout')));
+            }else{
+                return json(array('code' => 0,'msg' => '修改密码失败!'));
+            }
         } else {
             $this->assign('info', AID);
             return $this->fetch();

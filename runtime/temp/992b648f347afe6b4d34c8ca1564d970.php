@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:4:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\admin\rule.html";i:1525334488;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\admin\rule.html";i:1543643592;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -34,6 +34,10 @@ select{
   height: 120px;
   width: auto;
 }
+</style>
+<style type='text/css'>
+.one_level {font-size:16px;font-weight:bold;}
+.two_level {text-indent:2em;}
 </style>
 </head>
 <body class="no-skin">
@@ -103,14 +107,14 @@ select{
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-          <li> <a href="<?php echo url('index'); ?>">权限管理</a> </li>
+          <li> <a href="<?php echo url('rule'); ?>">权限管理</a> </li>
           <li class="active"><?php echo $pagename; ?></li>
         </ul>
         <!-- /.breadcrumb --> 
       </div>
       <div class="page-content">
         <div class="page-header">
-          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 后台权限列表，同时可作为右侧导航使用 </small> <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="<?php echo url('add_rule'); ?>" >添加权限</a></h1>
+          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 后台权限列表，同时可作为右侧导航使用 </small> <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="<?php echo url('add'); ?>" >添加权限</a></h1>
         </div>
         <!-- /.page-header -->
         
@@ -136,7 +140,7 @@ select{
                     <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
                       <tr>
                         <td class="center"><?php echo $vo['id']; ?></td>
-                        <td><i class="menu-icon fa fa-<?php echo $vo['icon']; ?>"> <?php echo $vo['title']; ?></td>
+                        <td class='one_level'><i class="menu-icon fa fa-<?php echo $vo['icon']; ?>"></i> <?php echo $vo['title']; ?></td>
                         <td><?php echo $vo['name']; ?></td>
                         <td><input class="col-xs-10 sort" value="<?php echo $vo['sort']; ?>" data-id="<?php echo $vo['id']; ?>"></td>
                         <td><input class="col-xs-10 icon" value="<?php echo $vo['icon']; ?>" data-id="<?php echo $vo['id']; ?>"></td>
@@ -154,12 +158,17 @@ select{
                             <?php endforeach; endif; else: echo "" ;endif; ?>
                           </select>
                         </td>
-                        <td><a class="btn btn-sm btn-success" href="<?php echo url('edit_rule?id='.$vo['id']); ?>">修改</a></td>
+                        <td>
+                        	<a class="btn btn-sm btn-success" href="<?php echo url('edit_rule?id='.$vo['id']); ?>">修改</a>
+                        	<?php if($vo['have'] == 0): ?>
+                        		<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,<?php echo $vo['id']; ?>)">删除</a>
+                        	<?php endif; ?>
+                        </td>
                       </tr>
                       <?php if(is_array($vo['child']) || $vo['child'] instanceof \think\Collection || $vo['child'] instanceof \think\Paginator): $i = 0; $__LIST__ = $vo['child'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$sub): $mod = ($i % 2 );++$i;?>
                       <tr>
                         <td class="center"><?php echo $sub['id']; ?></td>
-                        <td> ∟ <?php echo $sub['title']; ?></td>
+                        <td class='two_level'> ∟ <?php echo $sub['title']; ?></td>
                         <td><?php echo $sub['name']; ?></td>
                         <td><input class="col-xs-10 sort" value="<?php echo $sub['sort']; ?>" data-id="<?php echo $sub['id']; ?>"></td>
                         <td> -- </td>
@@ -177,7 +186,10 @@ select{
                             <?php endforeach; endif; else: echo "" ;endif; ?>
                           </select>
                         </td>
-                        <td><a class="btn btn-sm btn-success" href="<?php echo url('edit_rule?id='.$sub['id']); ?>">修改</a></td>
+                        <td>
+                        	<a class="btn btn-sm btn-success" href="<?php echo url('edit_rule?id='.$sub['id']); ?>">修改</a>
+                        	<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,<?php echo $sub['id']; ?>)">删除</a>
+                        </td>
                       </tr>
                       <?php endforeach; endif; else: echo "" ;endif; endforeach; endif; else: echo "" ;endif; ?>
                   </tbody>
@@ -207,8 +219,14 @@ select{
   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <!-- /.main-container --> 
 <!-- basic scripts --> 
-<include file="common/bottom" />
+<script type="text/javascript">if($(window).width()<1024)  $("#sidebar").addClass('menu-min');</script>
+<script src="/static/ace/js/bootstrap.js"></script>
+<script src="/static/ace/js/ace/ace.js"></script> 
+<script src="/static/ace/js/ace/ace.sidebar.js"></script> 
 <script src="/static/ace/js/layer/layer.js"></script>
+<script type="text/javascript">
+	$('a[href="/Admin/Admin/rule.html"]').parents().filter('li').addClass('open active');
+</script>
 <script type="text/javascript">
   jQuery(function($) { 
     //更改显示状态
@@ -244,6 +262,26 @@ select{
       })
     });
   });
+
+// 删除权限
+function deleteInfo(obj,id){
+	layer.confirm('确定要删除吗？<br>该友情链接所有的信息都将被完全删除，不可恢复！',{
+		btn: ['确定','关闭']
+	},function(){
+		$.post('<?php echo url("delete"); ?>',{id:id}).success(function(data){
+			if(data.code == 0){
+				layer.msg(data.msg,{icon:data.info,time:1500},function(){
+					location.href = self.location.href;
+				});
+			}else{
+				layer.msg(data.msg,{icon:data.info,time:1500},function(){
+					location.href = self.location.href;
+				})
+			}
+		});
+	});
+}
+
 </script>
 </body>
 </html>

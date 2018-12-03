@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:71:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\config\index.html";i:1543544705;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:71:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\config\index.html";i:1543632394;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -121,7 +121,7 @@ select{
                         <!-- PAGE CONTENT BEGINS -->
                         <form class="form-horizontal form-post" role="form">
                             <!-- #section:elements.form -->
-                            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                            <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $k = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right"> <?php echo $vo['info']; ?> </label>
                                 <div class="col-sm-9">
@@ -151,7 +151,7 @@ select{
                                     <div class="form-group">
                                         <br>
                                         <div class="col-sm-10 col-lg-5" style="padding-right: 0px;">
-                                            <script id="container" name="<?php echo $vo['key']; ?>" text="text/plain"><?php echo !empty($vo['value'])?$vo['value']:""; ?></script>
+                                            <script id="container<?php echo $k; ?>" name="<?php echo $vo['key']; ?>" text="text/plain"><?php echo !empty($vo['value'])?$vo['value']:""; ?></script>
                                         </div>
                                     </div>
                                     <?php break; endswitch; ?>
@@ -196,7 +196,9 @@ select{
 <script type="text/javascript" src="/static/ueditor/ueditor.parse.js"></script>
 <script type="text/javascript">
     $(document).ready(function (){
-        var ue = UE.getEditor('container');
+        <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $k = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;if(($vo['type'] == 4)): ?>
+            var ue<?php echo $k; ?> = UE.getEditor('container<?php echo $k; ?>');
+        <?php endif; endforeach; endif; else: echo "" ;endif; ?>
     });
 </script>
 <script>
@@ -229,7 +231,8 @@ select{
             $('#btn').text('正在保存').attr('disabled',"true");
             if (data){
                 setTimeout(function() {
-                    location.href=self.location.href;
+                    layer.msg("已保存");
+                    $('#btn').text('保存').removeAttr('disabled');
                 },1000);
             }
         });

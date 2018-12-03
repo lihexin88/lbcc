@@ -87,7 +87,7 @@
                                         <td>{$vo.we_receive_name}</td>
                                         <td>{$vo.we_code}</td>
                                         <td id = "status{$vo.id}">{if condition="($vo.status eq 1)"}已通过{elseif condition = "($vo.status eq 2)"}已拒绝{else}待审核{/if}</td>
-                                        {if condition="($vo.status eq 0)"}}
+                                        {if condition="($vo.status eq 0)"}
                                         <td id = "pass{$vo.id}"><button class="btn-success" onclick="authenticate({$vo.id},3)">通过</button></td>
                                         <td id = "reject{$vo.id}"><button class="btn-warning" onclick="authenticate({$vo.id},4)">拒绝</button></td>
                                         {else}

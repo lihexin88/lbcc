@@ -148,7 +148,11 @@ class GuessRecode extends Model
 			$pagesize = 15;
 			$recode['data'] = self::alias('r')->join('user u','r.uid = u.id')->where($where)->paginate($pagesize);
 			$recode['page'] = $recode['data']->render();
-			$recode['count'] = count($recode['data']);
+			$recode['count'] = self::
+							alias('r')
+							->join('user u','r.uid = u.id')
+							->where($where)
+							->count();
 			return $recode;
 	}
 }
