@@ -22,6 +22,7 @@ class Assets extends ApiBase
         parent::__construct($request);
         $this->UserCur = new \app\api\model\UserCur();
         $this->Currency = new \app\api\model\Currency();
+      	$this->Order = new \app\api\model\Order();
     }
 
     /**
@@ -35,7 +36,7 @@ class Assets extends ApiBase
         $cur = $this->Currency->cur_list();//所有币种新信息
         foreach ($cur as $kk => $vv) {//遍历
             if($vv['name'] == 'LBCC'){
-                $data[$vv['id']-1]['price'] = 2;
+                $data[$vv['id']-1]['price'] = $this->Order->last_order_area_price(3,5);
             }else{
                 $data[$vv['id']-1]['price'] = api_currency($vv['name']);//调用公共方法
             }

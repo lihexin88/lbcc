@@ -76,8 +76,8 @@
                                         <td class="center">{$vo.id}</td>
                                         <td>{$vo.name}</td>
                                         <td>{$vo.id_number}</td>
-                                        <td  title="点击图片显示详情" class="user_auth"><img onclick="display_detail(this)" src="{$vo.id_f_url}"></td>
-                                        <td  title="点击图片显示详情" class="user_auth"><img onclick="display_detail(this)" src="{$vo.id_b_url}"></td>
+                                        <td  title="点击图片显示详情" class="user_auth">{if condition = "($vo.id_b_url eq null)"}<i style="color: #dedede">-图片错误-</i>{else}<img onclick="display_detail(this)" src="{$vo.id_b_url}" style="max-width:100px;max-height: 150px;display:block;">{/if} </td>
+                                        <td  title="点击图片显示详情" class="user_auth">{if condition = "($vo.id_f_url eq null)"}<i style="color: #dedede">-图片错误-</i>{else}<img onclick="display_detail(this)" src="{$vo.id_f_url}" style="max-width:100px;max-height: 150px;display:block;">{/if}</td>
                                         <td>{$vo.bank_card}</td>
                                         <td>{$vo.take_bank_name}</td>
                                         <td>{$vo.alipay}</td>

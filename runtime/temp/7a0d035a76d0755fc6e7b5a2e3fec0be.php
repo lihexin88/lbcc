@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\admin\group.html";i:1543643477;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:70:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\config\data.html";i:1543643639;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -34,10 +34,6 @@ select{
   height: 120px;
   width: auto;
 }
-</style>
-<style type='text/css'>
-.status_red {float:right;width:50px;height:26px;line-height:26px;text-align:center;color:white;border-radius:10px;background-color:red;cursor:pointer;box-shadow:#006666 1px 1px 2px;}
-.status_green {float:left;width:50px;height:26px;line-height:26px;text-align:center;color:white;border-radius:10px;background-color:green;cursor:pointer;box-shadow:#18A665 1px 1px 2px;}
 </style>
 </head>
 <body class="no-skin">
@@ -104,13 +100,13 @@ select{
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-          <li> <a href="<?php echo url('index'); ?>">权限管理</a> </li>
+          <li> <a href="<?php echo url('index'); ?>">系统设置</a> </li>
           <li class="active"><?php echo $pagename; ?></li>
         </ul>
       </div>
       <div class="page-content">
         <div class="page-header">
-          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 后台所有的用户组 </small> <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="<?php echo url('add_group'); ?>" >添加用户组</a></h1>
+          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 显示数据库信息和表结构 </small> </h1>
         </div>
         <!-- /.page-header -->
         
@@ -119,30 +115,31 @@ select{
             <!-- PAGE CONTENT BEGINS -->
             <div class="row">
               <div class="col-xs-12">
-                <table class="table table-striped table-bordered table-hover">
+                <table id="sample-table-1" class="table table-striped table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th class="center">ID</th>
-                      <th>用户组名称</th>
-                      <th>用户组描述</th>
-                      <th>状态</th>
-                      <th>操作</th>
+                      <th>表名</th>
+                      <th>表用途</th>
+                      <th>数据条数</th>
+                      <th>引擎类型</th>
+                      <th>字符集</th>
+                      <th>表大小</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php if(is_array($list) || $list instanceof \think\Collection || $list instanceof \think\Paginator): $i = 0; $__LIST__ = $list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
                       <tr>
-                        <td class="center"><?php echo $vo['id']; ?></td>
-                        <td><?php echo $vo['title']; ?></td>
-                        <td><?php echo $vo['description']; ?></td>
-                        <td class="hidden-480"><div class='<?php echo $vo['status_btn']; ?>' onclick='change_status(<?php echo $vo['id']; ?>,<?php echo $vo['status']; ?>)'><?php echo $vo['statusTxt']; ?></div></td>
-                        <td>
-                        	<a class="btn btn-sm btn-success" href="<?php echo url('edit_group?id='.$vo['id']); ?>">修改</a>
-                        	<a class="btn btn-sm btn-info" href="<?php echo url('group_auth?id='.$vo['id']); ?>">用户组授权</a>
-                        	<a class="btn btn-danger btn-sm" href="javascript:void(0);" onclick="deleteInfo(this,<?php echo $vo['id']; ?>)">删除</a>
-                        </td>
+                        <td ><?php echo $vo['Name']; ?></td>
+                        <td ><?php echo $vo['Comment']; ?></td>
+                        <td ><?php echo $vo['Rows']; ?></td>
+                        <td ><?php echo $vo['Engine']; ?></td>
+                        <td ><?php echo $vo['Collation']; ?></td>
+                        <td ><?php echo $vo['size']; ?></td>
                       </tr>
                     <?php endforeach; endif; else: echo "" ;endif; ?>
+                    <tr>
+                      <td colspan="6" style="text-align:center;">数据库中共有<?php echo $tables; ?>张表，共计<?php echo $total; ?></td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -169,53 +166,14 @@ select{
   </div>
   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <!-- /.main-container --> 
-<script src="/static/ace/js/layer/layer.js"></script>
-<script type="text/javascript">
-	$('a[href="/Admin/Admin/group.html"]').parents().filter('li').addClass('open active');
-</script>
-<script type='text/javascript'>
-// 修改用户组状态
-function change_status(id,status){
-	layer.confirm('确定要修改吗？',{
-		btn:['确定','关闭']
-	},function(){
-		$.post('<?php echo url("change_group_status"); ?>',{id:id,status:status}).success(function(data){
-			if(data.code == 0){
-				layer.msg(data.msg,{icon:data.code,time:1000},function(){
-					location.href = self.location.href;
-				});
-			}else{
-				layer.msg(data.msg,{icon:data.code,time:1000},function(){
-					location.href = self.location.href;
-				});
-			}
-		});
-	});
-}
 
-// 删除用户组
-function deleteInfo(obj,id){
-	layer.confirm('确定要删除该用户组吗？', {
-		btn: ['确定','关闭'] //按钮
-	}, function(){
-		$.post("<?php echo url('delete_group'); ?>", {id: id}).success(function(data) {
-			if (data.code == 0) {
-				layer.msg(data.msg, {icon: data.code,time: 1500},function(){
-					location.href=self.location.href;
-				});
-			}else{
-				layer.msg(data.msg, {icon: data.code,time: 1500},function(){
-					location.href=self.location.href;
-				});
-			}
-		})
-	});
-}
-</script>
 <!-- basic scripts --> 
 <script type="text/javascript">if($(window).width()<1024)  $("#sidebar").addClass('menu-min');</script>
 <script src="/static/ace/js/bootstrap.js"></script>
 <script src="/static/ace/js/ace/ace.js"></script> 
-<script src="/static/ace/js/ace/ace.sidebar.js"></script> 
+<script src="/static/ace/js/ace/ace.sidebar.js"></script>  
 </body>
 </html>
+<script>
+    $('a[href="/Admin/Config/data.html"]').parents().filter('li').addClass('open active');
+</script>

@@ -10,6 +10,8 @@ namespace app\api\controller;
 
 
 use app\admin\model\GuessInfo;
+use app\api\model\Config;
+use app\api\model\GuessOrder;
 use app\api\model\GuessRecode;
 use think\Controller;
 use app\api\model\GuessConfig;
@@ -80,5 +82,33 @@ class Game extends Controller
 	{
 		return rtn(1,'os_success',GuessConfig::get_recode());
 	}
+
+
+	/**
+	 * 获取游戏手续费
+	 * @return false|string
+	 * @throws \think\db\exception\DataNotFoundException
+	 * @throws \think\db\exception\ModelNotFoundException
+	 * @throws \think\exception\DbException
+	 */
+	public function game_fee()
+	{
+		return rtn(1,lang('os_success'),Config::game_fee());
+	}
+
+
+	/**
+	 * 获取参与游戏且中奖的用户信息
+	 * @return false|string
+	 * @throws \think\exception\DbException
+	 */
+	public function get_join_er()
+	{
+		$join_er = GuessOrder::bingo_user();
+		return rtn(1,lang('os_success'),$join_er);
+	}
+
+
+
 
 }

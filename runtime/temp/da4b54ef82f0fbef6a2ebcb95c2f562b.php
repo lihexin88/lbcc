@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:78:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\account_recode.html";i:1543646778;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:78:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\account_recode.html";i:1543916086;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -129,9 +129,10 @@ select{
                                     <div class="form-group"><label>状态</label>
                                         <select name="direction" class="form-control">
                                             <option value="">全部</option>
-                                            <option value="-1">提现</option>
-                                            <option value="1">充值</option>
-                                            <option value="2">中奖</option>
+                                            <option <?php echo $direction==-1?'selected':''; ?> value="-1">提现</option>
+                                            <option <?php echo $direction==1?'selected':''; ?> value="1">充值</option>
+                                            <option <?php echo $direction==2?'selected':''; ?> value="2">中奖</option>
+                                            <option <?php echo $direction==3?'selected':''; ?> value="3">押注</option>
                                         </select>
                                     </div>
                                     <button type="submit" class="btn btn-sm btn-primary">查询</button>
@@ -147,8 +148,7 @@ select{
                                         <th>交易类型</th>
                                         <th>方向</th>
                                         <th>数额</th>
-                                        <th>创建时间</th>
-                                        <th>更新时间</th>
+                                        <th>时间</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -158,19 +158,24 @@ select{
                                             <td><?php echo $vo['account']; ?></td>
                                             <td class="center">
                                                 <?php switch($vo['direction']): case "1": ?>
-                                                        <span class="red">充值</span>
+                                                        <span class=" purple">充值</span>
                                                     <?php break; case "-1": ?>
-                                                        <span class="purple">提现</span>
+                                                        <span class="red">提现</span>
                                                     <?php break; case "2": ?>
                                                         <span class="badge-yellow">中奖</span>
+                                                    <?php break; case "3": ?>
+                                                        <span>押注</span>
                                                     <?php break; endswitch; ?>
                                             </td>
                                             <td>
-                                                <?php echo $vo['direction']==-1?"取出":"存入"; ?>
+                                                <?php if((($vo['direction'] == -1) ||($vo['direction'] == 3))): ?>
+                                                    取出
+                                                <?php else: ?>
+                                                    存入
+                                                <?php endif; ?>
                                             </td>
                                             <td><?php echo $vo['number']; ?></td>
                                             <td><?php echo $vo['create_time']; ?></td>
-                                            <td><?php echo $vo['update_time']; ?></td>
                                         </tr>
                                     <?php endforeach; endif; else: echo "" ;endif; ?>
                                     </tbody>

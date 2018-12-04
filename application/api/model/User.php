@@ -77,7 +77,7 @@ class User extends Model
             $invitation_code = $User->invitation_code;
             $secret_key = $User->secret_key;
             model('Library')->qrcode($id,$invitation_code);
-            return ['status'=>1,'info'=>$secret_key];
+            return ['id'=>$id,'status'=>1,'info'=>$secret_key];
         }
     }
 
@@ -574,7 +574,7 @@ class User extends Model
 	/**
 	 *
 	 * 我的好友
-	 * @param $user 当前用户
+	 * @param $user 当前用户、 仅查询当前用户的下一层用户信息，和下一层用户产生的业绩
 	 * @return false|\PDOStatement|string|\think\Collection
 	 * @throws \think\db\exception\DataNotFoundException
 	 * @throws \think\db\exception\ModelNotFoundException
@@ -583,13 +583,14 @@ class User extends Model
 	public function my_friends($user)
 	{
 		$where['parent_id'] = $user['id'];
-		$frineds = self::where($where)->field('id,account')->select()->toArray();
+		$frineds = self::where($where)->field('id,account')->order('create_time desc')->select()->toArray();
 		$count = null;
 		foreach ($frineds as $s=>$p){
 			$Money = new StoData();
 			$money = $Money->alias('st')
 				->join('user u','u.id = st.uid')
 				->where(['uid'=>$p['id']])
+				->order('st.id desc')
 				->field('u.account,u.create_time,st.total_number,st.status,st.bonus')
 				->select();
 			foreach ($money as $k=>$v)	$count['total_bonus']+=$v['bonus'];
@@ -599,5 +600,42 @@ class User extends Model
 		return ['friends'=>$frineds,'count'=>$count];
 	}
 
+	/**
+	 * 退出登录、登出、删除token
+	 * @param $user
+	 * @return bool
+	 */
+	public function logout($user)
+	{
+		if($this->where(['id'=>$user['id']])->update(['token'=>null]))
+		{
+			return true;
+		}
+		return false;
+	}
+//
+//	/**
+//	 * 邀请返佣
+//	 * @param $user 用户信息
+//	 * @return null
+//	 * @throws \think\db\exception\DataNotFoundException
+//	 * @throws \think\db\exception\ModelNotFoundException
+//	 * @throws \think\exception\DbException
+//	 */
+//	public function reword($user)
+//	{
+//		$friend = $this->where(['parent_id'=>$user['id']])->select()->toArray();
+//		$r = null;
+//		$times = 0;
+//		foreach ($friend as $k=>$v){
+//			$Sto = new StoData();
+//			$sto = $Sto->get_data($v['id']);
+//			foreach ($sto as $kk=>$vv){
+//				$r[$times] = $vv;
+//				$times++;
+//			}
+//		}
+//		return $r;
+//	}
 
 }

@@ -11,6 +11,7 @@ return [
      'phone_error'                                           => '手机验证码错误',
      'memorizing_words_error'                                => '助记词错误',
      'code_error'                                            => '验证码错误',
+     'secret_key_error'                                      => '请输入正确的密钥',
      'not_null'                                              => '不能为空',
      'parameter'                                             => '参数不正确',
      'null'                                                  => '暂无数据',
@@ -58,5 +59,7 @@ return [
 	 'not_game_time'                                         => '不在游戏时间内',
 	 'fail_cancel'                                           => '撤销失败',
 	 'info_cant_find'                                        => '查询信息不存在',
+	 'number_max'                                            => '本期剩余下注：',
+	 'logout'                                                => '已退出登录',
 
 ];

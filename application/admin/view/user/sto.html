@@ -16,7 +16,7 @@
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="{:url('Index/index')}">{:config('WEB_SITE_NAME')}</a> </li>
-          <li> <a href="{:url('index')}">用户管理</a> </li>
+          <li> <a href="{:url('index')}">用户:{$user}的STO参与记录</a> </li>
           <li class="active">{$pagename}</li>
         </ul>
       </div>
@@ -29,68 +29,29 @@
           <div class="col-xs-12"> 
             <!-- PAGE CONTENT BEGINS -->
             <div class="row">
-              <div class="col-xs-12" style="margin-bottom:10px;">
-                <form action="{:url('index')}" method="get" class="form-inline" role="form">
-                  <div class="form-group">
-                    <label>手机号码</label>
-                    <input name="keywords" type="text" class="form-control" placeholder="请输入手机号">
-                  </div>
-                  <div class="form-group"><label>状态</label>
-                    <select name="status" class="form-control">
-                    <option value="">全部</option>
-                      {volist name="state" id="vo"}
-                        <option value="{$vo.value}">{$vo.key}</option>
-                      {/volist}
-                    </select>
-                  </div>
-                  <button type="submit" class="btn btn-sm btn-primary">查询</button>
-                  <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="{:url('add')}" >添加用户</a>
-                  <button type="reset" class="btn btn-sm btn-danger hidden-xs" style="float:right;margin-right:10px;">清空查询条件</button>
-                </form>
-              </div>
               <div class="col-xs-12">
                 <table id="sample-table-1" class="table table-striped table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th class="center">用户ID</th>
-                      <th>手机号码/帐号</th>
-                      <th>等级</th>
-                      <th>父级</th>
-                      <th>邀请码</th>
-                      <th>创建时间</th>
-                      <th>更新时间</th>
-                      <th>用户状态</th>
-                      <th>操作</th>
+                      <th class="center">序列号</th>
+                      <th>虚拟币</th>
+                      <th>加仓时间</th>
+                      <th>加仓数量</th>
+                      <th>入金金额</th>
+                      <th>分红数量统计</th>
+                      <th>状态</th>
                     </tr>
                   </thead>
                   <tbody>
                     {volist name="info.list" id="vo" key="k"}
                       <tr>
                         <td class="center">{$vo.id}</td>
-                        <td>{$vo.account}</td>
-                        <td>{$vo.level}</td>
-                        <td>{$vo.parent_id}</td>
-                        <td>{$vo.invitation_code}</td>                
-                        <td>{$vo.create_time}</td>
-                        <td>{$vo.update_time}</td>
-                        
-                        <td> 
-                          <select class="state form-control" data-id="{$vo.id}">
-                          {volist name="state" id="so"}
-                            <option value="{$so.value}" {eq name="vo['status']" value="$so['value']"}selected{/eq} >{$so.key}</option>
-                          {/volist}
-                          </selec>
-                        </td>
-                        <td>
-                          <!--{if condition="$vo['status'] eq 1 "}-->
-                          <!--<a class="btn btn-sm btn-success" href="{:url('edit',array('id'=>$vo['id']))}" >修改</a>-->
-                          <!--{/if}-->
-                          <a class="btn btn-sm btn-primary" href="javascript:void(0);" onclick="editpwd(this,{$vo.id})">重置密码</a>
-                          <a class="btn btn-sm btn-success" href="{:url('rechargegcu',array('id'=>$vo['id']))}" >充值扣费</a>
-                          <!--<a  data-id='{$vo.id}' class="btn btn-sm btn-success layui-btn userinfo">分销树形图</a>-->
-                          <!--<a data-id='{$vo.id}' class="btn btn-sm btn-success layui-btn editbonus">增加扣除奖金</a>-->
-                        </td>
-                      </tr>
+                        <td>{$vo.cur_id}</td>
+                        <td>{$vo.time}</td>
+                        <td>{$vo.number}</td>
+                        <td>{$vo.total_number}</td>
+                        <td>{$vo.bonus}</td>
+                        <td>{$vo.status}</td>
                     {/volist}
                   </tbody>
                 </table>
@@ -126,9 +87,9 @@
 {include file="common/bottom" /}
 <script src="__JS__/layer/layer.js"></script>
 <!-- 树形结构图 -->
-<!--<link rel="stylesheet" href="__ZTREE__/css/demo.css" type="text/css">-->
-<!--<link rel="stylesheet" href="__ZTREE__/css/zTreeStyle/zTreeStyle.css" type="text/css">-->
-<!--<script type="text/javascript" src="__ZTREE__/js/jquery.ztree.core.js"></script>-->
+<link rel="stylesheet" href="__ZTREE__/css/demo.css" type="text/css">
+<link rel="stylesheet" href="__ZTREE__/css/zTreeStyle/zTreeStyle.css" type="text/css">
+<script type="text/javascript" src="__ZTREE__/js/jquery.ztree.core.js"></script>
  <script type="text/javascript">
   $('.editbonus').click(function(){
     var id = $(this).data('id'); 

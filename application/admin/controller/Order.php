@@ -22,16 +22,17 @@ class Order extends Admin
       	if($type){
         	 $map['trade_type'] = $type;
         }
-        if (is_numeric(input('get.id'))) {
-          	if( $map['trade_type'] ==1){
-            	$map['sell_id'] = input('get.id');
+        if (is_numeric(input('get.account'))) {
+          	if($map['trade_type'] ==1){
+            	$map['seller_id'] = db('user')->where('account',input('get.account'))->value('id');
+            }elseif($map['trade_type'] ==2){
+            	$map['buyer_id'] = db('user')->where('account',input('get.account'))->value('id');
             }else{
-            	$map['buy_id'] = input('get.id');
+                $map['seller_id|buyer_id'] = db('user')->where('account',input('get.account'))->value('id');
             }
         }
         $this->assign("info", model('Order')->infoList($map, $p));
         $this->assign("trade_type", model("Common/Dict")->showList('trade_type'));//状态
-      	$this->assign("user", model("User")->showList());
         return $this->fetch();
     }
 

@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\user_auth.html";i:1543630801;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\user_auth.html";i:1543820492;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -168,8 +168,8 @@ select{
                                         <td class="center"><?php echo $vo['id']; ?></td>
                                         <td><?php echo $vo['name']; ?></td>
                                         <td><?php echo $vo['id_number']; ?></td>
-                                        <td  title="点击图片显示详情" class="user_auth"><img onclick="display_detail(this)" src="<?php echo $vo['id_f_url']; ?>"></td>
-                                        <td  title="点击图片显示详情" class="user_auth"><img onclick="display_detail(this)" src="<?php echo $vo['id_b_url']; ?>"></td>
+                                        <td  title="点击图片显示详情" class="user_auth"><?php if(($vo['id_b_url'] == null)): ?><i style="color: #dedede">-图片错误-</i><?php else: ?><img onclick="display_detail(this)" src="<?php echo $vo['id_b_url']; ?>" style="max-width:100px;max-height: 150px;display:block;"><?php endif; ?> </td>
+                                        <td  title="点击图片显示详情" class="user_auth"><?php if(($vo['id_f_url'] == null)): ?><i style="color: #dedede">-图片错误-</i><?php else: ?><img onclick="display_detail(this)" src="<?php echo $vo['id_f_url']; ?>" style="max-width:100px;max-height: 150px;display:block;"><?php endif; ?></td>
                                         <td><?php echo $vo['bank_card']; ?></td>
                                         <td><?php echo $vo['take_bank_name']; ?></td>
                                         <td><?php echo $vo['alipay']; ?></td>

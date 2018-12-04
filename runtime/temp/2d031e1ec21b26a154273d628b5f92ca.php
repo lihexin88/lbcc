@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\currency\index.html";i:1543463887;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:73:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\currency\index.html";i:1543820324;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -50,6 +50,7 @@ overflow:hidden;
 }
 
 </style>
+<link rel="stylesheet" href = "/static/ace/css/userauth.css"></link>
 </head>
 <body class="no-skin">
 <div id="navbar" class="navbar navbar-default">
@@ -142,7 +143,7 @@ overflow:hidden;
                 <table id="sample-table-1" class="table table-striped table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th class="center">ID</th>
+                      <th class="center">序号</th>
                       <th>名称</th>
                       <th>图标</th>
                       <th>操作</th>
@@ -153,7 +154,7 @@ overflow:hidden;
                       <tr>
                         <td class="center"><?php echo $vo['id']; ?></td>
                         <td><?php echo $vo['name']; ?></td>
-                        <td><img src="<?php echo $vo['icon']; ?>" style="max-width:100px;max-height: 150px;display:block;"> </td>
+                          <td title="点击图片显示详情"  class="user_auth" ><?php if(($vo['icon'] == null)): ?><i style="color: #dedede">-图片错误-</i><?php else: ?><img onclick="display_detail(this)" src="<?php echo $vo['icon']; ?>" style="max-width:100px;max-height: 150px;display:block;"><?php endif; ?> </td>
                         <td>
                           <a class="btn btn-sm btn-success" href="<?php echo url('edit',array('id'=>$vo['id'])); ?>" >修改</a>
                           <!-- <a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,<?php echo $vo['id']; ?>)">删除</a> -->
@@ -168,16 +169,16 @@ overflow:hidden;
                   </ul>
                 </div>
               </div>
-              <!-- /.span --> 
+              <!-- /.span -->
             </div>
-            <!-- /.row --> 
-            <!-- PAGE CONTENT ENDS --> 
+            <!-- /.row -->
+            <!-- PAGE CONTENT ENDS -->
           </div>
-          <!-- /.col --> 
+          <!-- /.col -->
         </div>
-        <!-- /.row --> 
+        <!-- /.row -->
       </div>
-      <!-- /.page-content --> 
+      <!-- /.page-content -->
     </div>
   </div>
   <!-- /.main-content -->
@@ -204,6 +205,7 @@ overflow:hidden;
     $('select[name="state"]').val(<?php echo $_GET['state']; ?>);
   <?php endif; ?>
 </script>
+<script src = "/static/ace/js/userauth.js"></script>
 <script type="text/javascript">
 jQuery(function($) {
   //清除查询条件

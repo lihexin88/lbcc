@@ -83,7 +83,7 @@ class GuessConfig extends Model
 	 */
 	static public function get_recode($where = null)
 	{
-		$pagesize = 15;
+		$pagesize = 8;
 		$query = null;
 		if($where['id']){
 				$query=[

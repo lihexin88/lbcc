@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\index.html";i:1543474231;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\index.html";i:1543798407;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -158,7 +158,7 @@ select{
                                     <?php if(is_array($all_recode) || $all_recode instanceof \think\Collection || $all_recode instanceof \think\Paginator): $k = 0; $__LIST__ = $all_recode;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                                     <tr>
                                         <td class="center"><?php echo $k; ?></td>
-                                        <td class="center"><?php echo $vo['id']; ?></td>
+                                        <td class="center"><?php echo $vo['uid']; ?></td>
                                         <td class="center"><?php echo $vo['account']; ?></td>
                                         <td class="center"><?php echo $vo['team']; ?></td>
                                         <td class="center"><?php echo $vo['dir']; ?></td>

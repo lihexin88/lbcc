@@ -63,7 +63,7 @@ class GuessAccount extends Model
 	}
 
 	/**
-	 * 押注扣取压住费用加手续费
+	 * 押注扣取押注费
 	 * @param $user 用户信息
 	 * @param $number 押注数量
 	 * @throws Exception
@@ -89,7 +89,10 @@ class GuessAccount extends Model
 	 */
 	static public function get_guess_account($user)
 	{
-		$guess_account = self::get(['uid'=>$user['id']]);
+		$guess_account = self::alias('g')
+			->join('user u','u.id = g.uid')
+			->field('u.account,g.*')
+			->where(['uid'=>$user['id']])->find();
 		if(!$guess_account){
 			return ['code'=>-1];
 		}else{

@@ -54,4 +54,18 @@ class StoData extends Model
         $edit['status'] = 0;//0关闭
         return $this->where($map)->update($edit);
     }
+
+	/**
+	 * 查询一个用户的所有sto
+	 * @param $uid 用户uid
+	 * @return array
+	 * @throws \think\db\exception\DataNotFoundException
+	 * @throws \think\db\exception\ModelNotFoundException
+	 * @throws \think\exception\DbException
+	 */
+    public function get_data($uid)
+    {
+		$sto = $this->where(['uid'=>$uid])->select()->toArray();
+		return $sto;
+    }
 }

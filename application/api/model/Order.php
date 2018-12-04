@@ -30,7 +30,15 @@ class Order extends Model
         return $price;
     }
 
-
+	/**
+     * model 查看某一交易区最后两笔笔成交订单的价格
+     */
+    public function last_order_area_prices($order_status,$cur_area_id){
+        $order_where['order_status'] = $order_status;
+        $order_where['cur_area_id'] = $cur_area_id;
+        $price = $this -> where($order_where) -> order('id DESC') -> field('price') -> limit(2) -> select();
+        return $price;
+    }
 	/**
 	 * 撤销订单
 	 * @param $order_number 订单号
@@ -41,9 +49,12 @@ class Order extends Model
 	 * @throws \think\db\exception\ModelNotFoundException
 	 * @throws \think\exception\DbException
 	 */
-    public function cancel_trade($order_number,$user)
+    public function cancel_trade($order,$user)
     {
-		$order = self::where('order_number='.$order_number.' AND (seller_id='.$user['id'].' OR trade_id='.$user['id'].')')->find();
+    	$where['order'] = $order;
+    	$where['order_status'] = 1;
+	    $whereor['seller_id|buyer_id'] = $user['id'];
+	    $order = self::where($where)->where($whereor)->find();
 		if(!$order){
 			throw new Exception('info_cant_find');
 		}

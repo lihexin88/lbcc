@@ -14,6 +14,7 @@ overflow:hidden;
 }
 
 </style>
+<link rel="stylesheet" href = "__STATIC__/ace/css/userauth.css"></link>
 </head>
 <body class="no-skin">
 {include file="common/header" /}
@@ -50,7 +51,7 @@ overflow:hidden;
                 <table id="sample-table-1" class="table table-striped table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th class="center">ID</th>
+                      <th class="center">序号</th>
                       <th>名称</th>
                       <th>图标</th>
                       <th>操作</th>
@@ -61,7 +62,7 @@ overflow:hidden;
                       <tr>
                         <td class="center">{$vo.id}</td>
                         <td>{$vo.name}</td>
-                        <td><img src="{$vo.icon}" style="max-width:100px;max-height: 150px;display:block;"> </td>
+                          <td title="点击图片显示详情"  class="user_auth" >{if condition = "($vo.icon eq null)"}<i style="color: #dedede">-图片错误-</i>{else}<img onclick="display_detail(this)" src="{$vo.icon}" style="max-width:100px;max-height: 150px;display:block;">{/if} </td>
                         <td>
                           <a class="btn btn-sm btn-success" href="{:url('edit',array('id'=>$vo['id']))}" >修改</a>
                           <!-- <a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="deleteInfo(this,{$vo.id})">删除</a> -->
@@ -76,16 +77,16 @@ overflow:hidden;
                   </ul>
                 </div>
               </div>
-              <!-- /.span --> 
+              <!-- /.span -->
             </div>
-            <!-- /.row --> 
-            <!-- PAGE CONTENT ENDS --> 
+            <!-- /.row -->
+            <!-- PAGE CONTENT ENDS -->
           </div>
-          <!-- /.col --> 
+          <!-- /.col -->
         </div>
-        <!-- /.row --> 
+        <!-- /.row -->
       </div>
-      <!-- /.page-content --> 
+      <!-- /.page-content -->
     </div>
   </div>
   <!-- /.main-content -->
@@ -110,6 +111,7 @@ overflow:hidden;
     $('select[name="state"]').val({$_GET['state']});
   {/if}
 </script>
+<script src = "__STATIC__/ace/js/userauth.js"></script>
 <script type="text/javascript">
 jQuery(function($) {
   //清除查询条件

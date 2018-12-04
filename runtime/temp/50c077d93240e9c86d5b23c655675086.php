@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\index.html";i:1539846540;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:69:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\index.html";i:1543915075;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -145,14 +145,10 @@ select{
                   <thead>
                     <tr>
                       <th class="center">用户ID</th>
-                      <th>昵称</th>
-                      <th>手机号码</th>
-                      <th>USDT</th>
-                      <th>GCU</th>
+                      <th>手机号码/帐号</th>
                       <th>等级</th>
                       <th>父级</th>
                       <th>邀请码</th>
-                      <th>真实姓名</th>
                       <th>创建时间</th>
                       <th>更新时间</th>
                       <th>用户状态</th>
@@ -163,14 +159,10 @@ select{
                     <?php if(is_array($info['list']) || $info['list'] instanceof \think\Collection || $info['list'] instanceof \think\Paginator): $k = 0; $__LIST__ = $info['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                       <tr>
                         <td class="center"><?php echo $vo['id']; ?></td>
-                        <td><?php echo $vo['username']; ?></td>
-                        <td><?php echo $vo['tel']; ?></td>
-                        <td><?php echo $vo['usdt']; ?></td>
-                        <td><?php echo $vo['gcu']; ?></td>
+                        <td><?php echo $vo['account']; ?></td>
                         <td><?php echo $vo['level']; ?></td>
                         <td><?php echo $vo['parent_id']; ?></td>
-                        <td><?php echo $vo['invitation_code']; ?></td>
-                        <td><?php echo $vo['real_name']; ?></td>                   
+                        <td><?php echo $vo['invitation_code']; ?></td>                
                         <td><?php echo $vo['create_time']; ?></td>
                         <td><?php echo $vo['update_time']; ?></td>
                         
@@ -181,14 +173,14 @@ select{
                           <?php endforeach; endif; else: echo "" ;endif; ?>
                           </selec>
                         </td>
-    <td>
-                          <?php if($vo['status'] == 1): ?>
-                          <a class="btn btn-sm btn-success" href="<?php echo url('edit',array('id'=>$vo['id'])); ?>" >修改</a>
-                          <?php endif; ?>
+                        <td>
+                          <!--<?php if($vo['status'] == 1): ?>-->
+                          <!--<a class="btn btn-sm btn-success" href="<?php echo url('edit',array('id'=>$vo['id'])); ?>" >修改</a>-->
+                          <!--<?php endif; ?>-->
                           <a class="btn btn-sm btn-primary" href="javascript:void(0);" onclick="editpwd(this,<?php echo $vo['id']; ?>)">重置密码</a>
                           <a class="btn btn-sm btn-success" href="<?php echo url('rechargegcu',array('id'=>$vo['id'])); ?>" >充值扣费</a>
-                          <a  data-id='<?php echo $vo['id']; ?>' class="btn btn-sm btn-success layui-btn userinfo">分销树形图</a>
-                          <a data-id='<?php echo $vo['id']; ?>' class="btn btn-sm btn-success layui-btn editbonus">增加扣除奖金</a>
+                          <!--<a  data-id='<?php echo $vo['id']; ?>' class="btn btn-sm btn-success layui-btn userinfo">分销树形图</a>-->
+                          <!--<a data-id='<?php echo $vo['id']; ?>' class="btn btn-sm btn-success layui-btn editbonus">增加扣除奖金</a>-->
                         </td>
                       </tr>
                     <?php endforeach; endif; else: echo "" ;endif; ?>
@@ -229,9 +221,9 @@ select{
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
 <script src="/static/ace/js/layer/layer.js"></script>
 <!-- 树形结构图 -->
-<link rel="stylesheet" href="/static/zTree_v3/css/demo.css" type="text/css">
-<link rel="stylesheet" href="/static/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
-<script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.core.js"></script>
+<!--<link rel="stylesheet" href="/static/zTree_v3/css/demo.css" type="text/css">-->
+<!--<link rel="stylesheet" href="/static/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">-->
+<!--<script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.core.js"></script>-->
  <script type="text/javascript">
   $('.editbonus').click(function(){
     var id = $(this).data('id'); 

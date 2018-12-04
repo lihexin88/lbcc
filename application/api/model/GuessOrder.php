@@ -18,7 +18,7 @@ class GuessOrder extends Model
 	 * @param $direction 方向
 	 * @param $number 数额
 	 * @param $user 用户信息
-	 * @param $type 类型 1、充值 2、提现 3、中奖
+	 * @param $type 类型 -1、充值 1、提现 2、中奖 3、下注
 	 * @return array
 	 * @throws Exception
 	 * @throws \think\db\exception\DataNotFoundException
@@ -75,5 +75,22 @@ class GuessOrder extends Model
 			->alias('r')
 			->join('user u','u.id = r.uid')->count();
 		return $r;
+	}
+
+	/**
+	 * 获取参与游戏中奖记录的最新10条
+	 * @return \think\Paginator
+	 * @throws \think\exception\DbException
+	 */
+	static public function bingo_user()
+	{
+		$pagesize = 10;
+		$recode = self::alias('r')
+			->join('user u','u.id = r.uid')
+			->where(['direction'=>2])
+			->field('u.account,r.number,r.update_time')
+			->order('r.update_time desc')
+			->paginate($pagesize);
+		return $recode;
 	}
 }

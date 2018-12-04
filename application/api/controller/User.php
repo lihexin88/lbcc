@@ -1,11 +1,13 @@
 <?php
 namespace app\api\Controller;
+use app\api\model\BonusList;
 use app\api\model\Config;
 use app\api\model\GuessAccount;
 use app\api\model\GuessOrder;
 use app\api\model\GuessRecode;
 use app\api\model\GuessConfig;
 use app\api\model\Order;
+use app\api\model\Trade;
 use app\api\model\UserAuth;
 use app\api\model\UserCur;
 use app\api\model\User as UserModel;
@@ -421,11 +423,14 @@ class User extends ApiBase
     	$bet_dir = $_POST['dir'];
 //    	获取下注范围
 	    $chip = Config::chip_range();
-    	if(!($number >$chip['min'] && $number < $chip['max'])){
+    	if($number < $chip['min'] && $number > $chip['max']){
     		return rtn(-1,lang('number_error'));
 	    }
 	    if(!in_array($bet_dir,['0','1'])){
 			return rtn(-1,lang('os_error'));
+	    }
+	    if(encrypt($_POST['payment_password'])!=$this->userInfo['payment_password']){
+	    	return rtn(-1,lang('not_password'));
 	    }
 	    Db::startTrans();
 	    try{
@@ -441,11 +446,25 @@ class User extends ApiBase
 		    $GuessRecode = new GuessRecode();
 		    $GuessRecode->create_order($this->userInfo,$number,$bet_dir,$team,$chip);
 
+//		    写入订单表
+		    $GuessOrder = new GuessOrder();
+		    $GuessOrder->create_order(3,$number,$this->userInfo);
+
 	    	Db::commit();
 			return rtn(1,lang('os_success'));
 	    }catch (\Exception $e){
 			Db::rollback();
-			return rtn(-1,lang($e->getMessage()));
+			$errors = $e->getMessage();
+//			超出最大数量提示剩余数量
+			if($errors == 'number_max'){
+				$user = GuessRecode::get(['team'=>$team,'uid'=>$this->userInfo['id']]);
+				$max_number = Config::chip_range();
+				$max_number = $max_number['max'];
+				$number_left = $max_number - $user['number'];
+				return rtn(-1,lang('number_max').' '.$number_left);
+			}else{
+				return rtn(-1,lang($errors));
+			}
 	    }
     }
 
@@ -682,10 +701,25 @@ class User extends ApiBase
 	 */
 	public function invitation()
 	{
+		$web_url = Config::get(['key'=>'WEBSITE']);
 		$user = $this->userInfo;
-		$Invitation['img'] = $user['invitation_img'];
+		$Invitation['img'] = $web_url['value'].$user['invitation_img'];
 		$Invitation['inv_code']  = $user['invitation_code'];
 		return rtn(1,lang('os_success'),$Invitation);
+	}
+
+	/**
+	 * 邀请返佣
+	 * @return false|string
+	 */
+	public function invitation_reword()
+	{
+//		$User = new UserModel();
+//		$friends = $User->reword($this->userInfo);
+//		return rtn(1,lang('os_success'),$friends);
+		$BonusList = new BonusList();
+		$reword = $BonusList->reword($this->userInfo);
+		return rtn(1,lang('os_success'),$reword);
 	}
 
 	/**
@@ -708,9 +742,9 @@ class User extends ApiBase
 	 */
 	public function get_trade_order()
 	{
-		$Order = new Order();
-		$orders = $Order->select_order($this->userInfo);
-		return rtn(1,lang('os_success'),$orders);
+		$Trade = new Trade();
+		$trade = $Trade->get_trade($this->userInfo);
+		return rtn(1,lang('os_success'),$trade);
 	}
 
 
@@ -735,6 +769,38 @@ class User extends ApiBase
 			Db::rollback();
 			return rtn(-1,lang($e->getMessage()));
 		}
+	}
+
+
+	/**
+	 * 返回“我的”页面 用户信息
+	 * @return false|string
+	 * @throws \think\exception\DbException
+	 */
+	public function user_head_info()
+	{
+		$user_info['user_info'] = UserCur::get(['uid'=>$this->userInfo['id'],'cur_id'=>1]);
+		if(!$user_info){
+			return rtn(-1,lang('info_cant_find'));
+		}
+		$user_info['user_info']['account'] = $this->userInfo['account'];
+		$user_info['version'] = Config::get(['key'=>'SYS_VERSION']);
+		return rtn(1,lang('os_success'),$user_info);
+	}
+
+	/**
+	 * 退出登录
+	 * @return false|string
+	 */
+	public function logout()
+	{
+		$User = new UserModel();
+		if($User->logout($this->userInfo)){
+			return rtn(1,lang('logout'));
+		}else{
+			return rtn(-1,lang('os_error'));
+		}
+
 	}
 
 

@@ -109,6 +109,7 @@ class Game extends AdminBase
 		}
 		$order = GuessOrder::get_order($where);
 //		exit;
+	    $this->assign('direction',$_GET['direction']);
 		$this->assign('all_recode',$order['data']);
 		$this->assign('page',$order['page']);
 		$this->assign('count',$order['count']);

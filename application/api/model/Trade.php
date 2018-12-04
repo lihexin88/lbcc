@@ -459,4 +459,22 @@ class Trade extends Model
         $count = $type==1?$number+$fee:$number*$price+$fee;
         return $count;
     }
+
+	/**
+	 * 获取订单记录
+	 * @param $user用户信息
+	 * @return false|\PDOStatement|string|\think\Collection
+	 * @throws \think\db\exception\DataNotFoundException
+	 * @throws \think\db\exception\ModelNotFoundException
+	 * @throws \think\exception\DbException
+	 */
+	public function get_trade($user)
+	{
+		$trade = $this->where(['uid'=>$user['id']])->select();
+		foreach ($trade as $k=>$v){
+			$trade[$k]['end_time'] = date("Y-m-d H:i:s",$v['end_time']);
+		}
+		return $trade;
+	}
+
 }

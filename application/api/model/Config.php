@@ -64,7 +64,7 @@ class Config extends Model
 		$max = null;
 
 		$min = self::where(['key'=>'GAME_MIN_CHIP'])->field('value')->find();
-		$max = self::where(['key'=>'GAME_MIN_CHIP'])->field('value')->find();
+		$max = self::where(['key'=>'GAME_MAX_CHIP'])->field('value')->find();
 
 		$chip['min'] = $min['value'];
 		$chip['max'] = $max['value'];

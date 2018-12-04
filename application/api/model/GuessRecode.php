@@ -42,11 +42,16 @@ class GuessRecode extends Model
 			if($Recode['team']!= $team){
 				throw new Exception('wrong_team');
 			}
+			$customary = $Recode['number'];
 //			加注
 			$Recode['number']+=$number;
 //			数量范围$chip['min'] ~ $chip['max']
 			if(!($Recode['number'] < $chip['max'] && $Recode['number'] > $chip['min']) ){
-				throw new Exception('number_error');
+				if($Recode['number'] > $chip['max']){
+					throw new Exception('number_max');
+				}else{
+					throw new Exception('number_error');
+				}
 			}
 //			方向锁定
 			if($Recode['dir'] != $bet_dir){
@@ -57,6 +62,13 @@ class GuessRecode extends Model
 				throw new Exception('os_error');
 			}
 		}else{
+			if(!($number < $chip['max'] && $number > $chip['min']) ){
+				if($number > $chip['max']){
+					throw new Exception('number_max');
+				}else{
+					throw new Exception('number_error');
+				}
+			}
 			$GuessRecode['team'] = $team;
 			$GuessRecode['uid'] = $user['id'];
 			$GuessRecode['dir'] = $bet_dir;
@@ -122,10 +134,15 @@ class GuessRecode extends Model
 	{
 		$page_size = 15;
 		$today = strtotime(date("Y-m-d"),time());
-		$tomorrow = $today+24*60*60;
+		$tomorrow = $today + 24*60*60;
 		$where['r.update_time'] = array('between',$today.','.$tomorrow);
 		$where['r.right'] = 1;
-		$Recode = Db::table('sn_guess_recode')->alias('r')->where($where)->join('user u','r.uid = u.id')->field('u.account,r.number')->paginate($page_size);
+		$Recode = Db::table('sn_guess_recode')
+			->alias('r')
+			->where($where)
+			->join('user u','r.uid = u.id')
+			->field('u.account,r.number')
+			->paginate($page_size);
 		return $Recode;
 	}
 
@@ -146,13 +163,36 @@ class GuessRecode extends Model
 				unset($where['r.announce']);
 			}
 			$pagesize = 15;
-			$recode['data'] = self::alias('r')->join('user u','r.uid = u.id')->where($where)->paginate($pagesize);
+			$recode['data'] = self::alias('r')
+				->join('user u','r.uid = u.id')
+				->where($where)
+				->field('u.account,u.id,r.*')
+				->paginate($pagesize);
 			$recode['page'] = $recode['data']->render();
-			$recode['count'] = self::
-							alias('r')
+			$recode['count'] = self::alias('r')
 							->join('user u','r.uid = u.id')
 							->where($where)
 							->count();
 			return $recode;
 	}
+
+	/**
+	 * 获取参与游戏且中奖的用户信息
+	 * @return \think\Paginator
+	 * @throws \think\exception\DbException
+	 */
+	static public function get_bingo_user()
+	{
+		$pagesize = 10;
+		$b_recode = self::alias('r')
+			->join('user u','u.id = r.uid')
+			->field('u.account,r.*')
+			->where(['announce'=>1])
+			->where(['right'=>1])
+			->order(['r.update_time desc'])
+			->paginate($pagesize);
+		return $b_recode;
+	}
+
+
 }

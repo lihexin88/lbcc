@@ -37,9 +37,10 @@
                                     <div class="form-group"><label>状态</label>
                                         <select name="direction" class="form-control">
                                             <option value="">全部</option>
-                                            <option value="-1">提现</option>
-                                            <option value="1">充值</option>
-                                            <option value="2">中奖</option>
+                                            <option {$direction==-1?'selected':''} value="-1">提现</option>
+                                            <option {$direction==1?'selected':''} value="1">充值</option>
+                                            <option {$direction==2?'selected':''} value="2">中奖</option>
+                                            <option {$direction==3?'selected':''} value="3">押注</option>
                                         </select>
                                     </div>
                                     <button type="submit" class="btn btn-sm btn-primary">查询</button>
@@ -55,8 +56,7 @@
                                         <th>交易类型</th>
                                         <th>方向</th>
                                         <th>数额</th>
-                                        <th>创建时间</th>
-                                        <th>更新时间</th>
+                                        <th>时间</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -67,22 +67,28 @@
                                             <td class="center">
                                                 {switch name = "$vo.direction"}
                                                     {case value = "1"}
-                                                        <span class="red">充值</span>
+                                                        <span class=" purple">充值</span>
                                                     {/case}
                                                     {case value = "-1"}
-                                                        <span class="purple">提现</span>
+                                                        <span class="red">提现</span>
                                                     {/case}
                                                     {case value = "2"}
                                                         <span class="badge-yellow">中奖</span>
                                                     {/case}
+                                                    {case value = "3"}
+                                                        <span>押注</span>
+                                                    {/case}
                                                 {/switch}
                                             </td>
                                             <td>
-                                                {$vo.direction==-1?"取出":"存入"}
+                                                {if condition = "(($vo.direction eq -1) ||($vo.direction eq 3))"}
+                                                    取出
+                                                {else}
+                                                    存入
+                                                {/if}
                                             </td>
                                             <td>{$vo.number}</td>
                                             <td>{$vo.create_time}</td>
-                                            <td>{$vo.update_time}</td>
                                         </tr>
                                     {/volist}
                                     </tbody>
