@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:77:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\config_recode.html";i:1543566414;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:77:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\config_recode.html";i:1543980541;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -203,102 +203,6 @@ select{
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
 <script src="/static/ace/js/layer/layer.js"></script>
-<!-- 树形结构图 -->
-<link rel="stylesheet" href="/static/zTree_v3/css/demo.css" type="text/css">
-<link rel="stylesheet" href="/static/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
-<script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.core.js"></script>
-<script type="text/javascript">
-    $('.editbonus').click(function(){
-        var id = $(this).data('id');
-        layer.prompt({title: '增加扣除奖金（负数为扣除数）', formType: 0}, function(pass, index){
-            $.post("<?php echo url('editbonus'); ?>", {id: id,bonus: pass}).success(function(data) {
-                layer.msg(data.info, {icon: data.status,time: 1500});
-            })
-            layer.close(index);
-        });
-    });
-    $('.userinfo').click(function(){
-        var id = $(this).data('id');
-        layer.open({
-            type: 1,
-            skin: 'layui-layer-rim', //加上边框
-            area: ['252px', '579px'], //宽高
-            content: '<ul id="demotree" class="ztree" style="margin-left:10px"></ul><ul id="userallmsg" style="margin-left:10px"></ul>',
-            success: function(){
-                var zTree;
-                var treeNodes;
-                $(function(){
-                    $.ajax({
-                        async : false,
-                        cache:false,
-                        type: 'POST',
-                        dataType : "json",
-                        data:{"id":id},
-                        url: "<?php echo url('userinfo'); ?>",//请求的action路径
-                        success:function(data){ //请求成功后处理函数。
-                            treeNodes = eval(data); //把后台封装好的简单Json格式赋给treeNodes
-                        }
-                    });
-                });
-
-
-                //初始化节点
-                $(document).ready(function(){
-                    $.fn.zTree.init($("#demotree"), setting, treeNodes);
-                });
-            }
-        });
-    });
-    var setting = {
-        isSimpleData : true, //数据是否采用简单 Array 格式，默认false
-        treeNodeKey : "id", //在isSimpleData格式下，当前节点id属性
-        treeNodeParentKey : "pId", //在isSimpleData格式下，当前节点的父节点id属性
-        showLine : true, //是否显示节点间的连线
-        callback :{
-            onClick : function(event, treeId, treeNode, clickFlag) {
-                // 判断是否父节点
-                if(!treeNode.isParent){
-                    $.ajax({
-                        url: "<?php echo url('childinfo'); ?>",//请求的action路径
-                        data:{"id":treeNode.id},
-                        success:function(data)
-                        { //添加子节点到指定的父节点
-                            var jsondata= eval(data);
-                            if(jsondata == null || jsondata == ""){
-                                //末节点的数据为空   所以不再添加节点  这里可以根据业务需求自己写
-                                //$("#treeFrame").attr("src",treeNode.url);
-                            }
-                            else{
-                                var treeObj = $.fn.zTree.getZTreeObj("demotree");
-                                //treeNode.halfCheck = false;
-                                var parentZNode = treeObj.getNodeByParam("id", treeNode.id, null);//获取指定父节点
-                                newNode = treeObj.addNodes(parentZNode,jsondata, false);
-                            }
-                        }
-                    });
-                }
-            },
-            onRightClick: onRightClick
-        },
-        //checkable : true //每个节点上是否显示 CheckBox
-    };
-    function onRightClick(event, treeId, treeNode) {
-        $.ajax({
-            url: "<?php echo url('userallmsg'); ?>",//请求的action路径
-            data:{"id":treeNode.id},
-            success:function(data){
-                console.log(data);
-                $('#userallmsg').html('');
-                html = '<li>编号：'+data.invitation_code+'</li>';
-                html += '<li>推荐人编号：'+data.user_invitation_code+'</li>';
-                html += '<li>姓名：'+data.username+'</li>';
-                html += '<li>注册日期：'+data.create_time+'</li>';
-                $('#userallmsg').html(html);
-            }
-        });
-    }
-
-</script>
 <script type="text/javascript">
     // 定位
     $('a[href="/Admin/Game/recode.html"]').parents().filter('li').addClass('open active');
@@ -329,44 +233,7 @@ select{
         });
     });
 
-    //删除用户
-    function deleteInfo(obj,id){
-        layer.confirm('确定要删除吗？<br>本用户所有的信息都将被完全删除，不可恢复！', {
-                btn: ['确定','关闭'] //按钮
-            }, function(){
-                $.post("<?php echo url('delete'); ?>", {id: id}).success(function(data) {
-                    if (data.code == 0) {
-                        layer.msg(data.msg, {icon: data.code,time: 1500},function(){
-                            location.href=self.location.href;
-                        });
-                    }else{
-                        layer.msg(data.info, {icon: data.status,time: 1500},function(){
-                            location.href=self.location.href;
-                        });
-                    }
-                })
-            }
-        );
-    }
-    //重置密码
-    function editpwd(obj,id){
-        layer.confirm('确定要重置密码吗？<br>该用户的一级密码、二级密码重置为123456！', {
-                btn: ['确定','关闭'] //按钮
-            }, function(){
-                $.post("<?php echo url('editpwd'); ?>", {id: id}).success(function(data) {
-                    if (data.code == 0) {
-                        layer.msg(data.msg, {icon: data.code,time: 1500},function(){
-                            location.href=self.location.href;
-                        });
-                    }else{
-                        layer.msg(data.info, {icon: data.status,time: 1500},function(){
-                            location.href=self.location.href;
-                        });
-                    }
-                })
-            }
-        );
-    }
+   
 </script>
 
 <script src = "/static/ace/js/userauth.js"></script>
