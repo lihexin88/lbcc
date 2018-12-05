@@ -108,7 +108,4 @@ class Game extends Controller
 		return rtn(1,lang('os_success'),$join_er);
 	}
 
-
-
-
 }

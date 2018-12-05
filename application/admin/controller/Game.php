@@ -116,4 +116,17 @@ class Game extends AdminBase
 		return $this->fetch();
 	}
 
+	/**
+	 * 后台删除用户竞猜账户资金流水记录
+	 * @param id 资金流水id
+	 * @return false|string
+	 */
+	public function del_recode(){
+		$Order = new GuessOrder();
+		if($Order->where(['id'=>$_POST['id']])->delete()){
+			return rtn(1,'os_success');
+		}
+		return rtn(-1,'os_error');
+	}
+
 }

@@ -46,7 +46,7 @@ class GuessRecode extends Model
 //			加注
 			$Recode['number']+=$number;
 //			数量范围$chip['min'] ~ $chip['max']
-			if(!($Recode['number'] < $chip['max'] && $Recode['number'] > $chip['min']) ){
+			if(!($Recode['number'] <= $chip['max'] && $Recode['number'] >= $chip['min']) ){
 				if($Recode['number'] > $chip['max']){
 					throw new Exception('number_max');
 				}else{
@@ -62,7 +62,7 @@ class GuessRecode extends Model
 				throw new Exception('os_error');
 			}
 		}else{
-			if(!($number < $chip['max'] && $number > $chip['min']) ){
+			if(!($number <= $chip['max'] && $number >= $chip['min']) ){
 				if($number > $chip['max']){
 					throw new Exception('number_max');
 				}else{
@@ -109,7 +109,7 @@ class GuessRecode extends Model
 	}
 
 	/**
-	 * 开奖
+	 * 开奖,更新用户押注记录
 	 * @param $this_team 当前期号
 	 * @param $dir 获奖方向（红蓝）
 	 * @throws Exception
@@ -118,9 +118,9 @@ class GuessRecode extends Model
 	{
 		$where_array['team'] = array('eq',$this_team['id']);
 		$where_array['dir'] = array('eq',$dir);
-		self::where($where_array)->update(['right'=>1,'announce'=>1]);
+		self::where($where_array)->update(['right'=>1,'announce'=>1,'update_time'=>time()]);
 		$where_array['dir'] = array('neq',$dir);
-		self::where($where_array)->update(['right'=>0,'announce'=>1]);
+		self::where($where_array)->update(['right'=>0,'announce'=>1,'update_time'=>time()]);
 	}
 
 	/**

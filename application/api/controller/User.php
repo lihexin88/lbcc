@@ -333,7 +333,8 @@ class User extends ApiBase
 
     /**
     *记录每天的收益率
-    */
+	 * @return \think\response\Json
+	 */
     public function profitrate()
     {
         $data = ['profit_rate' => config('RATE_OF_RETURN'), 'time' => time()];
@@ -423,9 +424,7 @@ class User extends ApiBase
     	$bet_dir = $_POST['dir'];
 //    	获取下注范围
 	    $chip = Config::chip_range();
-    	if($number < $chip['min'] && $number > $chip['max']){
-    		return rtn(-1,lang('number_error'));
-	    }
+
 	    if(!in_array($bet_dir,['0','1'])){
 			return rtn(-1,lang('os_error'));
 	    }
@@ -714,9 +713,6 @@ class User extends ApiBase
 	 */
 	public function invitation_reword()
 	{
-//		$User = new UserModel();
-//		$friends = $User->reword($this->userInfo);
-//		return rtn(1,lang('os_success'),$friends);
 		$BonusList = new BonusList();
 		$reword = $BonusList->reword($this->userInfo);
 		return rtn(1,lang('os_success'),$reword);

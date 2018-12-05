@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:78:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\account_recode.html";i:1543916086;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:78:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\game\account_recode.html";i:1543974757;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -144,17 +144,20 @@ select{
                                     <thead>
                                     <tr>
                                         <th>序号</th>
+                                        <th>订单号</th>
                                         <th>用户</th>
                                         <th>交易类型</th>
                                         <th>方向</th>
                                         <th>数额</th>
                                         <th>时间</th>
+                                        <th>操作</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <?php if(is_array($all_recode) || $all_recode instanceof \think\Collection || $all_recode instanceof \think\Paginator): $k = 0; $__LIST__ = $all_recode;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($k % 2 );++$k;?>
                                         <tr>
                                             <td><?php echo $k; ?></td>
+                                            <td><?php echo $vo['id']; ?></td>
                                             <td><?php echo $vo['account']; ?></td>
                                             <td class="center">
                                                 <?php switch($vo['direction']): case "1": ?>
@@ -174,8 +177,16 @@ select{
                                                     存入
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $vo['number']; ?></td>
+                                            <td>
+                                                <?php if((($vo['direction'] == -1) ||($vo['direction'] == 3))): ?>
+                                                 <span class="red">-</span>
+                                                <?php else: ?>
+                                                 <span class="green">+</span>
+                                                <?php endif; ?>
+                                                <?php echo $vo['number']; ?>
+                                            </td>
                                             <td><?php echo $vo['create_time']; ?></td>
+                                            <td style="cursor: pointer" onclick="del_this(this,<?php echo $vo['id']; ?>)"><button class="btn-danger">删除</button></td>
                                         </tr>
                                     <?php endforeach; endif; else: echo "" ;endif; ?>
                                     </tbody>
@@ -233,6 +244,31 @@ select{
             })
         });
     });
+</script>
+<script>
+    function del_this(obj,id) {
+        var data = {
+            "id" : id,
+        };
+        layer.confirm("确定删除吗？",function () {
+            $.ajax(
+                {
+                    type:"post",
+                    url:"del_recode",
+                    data:data,
+                    success:function (r) {
+                        r = JSON.parse(r);
+                        if(r['code'] == -1){
+                            layer.msg("删除出错！");
+                        }else{
+                            layer.msg("已删除");
+                            obj.parentNode.remove();
+                        }
+                    }
+                }
+            )
+        })
+    }
 </script>
 </body>
 </html>
