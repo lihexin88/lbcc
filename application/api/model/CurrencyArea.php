@@ -12,6 +12,16 @@ use think\Model;
 
 class CurrencyArea extends Model
 {
+
+    public function get_area_name(){
+        $list = $this -> field('area_id as id') -> group('area_id') -> select() -> toArray();
+        foreach($list as $k => $v){
+            $Currency = new Currency();
+            $list[$k]['name'] = $Currency -> get_cur_text($v['id']);
+        }
+        return $list;
+    }
+
     /**
      * model 获取交易区中某一交易对左右对应的币种ID
      */
@@ -48,7 +58,22 @@ class CurrencyArea extends Model
         }else{
             return ['code' => 0];
         }
+    }
 
+    /**
+     * model 搜索交易对
+     */
+    public function search_area($user,$keywords){
+        $Currency = new Currency();
+        $ids = $Currency -> get_cur_ids($keywords);
+        $cur_id_where['cur_id|area_id'] = array('in',$ids);
+        $list = $this -> where($cur_id_where) -> select();
+        foreach($list as $k => $v){
+            $left = $Currency -> get_cur_text($v['cur_id']);    // 获取交易对左边的名称
+            $right = $Currency -> get_cur_text($v['area_id']);  // 获取交易对右边的名称
+            $list[$k]['area_cur_text'] = $left.'/'.$right; // 组合交易对名称
+        }
+        return ['code' => 1,'data' => $list];
     }
 
     /**

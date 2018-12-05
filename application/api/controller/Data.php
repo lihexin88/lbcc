@@ -46,7 +46,7 @@ class Data extends ApiBase
             }else{
                 $times = 86400;
             }
-            for($i=0;$i<=100;$i++){
+            for($i=0;$i<=200;$i++){
                 $close = time()-$times*$i;
                 $open = $close-$times;
                 $arr = db('kline')->where('time','between',[$open,$close])->order('time DESC')->find();

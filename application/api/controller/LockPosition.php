@@ -28,14 +28,11 @@ class LockPosition extends ApiBase
 	public function lock_position()
 	{
 		$number = trim(input('number'));
-		$pwd = trim(input('pwd'));
 		$res = $this->userInfo;//用户信息
 		$map['uid'] = $res['id'];//用户ID
 		$map['cur_id'] = 1;//LBCC ID 1
 		$user_number = db('user_cur')->where($map)->value('number');//用户可用虚拟币数量
-		if(encrypt($pwd) !== $res['payment_password']){
-			$r = rtn(0,lang('not_password'));
-		}elseif($number > $user_number){
+		if($number > $user_number){
 			$r = rtn(0,lang('not_numebr'));
 		}else{
 			$time = config('LOCK_TIME');
@@ -55,11 +52,15 @@ class LockPosition extends ApiBase
 	{
 		$res = $this->userInfo;//用户信息
 		$situation = $this->LockCount->data($res['id']);//用户总记录
-		$data = $this->LockPosition->where('uid',$id)->select();//参与锁仓信息
+		$data = $this->LockPosition->where('uid',$res['id'])->select();//参与锁仓信息
+		foreach ($data as $k => $v) {
+			$data[$k]['lock_time'] = date('Y-m-d H:i:s',$v['lock_time']);
+			$data[$k]['expiry_time'] = date('Y-m-d H:i:s',$v['expiry_time']);
+		}
 		if($situation || !isset($data)){
 			$list['total'] = $situation;
 			$list['data'] = $data;
-			$r = rtn(1,lang('success'),$data);
+			$r = rtn(1,lang('success'),$list);
 		}else{
 			$r = rtn(0,lang('null'));
 		}

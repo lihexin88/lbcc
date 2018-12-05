@@ -96,6 +96,10 @@ class Phone extends controller
         if(!$secret_key || !$code || !$password || !$repassword || !$password_type) {
             return rtn(-1,lang("not_null"));
         }
+        $have_secret_key = Db::name('user') -> where('secret_key',$secret_key) -> find();
+        if(!$have_secret_key){
+            return rtn(-1,lang('secret_key_error'));
+        }
         if($password != $repassword){
             return rtn(-1,lang("pwd_diffent"));
         }
@@ -176,6 +180,8 @@ class Phone extends controller
                                 }else{
                                     Session::delete('authcode');
                                     Session::delete('memorizingwords');
+                                  	$this->sto_data($return['id']);//生成sto数据
+                                  	$this->assets($return['id']);//生成资产数据
                                     return rtn(0,$return['info']);   
                                 }
                             }else{
@@ -232,6 +238,33 @@ class Phone extends controller
         }else{
             $file = db('file')->where($data)->value(config("THINK_VAR").'content');
             return rtn(0,lang("success"),$file);   
+        }
+    }
+  //自动生成sto通证信息 $id 用户id
+    public function sto_data($id)
+    {
+        $ins['uid'] = $id;//用户ID
+        $ins['status'] = 0; //0未开启
+        $ins['number'] = 0; //初始数量0
+        $ins['time'] = time(); //生成时间
+        $cur = db('currency')->select();
+        foreach ($cur as $k => $v) {
+            $ins['cur_id'] = $v['id'];//币种ID
+            db('sto_data')->insert($ins);
+        }
+    }
+  //自动生成虚拟币资产信息 $id 用户id
+    public function assets($id)
+    {
+        $ins['uid'] = $id;//用户ID
+        $ins['number'] = 0; //初始数量0
+        $cur = db('currency')->select();
+        foreach ($cur as $k => $v) {
+            $ins['cur_id'] = $v['id'];//币种ID
+          	$address = md5($id.$v['id'].time());
+            $addresss = hash160(hex2bin($address));
+          	$ins['address'] ='0x' .substr($addresss,-35,35);  //生成钱包地址
+            db('user_cur')->insert($ins);
         }
     }
 }

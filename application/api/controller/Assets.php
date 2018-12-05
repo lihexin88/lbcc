@@ -36,24 +36,34 @@ class Assets extends ApiBase
         $cur = $this->Currency->cur_list();//所有币种新信息
         foreach ($cur as $kk => $vv) {//遍历
             if($vv['name'] == 'LBCC'){
-                $data[$vv['id']-1]['price'] = $this->Order->last_order_area_price(3,5);
+                if($this->Order->last_order_area_price(3,5)){
+                    $data['coin'][$vv['id']-1]['price'] = $this->Order->last_order_area_price(3,5);
+                }else{
+                    $data['coin'][$vv['id']-1]['price'] = 0;
+                }
             }else{
-                $data[$vv['id']-1]['price'] = api_currency($vv['name']);//调用公共方法
+                $data['coin'][$vv['id']-1]['price'] = api_currency($vv['name']);//调用公共方法
             }
-            $data[$vv['id']-1]['coin'] =  $vv['name'];
+            $data['coin'][$vv['id']-1]['coin'] =  $vv['name'];
+            $data['coin'][$vv['id']-1]['icon'] =  config('WEBSITE').$vv['icon'];
         }
         ksort($data);
-        foreach($data as $k1=>$v1){
+        foreach($data['coin'] as $k1=>$v1){
             foreach($list as $k2=>$v2){
                 if($v1['coin'] == $v2['name']){
-                    $data[$k1]['number'] = $v2['number'];
-                    $data[$k1]['cur_id'] = $v2['cur_id'];
-                  	$data[$k1]['count'] = $v2['number']*$v1['price'];
-                  	$data[6]['usdt'] += $data[$k1]['count'];
-                  	$data[6]['rmb'] = $data[6]['usdt']*6.9477;
+                    if($v2['number']){
+                        $data['coin'][$k1]['number'] = number_format($v2['number'],2);
+                    }else{
+                        $data['coin'][$k1]['number'] = 0.00;
+                    }
+                    $data['coin'][$k1]['cur_id'] = $v2['cur_id'];
+                  	$data['coin'][$k1]['count'] = $v2['number']*$v1['price'];
+                    $data['header']['usdt'] += $data['coin'][$k1]['count'];
                 }   
             }
         }
+        
+        $data['header']['rmb'] = $data['header']['usdt']*6.9477;
          return json($data);
     }
 }

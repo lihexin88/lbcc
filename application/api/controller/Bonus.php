@@ -19,7 +19,9 @@ class Bonus extends Controller
     private $Currency;
     private $UserCur;
     private $Order;
-  	private $Config;
+    private $Config;
+    private $BonusList;
+  	private $Trade;
     public function __construct(\think\Request $request = null) 
     {
         parent::__construct($request);
@@ -28,7 +30,9 @@ class Bonus extends Controller
         $this->Currency = new \app\api\model\Currency();
         $this->UserCur = new \app\api\model\UserCur();
         $this->Order = new \app\api\model\Order();
-      	$this->Config = new \app\api\model\Config();
+        $this->Config = new \app\api\model\Config();
+        $this->BonusList = new \app\api\model\BonusList();
+      	$this->Trade = new \app\api\model\Trade();
     }
     // EARNINGS_RATIO收益率
     public function index()
@@ -54,14 +58,15 @@ class Bonus extends Controller
                         $bonus = $price*$bonus_num;
                         $this->StoData->where('id',$vv['id'])->setInc('bonus',$bonus);//每日分红自增
                         $this->UserCur->where('uid',$vv['uid'])->where('cur_id',1)->setInc('number',$bonus);//进资产表
+                        $this->BonusList->add_log($vv['uid'],$bonus,1,$vv['uid']);
                     }
-                    $this->bonus($v['parent_id'],$bonus,0);
+                    $this->bonus($v['parent_id'],$bonus,0,$vv['uid']);
                 }
             }
         }
     }
-    //上级返利 $parent_id 父级ID $bonus 分红数 $times 递归次数
-    public function bonus($parent_id,$bonus,$times)
+    //上级返利 $parent_id 父级ID $bonus 分红数 $times 递归次数 $tid 本人ID
+    public function bonus($parent_id,$bonus,$times,$tid)
     {
       if($parent_id !== null){
       		if($times < 10){
@@ -76,6 +81,7 @@ class Bonus extends Controller
                             $con = $this->Config->where('key','DIRECT')->value('value');
                             $number = $bonus*$con;//只会给上一级返利
                             $this->UserCur->where('uid',$parent_id)->where('cur_id',1)->setInc('number',$number);
+                            $this->BonusList->add_log($parent_id,$number,3,$tid);
                         }
                         $times++;//递归次数+1
                         if($user['level'] == 1){
@@ -98,17 +104,28 @@ class Bonus extends Controller
                         }else{
                             $con = $this->Config->where('key','EMPEROR')->value('value');
                           	$number = $bonus*$con;
+
                         }
                         $this->UserCur->where('uid',$parent_id)->where('cur_id',1)->setInc('number',$number);
-                        $this->bonus($user['parent_id'],$bonus,$times);
+                        $this->BonusList->add_log($parent_id,$number,3,$tid);
+                        $this->bonus($user['parent_id'],$bonus,$times,$user['id']);
                     }
                 }
             }else{
                 return array('msg'=>'已经返利10轮');
             }		
-      }
+        }
     }
-  
+    //月分红 皇冠
+    public function crown()
+    {
+        $crown = $this->User->where('level',5)->select();
+        $poundage = $this->Trade->sum('service_price');//交易手续费总和
+        foreach ($crown as $key => $value) {
+            $bonus = $poundage/2;
+            $this->BonusList->add_log($value['id'],$bonus,4);
+        }
+    }
   //KLine定时 只定时 LBCC交易区
     public function kline()
     {

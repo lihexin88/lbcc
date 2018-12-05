@@ -239,6 +239,7 @@ class Trade extends Model
         }else{
             $service = $service_charge;
         }
+        $in_trade['service_price'] = $service;  // 交易手续费
 
         // 判断用户账户中的相应的币种是否足够
         $price = $data['price'] * $data['number'] + ($service/$price);//输入的单价*输入的数量+（手续费美元除以该币种对应的美元单价)=总价+该币种应该扣除的手续费=应扣钱
@@ -282,6 +283,7 @@ class Trade extends Model
         $in_trade['update_time'] = time();
         $in_trade['trade_type'] = $data['trade_type'];
         $in_trade['cur_area_id'] = $data['area_id'];
+        $in_trade['service_price'] = config('SERVICE_SELL');  // 交易手续费
         $count_number = $data['number']*(1+config('SERVICE_SELL'));//挂单数量*（1+手续费） = 总共需要的钱
         $UserCur = new UserCur();//实例化资产表
         $maps['uid'] = $user['id'];
@@ -330,7 +332,7 @@ class Trade extends Model
                 $count_number = $this->fees($data['price'],$data['number'],$type,$cur_name,$user);  // 算上手续费
 
                 $order = new Order();
-                // 本人全额交易(获得数量 $data['number'] 支付数量$count_number)
+                // 本人全额交易(获得数量 $data['number'] 支付数量$count_number['count'])
                 $member['order'] = generateOrderNumber();       // 订单编号
                 $member['order_number'] = $data['number'];      // 订单数量
                 $member['price'] = $data['price'];              // 订单价格
@@ -348,7 +350,7 @@ class Trade extends Model
                 if(!$order->insert($member)){    // 添加数据
                     throw new Exception(lang('sub_order'));
                 }
-                if(!$usercur->where('uid',$user['id'])->where('cur_id',$cur)->setDec('number',$count_number)){       // 自减算上手续费的数量
+                if(!$usercur->where('uid',$user['id'])->where('cur_id',$cur)->setDec('number',$count_number['count'])){       // 自减算上手续费的数量
                     throw new Exception(lang('service_failed'));
                 }
                 if(!$usercur->where('uid',$user['id'])->where('cur_id',$cur_id)->setInc('number',$data['number'])){  // 自增输入的数量
@@ -373,6 +375,7 @@ class Trade extends Model
                 $in_trade['update_time'] = time();
                 $in_trade['trade_type'] = $data['trade_type'];
                 $in_trade['cur_area_id'] = $data['area_id'];
+                $in_trade['service_price'] = $count_number['fee'];  // 交易手续费
                 if(!$this -> insert($in_trade)){  // 插入当前交易挂单表信息
                     throw new Exception(lang('in_trade_failed'));
                 }
@@ -456,8 +459,9 @@ class Trade extends Model
         }else{
             $fee = $fee;
         }
-        $count = $type==1?$number+$fee:$number*$price+$fee;
-        return $count;
+        $return['fee'] = $fee;
+        $return['count'] = $type==1?$number+$fee:$number*$price+$fee;
+        return $return;
     }
 
 	/**

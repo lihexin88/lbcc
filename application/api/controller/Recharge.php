@@ -16,12 +16,14 @@ class Recharge extends ApiBase
     private $UserCur;
     private $Method;
     private $ExternalAddress;
+    private $Currency;
     public function __construct(\think\Request $request = null) 
     {
         parent::__construct($request);
         $this->UserCur = new \app\api\model\UserCur();
         $this->Method = new \app\api\model\Method();
         $this->ExternalAddress = new \app\api\model\ExternalAddress();
+        $this->Currency = new \app\api\model\Currency();
     }
     //绑定外部充值地址
     public function index()
@@ -38,7 +40,7 @@ class Recharge extends ApiBase
         }else{
             $res = $this->ExternalAddress->inserts($res['id'],$cur_id,$ps,$address);
             if($res){
-                $r = rtn(1,lang('success'));
+                $r = rtn(1,lang('success'),$address);
             }else{
                 $r = rtn(0,lang('error'));
             }
@@ -67,9 +69,11 @@ class Recharge extends ApiBase
     public function address(){
         $res = $this->userInfo;//用户信息
         $cur_id = trim(input('cur_id'));//本地钱包地址对应币种
-        $address = $this->UserCur->where(['uid'=>$res['id'],'cur_id'=>$cur_id])->value('address');
-        if($address){
-            $r = rtn(0,lang('success'),$address);
+        $list['cur'] = $this->Currency->where('id',$cur_id)->value('name');
+        $list['address'] = config($list['cur'].'_ADDRESS');
+        $list['external'] = $this->ExternalAddress->where(['uid'=>$res['id'],'cur_id'=>$cur_id])->value('address');
+        if($list){
+            $r = rtn(0,lang('success'),$list);
         }else{
             $r = rtn(0,lang('null'));
         }

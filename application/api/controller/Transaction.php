@@ -21,10 +21,27 @@ class Transaction extends ApiBase
 {
     /**
      * controller 获取交易区列表
+     * @return \think\response\Json
+     */
+    public function get_area_name(){
+        $CurrencyArea = new CurrencyArea();
+        return json($CurrencyArea -> get_area_name($this -> userInfo));
+    }
+
+    /**
+     * controller 获取交易区列表
      */
     public function area_list($area_id){
         $CurrencyArea = new CurrencyArea();
         return json($CurrencyArea -> area_list($this -> userInfo,$area_id));
+    }
+
+    /**
+     * controller 搜索交易对
+     */
+    public function search_area($keywords){
+        $CurrencyArea = new CurrencyArea();
+        return json($CurrencyArea -> search_area($this -> userInfo,$keywords));
     }
 
     /**

@@ -17,11 +17,16 @@ class ExternalAddress extends Model
      */
     public function inserts($id,$cur_id,$ps,$address)
     {
+        $data = $this->where('uid',$id)->where('cur_id',$cur_id)->find();
         $ins['uid'] = $id;
         $ins['cur_id'] = $cur_id;
         $ins['address'] = $address;
         $ins['ps'] = $ps;
         $ins['create_time'] = time();
-        return $this->insert($ins);
+        if($data){
+            return $this->where('uid',$id)->where('cur_id',$cur_id)->update($ins);
+        }else{
+            return $this->insert($ins);
+        }
     }
 }

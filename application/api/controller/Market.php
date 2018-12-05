@@ -15,25 +15,32 @@ class Market extends ApiBase
     {
         parent::__construct($request);
         $this->Currency = new \app\api\model\Currency();
+      	$this->Order = new \app\api\model\Order();
     }
 
     /**
-		sto 通证列表
+		行情列表
 		id 用户id
     **/
 	public function index()
 	{
 		$list = $this->Currency->field('id,name,icon')->select();
 		foreach ($list as $key => $value) {
+          	$list[$key]['icon'] = config('WEBSITE').$value['icon'];
 			if($value['name'] == "LBCC"){
-              	$price = 2;
-              	$gain = 2-1.9;
-              	if($gain < 0){
-                	$prices = (2-1.9)/1.9;
+              	$order = $this->Order->last_order_area_prices(3,5);
+              	if($order){
+                  	if($order[0]['price'] && $order[1]['price']){
+                    	$price = $order[0]['price'];
+                        $gain = $order[0]['price']-$order[1]['price'];
+                        $prices =$gain/$order[1]['price'];
+                        $list[$key]['money'] = array('price'=>$price,'rmb'=>$price*6.9545,'gain'=>$prices);
+                    }else{
+                    	$list[$key]['money'] = array('price'=>0,'rmb'=>0,'gain'=>0); 
+                    }
                 }else{
-                	$prices = (2-1.9)/1.9;
+                	$list[$key]['money'] = array('price'=>0,'rmb'=>0,'gain'=>0); 
                 }
-              	$list[$key]['money'] = array('price'=>$price,'rmb'=>$price*6.9545,'gain'=>$prices);
 			}else{
 				$list[$key]['money'] = $this->api($value['name']);
 			}

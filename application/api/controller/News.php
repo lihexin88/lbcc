@@ -29,6 +29,8 @@ class News extends ApiBase
                $array[$k] =	array_diff_key($v, ["en_title" => "xy"]);
             }else{
                $array[$k] = array_diff_key($v, ["title" => "xy"]);
+               $array[$k]['title'] = $array[$k]['en_title'];
+               unset($array[$k]["en_title"]);
             }
         }
        $r = rtn(1,'',$array);
@@ -78,6 +80,8 @@ class News extends ApiBase
                 }else{
                    unset($data["title"]);
                    unset($data["content"]);
+                    $data['title'] = $data['en_title'];
+                  	$data['content'] = $data['en_content'];
                 }
               	$r = rtn(1,'success',$data);
             }    

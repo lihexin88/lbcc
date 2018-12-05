@@ -33,4 +33,27 @@ class Currency extends Model
     public function get_cur_text($id){
         return self::get_name_by_id($id);
     }
+    //币种信息
+    public function cur_list()
+    {
+        return $this->where('id','neq',7)->select();
+    }
+
+    /**
+     * 通过关键字母搜索币种名称
+     * @param $keywords
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function get_cur_ids($keywords){
+        $array_ids = $this -> where('name','LIKE','%'.$keywords.'%') -> field('id') -> select();
+        $ids = '';
+        foreach($array_ids as $k => $v) {
+            $ids .= $v['id'] . ',';
+        }
+        $ids = trim($ids,',');
+        return $ids;
+    }
 }

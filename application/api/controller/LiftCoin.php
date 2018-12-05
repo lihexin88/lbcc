@@ -28,7 +28,7 @@ class LiftCoin extends ApiBase
     //矿工手续费
     public function fee()
     {
-        $fee = config('MINER_FEE');
+        $fee = config('MINER_FEE')*100;
         $r = rtn(1,'',$fee);
         return $r;
     }
@@ -42,26 +42,26 @@ class LiftCoin extends ApiBase
         $phone = trim(input('phone'));//手机号
         $yzm = trim(input('yzm'));//验证码
         $pwd = trim(input('pwd'));//支付密码
-        $code = session('code');//session存的手机验证码
-        $map['uid'] = $uid;
-        $map['cur_id'] = $curid;
+        $code = session('authcode.code');//session存的手机验证码
+        $map['uid'] = $res['id'];
+        $map['cur_id'] = $cur_id;
         $user_number = $this->UserCur->where($map)->value('number');//查询用户改币种的数量
         if(!$address){
-            $r = rtn(0,'not_null');
+            $r = rtn(0,lang('not_null'));
         }elseif(!$cur_id){
-            $r = rtn(0,'not_null');
+            $r = rtn(0,lang('not_null'));
         }elseif(!$number){
-            $r = rtn(0,'not_null');
+            $r = rtn(0,lang('not_null'));
         }elseif(!$phone){
-            $r = rtn(0,'not_null');
+            $r = rtn(0,lang('not_null'));
         }elseif(!$yzm){
-            $r = rtn(0,'not_null');
-        }elseif($yzm !== $code){
-            $r = rtn(0,'code_error');
-        }elseif(encrypt($pwd) !== $res['payment_password']){
-            $r = rtn(0,'not_password');
+            $r = rtn(0,lang('not_null'));
+        }elseif($yzm != $code){
+            $r = rtn(0,lang('code_error'));
+        }elseif(encrypt($pwd) != $res['payment_password']){
+            $r = rtn(0,lang('not_password'));
         }elseif($user_number < $number){
-            $r = rtn(0,'excess_quantity');
+            $r = rtn(0,lang('excess_quantity'));
         }else{
             $fee = config('MINER_FEE');//提笔手续费
             $look_count = $this->LockCount -> where('uid',$res['id']) -> field('count_number,time') -> find();
@@ -91,13 +91,13 @@ class LiftCoin extends ApiBase
         $address = trim(input('address'));
         $pwd = trim(input('pwd'));
         if(!$address){
-            $r = rtn(0,'not_null');
+            $r = rtn(0,lang('not_null'));
         }elseif(!$cur_id){
-            $r = rtn(0,'not_null');
+            $r = rtn(0,lang('not_null'));
         }elseif(!$ps){
-            $r = rtn(0,'not_null');
-        }elseif(encrypt($pwd) == $res['payment_password']){
-            $r = rtn(0,'not_password');
+            $r = rtn(0,lang('not_null'));
+        }elseif(encrypt($pwd) != $res['payment_password']){
+            $r = rtn(0,lang('not_password'));
         }else{
             $res = $this->UserAddress->inserts($address,$res['id'],$cur_id,$ps);
             if($res){
@@ -115,7 +115,7 @@ class LiftCoin extends ApiBase
         $cur_id = trim(input('cur_id'));//币种ID
         $p = trim(input('p'));//页码
         if(!$cur_id){
-            $r = rtn(0,'not_null');
+            $r = rtn(0,lang('not_null'));
         }else{
             $res = $this->Method->lists($res['id'],$cur_id,$p,2);
             if($res['page']){
