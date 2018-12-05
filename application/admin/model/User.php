@@ -4,6 +4,7 @@ use app\common\model\Base;
 use think\Request;
 use think\db;
 use think\Validate;
+use think\Exception;
 class User extends Base
 {
 
@@ -160,4 +161,52 @@ class User extends Base
         return $list;
     }
 
+    /**
+     * 充值扣费
+     * @param $data
+     * @return array
+     */
+    public function rechargegcu($data){
+        if(!$data['uid']){
+            return ['status' => 0,'info' => '未获取用户信息!'];
+        }
+
+        if(!$data['cur_type']){
+            return ['status' => 0,'info' => '请选择币种!'];
+        }
+
+        if(!$data['number']){
+            return ['status' => 0,'info' => '请输入价格!'];
+        }
+
+        Db::startTrans();
+        try{
+            // 执行 充值/扣费
+            $user_cur_where['uid'] = $data['uid'];
+            $user_cur_where['cur_id'] = $data['cur_type'];
+            if($data['status'] == 2){
+                Db::name('user_cur')->where($user_cur_where)->setDec('number',$data['number']);
+                $msg = '扣费成功!';
+            }else{
+                Db::name('user_cur')->where($user_cur_where)->setInc('number',$data['number']);
+                $msg = '充值成功!';
+            }
+
+            // 添加记录
+            $in_finance['aid'] = $_SESSION['think']['aid'];
+            $in_finance['uid'] = $data['uid'];
+            $in_finance['cur_id'] = $data['cur_type'];
+            $in_finance['type'] = $data['status'];
+	        $in_finance['number'] = $data['number'];
+	        $in_finance['remarks'] = $data['remarks'];
+            $in_finance['create_time'] = time();
+            Db::name('admin_manage_finance') -> insert($in_finance);
+
+            Db::commit();
+            return ['status' => 1,'info' => $msg];
+        }catch(\Exception $e){
+            Db::rollback();
+            return ['status' => 0,'info' => $e -> getMessage()];
+        }
+    }
 }

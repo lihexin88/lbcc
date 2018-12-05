@@ -64,4 +64,16 @@ class Currency extends Base
     	$list = $this->where('id',$id)->find();
     	return $list;
     }
+
+    /**
+     * 获取所有币种信息
+     * @return mixed
+     * @throws \think\exception\DbException
+     * @throws db\exception\DataNotFoundException
+     * @throws db\exception\ModelNotFoundException
+     */
+    public function curList(){
+        $list = $this -> select();
+        return $list;
+    }
 }

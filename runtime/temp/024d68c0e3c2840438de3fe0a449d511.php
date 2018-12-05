@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:75:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\rechargegcu.html";i:1539220731;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:75:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\user\rechargegcu.html";i:1543978267;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -117,19 +117,19 @@ select{
           <div class="row">
             <div class="col-xs-12">
               <form class="form-horizontal form-post" role="form">
-                
                 <div class="form-group">
                   <label class="col-sm-3 control-label no-padding-right"> 金额 </label>
                   <div class="col-sm-9">
-                    <input name="gcu" type="text" class="col-xs-10 col-sm-5" placeholder="请填写金额"/>
+                    <input name="number" type="text" class="col-xs-10 col-sm-5" placeholder="请填写金额"/>
                   </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right"> 币种 </label>
                     <div class="col-sm-9">
                     <select name="cur_type" class="form-control" style="width: 150px;">
-                    <option value="2">GCU</option>
-                    <option value="1">USDT</option>
+                    <?php if(is_array($cur_list) || $cur_list instanceof \think\Collection || $cur_list instanceof \think\Paginator): $i = 0; $__LIST__ = $cur_list;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                      <option value="<?php echo $vo['id']; ?>"><?php echo $vo['name']; ?></option>
+                    <?php endforeach; endif; else: echo "" ;endif; ?>
                     </select>
                   </div>
                   </div>
@@ -142,11 +142,19 @@ select{
                     </select>
                   </div>
                   </div>
+                <div class="form-group">
+                  <label class="col-sm-3 control-label no-padding-right"> 备注 </label>
+                  <div class="col-sm-9">
+                    <input name="remarks" type="text" class="text-info" placeholder="请填写备注"/>
+                  </div>
+                </div>
                 <div class="space-4"></div>
                 <div class="alert alert-danger" style="display:none;"></div>
                 <div class="clearfix form-actions">
                   <div class="col-md-offset-3 col-md-9">
-                  <input name="id" class="hidden" type="text" value="<?php echo $id; ?>">
+
+                  <input name="uid" class="hidden" type="text" value="<?php echo $id; ?>">
+
                     <button class="btn btn-info" type="submit" id="btn"> <i class="ace-icon fa fa-check bigger-110"></i> 确定 </button>
                   </div>
                 </div>
@@ -186,8 +194,11 @@ $(".form-post").find('button:submit').click(function() {
       },
       1000);
     }else{
+        $(".form-post .alert").text(data.info).show();
       setTimeout(function() {
-        location.href = data.url;
+          $('#btn').text('保存').removeAttr('disabled');
+        location.href = location.href;
+
       },
       1000);
     }

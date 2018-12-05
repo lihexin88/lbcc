@@ -53,26 +53,9 @@ class User extends Admin
     public function rechargegcu()
     {
         if(Request::instance()->isPost()){
-            $data = input('post.');
-            if($data['cur_type'] == 2){
-                $cur_type = 'gcu';
-            }else{
-                $cur_type = 'usdt';
-            }
-            if($data['status'] == 2){
-                db('user')->where('id',$data['id'])->setDec($cur_type,$data['gcu']);
-                $insert_map['transaction_type'] = 11;
-            }else{
-                db('user')->where('id',$data['id'])->setInc($cur_type,$data['gcu']);
-                $insert_map['transaction_type'] = 10;
-            }
-            $insert_map['money'] = $data['gcu'];
-            $insert_map['user_id'] = $data['id'];
-            $insert_map['create_time'] = time();
-            $insert_map['pay_type'] = $data['cur_type'];
-            db('record')->insert($insert_map);
-            return json(array('status' => 1, 'info' => '成功', 'url' => url('index')));
+            return json(model('User') -> rechargegcu(input('post.')));
         }
+        $this -> assign('cur_list',model('Currency') -> curList());
         $this->assign('id',input('id'));
         $this->assign('pagename','充值扣费');
         return $this->fetch();
