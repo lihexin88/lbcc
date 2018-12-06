@@ -483,51 +483,59 @@ class Trade extends Model
 	public function get_trade($user,$status)
 	{
 		$trade = $this->where(['uid'=>$user['id'],'trade_status'=>$status])->select();
+		$return = null;
 		foreach ($trade as $k=>$v){
+//		    中英“状态”
 		    switch ($v['trade_status']){
                 case 1:
-		            $trade[$k]['trade_status'] = lang("挂卖中");
+		            $return[$k]['trade_status'] = lang("挂卖中");
                     break;
                 case 2:
-                    $trade[$k]['trade_status'] = lang("交易中");
+                    $return[$k]['trade_status'] = lang("交易中");
                     break;
                 case 3:
-                    $trade[$k]['trade_status'] = lang("交易完成");
+                    $return[$k]['trade_status'] = lang("交易完成");
                     break;
                 case 4:
-                    $trade[$k]['trade_status'] = lang("挂卖撤销");
+                    $return[$k]['trade_status'] = lang("挂卖撤销");
                     break;
                 default:
-                    $trade[$k]['trade_status'] = lang("error");
+                    $return[$k]['trade_status'] = lang("error");
             }
+//            中英“类型”
             switch ($v['trade_type']){
                 case 1:
-                    $trade[$k]['trade_type'] = lang("卖出");
+                    $return[$k]['color'] = "red" ;
+                    $return[$k]['trade_type'] = lang("卖出").Currency::get_name_by_id($v['cur_id']);
                     break;
                 case 2:
-                    $trade[$k]['trade_type'] = lang("买入");
+                    $return[$k]['color'] = "green" ;
+                    $return[$k]['trade_type'] = lang("买入").Currency::get_name_by_id($v['cur_id']);
                     break;
                 default:
-                    $trade[$k]['trade_type'] = lang("error");
+                    $return[$k]['trade_type'] = lang("error");
             }
+//            中英“支付类型”
 		    switch ($v['payment_method']){
                 case 1:
-                    $trade[$k]['payment_method'] = lang("银行卡");
+                    $return[$k]['payment_method'] = lang("银行卡");
                     break;
                 case 2:
-                    $trade[$k]['payment_method'] = lang("微信");
+                    $return[$k]['payment_method'] = lang("微信");
                     break;
                 case 3:
-                    $trade[$k]['payment_method'] = lang("支付宝");
+                    $return[$k]['payment_method'] = lang("支付宝");
                     break;
                 default:
-                    $trade[$k]['payment_method'] = lang("error");
+                    $return[$k]['payment_method'] = lang("error");
 
             }
-            $trade[$k]['cur_id'] = Currency::get_name_by_id($v['cur_id']);
-			$trade[$k]['end_time'] = date("Y-m-d H:i:s",$v['end_time']);
+//            删除支付类型
+            unset($return[$k]['payment_method']);
+			$return[$k]['end_time'] = date("Y-m-d H:i:s",$v['end_time']);
+		    $return[$k]['number'] = $v['number'];
 		}
-		return $trade;
+		return $return;
 	}
 
 

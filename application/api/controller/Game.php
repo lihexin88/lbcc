@@ -59,7 +59,12 @@ class Game extends Controller
 	public function get_history()
 	{
 		$GuessRecode = GuessRecode::get_daily_recode();
-		return rtn(1,lang('os_success'),$GuessRecode);
+		$GuessRecode = $GuessRecode;
+		$Guess = null;
+		foreach ($GuessRecode as $k=>$v){
+		    $Guess[$k]['account'] = substr($v['account'],0,3)."****".substr($v['account'],-4);
+        }
+		return rtn(1,lang('os_success'),$Guess);
 	}
 
 	/**

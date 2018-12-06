@@ -94,7 +94,11 @@ class GuessConfig extends Model
 		$configs = [
 			'query'=>$query
 		];
-		$recode = self::where($where)->order('create_time desc')->paginate($pagesize,false,$configs);
+		$recode = self::where($where)->where(['status'=>0])->order('create_time desc')->paginate($pagesize,false,$configs);
+		foreach ($recode as $k=>$v){
+            $recode[$k]['status'] = lang($v['status'] == 0?"lotteryed":"not_lottery");
+            $recode[$k]['right'] = lang($v['right'] == 0?"red":"blue");
+        }
 		$r['data'] = $recode;
 		$r['page'] = $recode->render();
 		$r['count'] = self::where($where)->count();

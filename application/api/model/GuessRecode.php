@@ -147,6 +147,7 @@ class GuessRecode extends Model
 			->where($where)
 			->join('user u','r.uid = u.id')
 			->field('u.account,r.number')
+            ->order('r.update_time desc')
 			->paginate($page_size);
 		return $Recode;
 	}
@@ -172,6 +173,7 @@ class GuessRecode extends Model
 				->join('user u','r.uid = u.id')
 				->where($where)
 				->field('u.account,u.id,r.*')
+                ->order('r.create_time desc')
 				->paginate($pagesize);
 			$recode['page'] = $recode['data']->render();
 			$recode['count'] = self::alias('r')
