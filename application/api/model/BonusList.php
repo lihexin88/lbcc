@@ -49,7 +49,7 @@ class BonusList extends Model
 			->field('b.bonus,b.type,b.time')
 			->select();
 		foreach ($reword as $k=>$v){
-			$reword[$k]['time'] = date("Y-m-d H:i:s",$v['time']);
+            $reword[$k]['time'] = date("Y-m-d H:i:s",$v['time']);
 		}
 		return $reword;
 	}

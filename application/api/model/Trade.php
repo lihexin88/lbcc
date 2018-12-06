@@ -64,17 +64,21 @@ class Trade extends Model
                     // 交易类型
                     switch($v['trade_type']){
                         case 1:
-                            $list[$k]['trade_type_text'] = '卖出';
+                            $list[$k]['trade_type_text'] = lang('sell');
                             $list[$k]['trade_type_color'] = 'green';
                             break;
                         case 2:
-                            $list[$k]['trade_type_text'] = '买入';
+                            $list[$k]['trade_type_text'] = lang('buy');
                             $list[$k]['trade_type_color'] = 'red';
                             break;
                     }
                     // 币种名称
                     $Currency = new Currency();
                     $list[$k]['cur_text'] = $Currency -> get_cur_text($v['cur_id']);
+                    // 交易区币种名称
+                    $list[$k]['area_text'] = $Currency -> get_cur_text($data['area_id']);
+                    // 成交量
+                    $list[$k]['volume'] = $v['number'] * $v['price'];
                 }
                 break;
             case 4: // 查询历史委托
@@ -86,17 +90,21 @@ class Trade extends Model
                     // 交易类型
                     switch($v['trade_type']){
                         case 1:
-                            $list[$k]['trade_type_text'] = '卖出';
+                            $list[$k]['trade_type_text'] = lang('sell');
                             $list[$k]['trade_type_color'] = 'green';
                             break;
                         case 2:
-                            $list[$k]['trade_type_text'] = '买入';
+                            $list[$k]['trade_type_text'] = lang('buy');
                             $list[$k]['trade_type_color'] = 'red';
                             break;
                     }
                     // 币种名称
                     $Currency = new Currency();
                     $list[$k]['cur_text'] = $Currency -> get_cur_text($v['cur_id']);
+                    // 交易区币种名称
+                    $list[$k]['area_text'] = $Currency -> get_cur_text($data['area_id']);
+                    // 成交量
+                    $list[$k]['volume'] = $v['number'] * $v['price'];
                 }
                 break;
         }
@@ -111,11 +119,11 @@ class Trade extends Model
         if(!$data['currency_area_id']){
             return ['code' => 0,'msg' => lang('not_cur_area')];
         }
-        if(!$data['price']){
-            return ['code' => 0,'msg' => lang('input_price')];
-        }
-        if(!$data['number']){
-            return ['code' => 0,'msg' => lang('input_number')];
+        $default['need'] = 0;
+        $default['all_price'] = 0;
+        $default['service'] = 0;
+        if(!$data['price'] || !$data['number']){
+            return $default;
         }
 
         $Currency = new Currency();
@@ -472,13 +480,69 @@ class Trade extends Model
 	 * @throws \think\db\exception\ModelNotFoundException
 	 * @throws \think\exception\DbException
 	 */
-	public function get_trade($user)
+	public function get_trade($user,$status)
 	{
-		$trade = $this->where(['uid'=>$user['id']])->select();
+		$trade = $this->where(['uid'=>$user['id'],'trade_status'=>$status])->select();
 		foreach ($trade as $k=>$v){
+		    switch ($v['trade_status']){
+                case 1:
+		            $trade[$k]['trade_status'] = lang("挂卖中");
+                    break;
+                case 2:
+                    $trade[$k]['trade_status'] = lang("交易中");
+                    break;
+                case 3:
+                    $trade[$k]['trade_status'] = lang("交易完成");
+                    break;
+                case 4:
+                    $trade[$k]['trade_status'] = lang("挂卖撤销");
+                    break;
+                default:
+                    $trade[$k]['trade_status'] = lang("error");
+            }
+            switch ($v['trade_type']){
+                case 1:
+                    $trade[$k]['trade_type'] = lang("卖出");
+                    break;
+                case 2:
+                    $trade[$k]['trade_type'] = lang("买入");
+                    break;
+                default:
+                    $trade[$k]['trade_type'] = lang("error");
+            }
+		    switch ($v['payment_method']){
+                case 1:
+                    $trade[$k]['payment_method'] = lang("银行卡");
+                    break;
+                case 2:
+                    $trade[$k]['payment_method'] = lang("微信");
+                    break;
+                case 3:
+                    $trade[$k]['payment_method'] = lang("支付宝");
+                    break;
+                default:
+                    $trade[$k]['payment_method'] = lang("error");
+
+            }
+            $trade[$k]['cur_id'] = Currency::get_name_by_id($v['cur_id']);
 			$trade[$k]['end_time'] = date("Y-m-d H:i:s",$v['end_time']);
 		}
 		return $trade;
 	}
+
+
+    /**
+     * 撤销订单
+     * @param $order
+     * @param $user
+     * @return bool
+     */
+	public function cancel_trade($order,$user)
+    {
+        if($this->where(['id'=>$order,'uid'=>$user['id']])->update(['trade_status'=>4])){
+            return true;
+        }
+        return false;
+    }
 
 }

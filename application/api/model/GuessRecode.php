@@ -91,6 +91,11 @@ class GuessRecode extends Model
 	static public function get_recode($user)
 	{
 		$guess_recode = self::where(['uid'=>$user['id']])->select();
+		foreach ($guess_recode as $k=>$v){
+		    $guess_recode[$k]['dir'] = lang($v['dir']==0?"red":"blue");
+		    $guess_recode[$k]['announce'] = lang($v['announce']==0?"not_lottery":"lotteryed");
+		    $guess_recode[$k]['right'] = lang($v['right'] == 1?"win":"not_win");
+        }
 		return $guess_recode;
 	}
 

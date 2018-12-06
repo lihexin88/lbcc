@@ -108,4 +108,16 @@ class Game extends Controller
 		return rtn(1,lang('os_success'),$join_er);
 	}
 
+    /**
+     * 前端接收剩余时间
+     * @return false|string
+     */
+	public function get_team_time()
+    {
+        $team_time = GuessConfig::team_time();
+        $now_time = time();
+        $time_left = strtotime($team_time['create_time']) + 3 * 60 - $now_time;
+        return rtn(1,lang('os_success'),$time_left);
+    }
+
 }

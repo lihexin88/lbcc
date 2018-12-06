@@ -582,9 +582,18 @@ class User extends ApiBase
 		$user = $this->userInfo;
 		$AuthInfo = UserAuth::get(['uid'=>$user['id']]);
 		if($AuthInfo){
+            foreach ($AuthInfo as $k=>$v){
+                if($v['status'] == 1){
+                    $AuthInfo[$k]['status'] = lang('passed');
+                }else if($v['status'] == 2){
+                    $AuthInfo[$k]['status'] = lang("auth_rejected");
+                }else{
+                    $AuthInfo[$k]['status'] = lang("not_auth");
+                }
+            }
 			return rtn(1,lang('success'),$AuthInfo);
 		}else{
-			return rtn(1,lang('success'),'暂无用户认证信息');
+			return rtn(1,lang('success'),lang('暂无用户认证信息'));
 		}
 	}
 
@@ -738,8 +747,11 @@ class User extends ApiBase
 	 */
 	public function get_trade_order()
 	{
+	    if(!$_POST['status']){
+            return rtn(0,lang('not_null'));
+        }
 		$Trade = new Trade();
-		$trade = $Trade->get_trade($this->userInfo);
+		$trade = $Trade->get_trade($this->userInfo,$_POST['status']);
 		return rtn(1,lang('os_success'),$trade);
 	}
 
@@ -750,21 +762,30 @@ class User extends ApiBase
 	 */
 	public function cancel_trade()
 	{
-		if(!$_POST['order']){
-			return rtn(-1,lang('cont_empty'));
-		}
-		$Order = new Order();
-		Db::startTrans();
-		try{
-			if(!$Order->cancel_trade($_POST['order'],$this->userInfo)){
-				throw new Exception('fail_cancel');
-			}
-			Db::commit();
-			return rtn(1,lang('os_success'));
-		}catch (\Exception $e){
-			Db::rollback();
-			return rtn(-1,lang($e->getMessage()));
-		}
+//		if(!$_POST['order']){
+//			return rtn(-1,lang('cont_empty'));
+//		}
+//		$Order = new Order();
+//		Db::startTrans();
+//		try{
+//			if(!$Order->cancel_trade($_POST['order'],$this->userInfo)){
+//				throw new Exception('fail_cancel');
+//			}
+//			Db::commit();
+//			return rtn(1,lang('os_success'));
+//		}catch (\Exception $e){
+//			Db::rollback();
+//			return rtn(-1,lang($e->getMessage()));
+//		}
+        if(!$_POST['order']){
+            return rtn(0,lang('os_success'));
+        }
+        $Trade = new Trade();
+        if(!$Trade->cancel_trade($_POST['order'],$this->userInfo)){
+            return rtn(0,lang('os_error'));
+        }
+        return rtn(1,lang('os_success'));
+
 	}
 
 

@@ -11,6 +11,7 @@ namespace app\api\model;
 
 use think\Exception;
 use think\Model;
+use think\Db;
 
 class GuessConfig extends Model
 {
@@ -99,4 +100,15 @@ class GuessConfig extends Model
 		$r['count'] = self::where($where)->count();
 		return $r;
 	}
+
+
+    /**
+     * 获取本期剩余时间
+     * @return GuessConfig|null
+     * @throws \think\exception\DbException
+     */
+	static public function team_time()
+    {
+        return self::get(['status'=>1]);
+    }
 }
