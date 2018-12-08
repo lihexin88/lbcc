@@ -79,7 +79,7 @@ return [
      'blue'                                                  => '蓝方',
      'lotteryed'                                             => '已开奖',
      'not_lottery'                                           => '未开奖',
-    'win'                                                    => '中奖',
+    'win'                                                    => '胜',
     'not_win'                                                => '未中奖',
     'cant_found_info'                                        => '暂无用户认证信息',
     'passed'                                                 => '认证通过',

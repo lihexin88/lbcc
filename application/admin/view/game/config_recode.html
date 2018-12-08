@@ -7,7 +7,7 @@
         margin-right:10px;
     }
 </style>
-<link rel="stylesheet" href = "__STATIC__/ace/css/userauth.css"></link>
+<link rel="stylesheet" href = "__STATIC__/ace/css/userauth.css">
 </head>
 <body class="no-skin" style="font-size: 13px;">
 {include file="common/header" /}
@@ -51,8 +51,8 @@
                                         <th>本期下注</th>
                                         <th>红方下注</th>
                                         <th>蓝方下注</th>
-                                        <th>开奖时间</th>
                                         <th>创建时间</th>
+                                        <th>开奖时间</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -62,8 +62,8 @@
                                         <td class="center">{$vo.id}</td>
                                         <td class="center">{$vo.status==1?"未开奖":"已开奖"}</td>
                                         <td class="center">
-                                            {if condition = "in_array($vo.right,['0','1'])"}
-                                                {$vo.right==0?"<span class='red'>红</span>":"<span class='blue'>蓝</span>"}
+                                            {if condition = "in_array($vo.right,['blue','red'])"}
+                                                {$vo.right=='red'?"<span class='red'>红</span>":"<span class='blue'>蓝</span>"}
                                             {else}
                                                 <span class="grey">未开奖</span>
                                             {/if}

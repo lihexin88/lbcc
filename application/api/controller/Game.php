@@ -121,7 +121,13 @@ class Game extends Controller
     {
         $team_time = GuessConfig::team_time();
         $now_time = time();
-        $time_left = strtotime($team_time['create_time']) + 3 * 60 - $now_time;
+        $today_start = strtotime(date("Y-m-d",time())) + 9 * 60 * 60;
+        $time_left = 0;
+        if($now_time < $today_start){
+            $time_left = $today_start - $now_time;
+        }else{
+            $time_left = strtotime($team_time['create_time']) + 3 * 60 - $now_time;
+        }
         return rtn(1,lang('os_success'),$time_left);
     }
 

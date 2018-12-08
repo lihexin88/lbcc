@@ -97,7 +97,8 @@ class GuessConfig extends Model
 		$recode = self::where($where)->where(['status'=>0])->order('create_time desc')->paginate($pagesize,false,$configs);
 		foreach ($recode as $k=>$v){
             $recode[$k]['status'] = lang($v['status'] == 0?"lotteryed":"not_lottery");
-            $recode[$k]['right'] = lang($v['right'] == 0?"red":"blue");
+            $recode[$k]['color'] = $v['right'] == 0?"0":"1";
+            $recode[$k]['right'] = lang($v['right'] == 0?"red":"blue").lang("win");
         }
 		$r['data'] = $recode;
 		$r['page'] = $recode->render();
