@@ -762,21 +762,6 @@ class User extends ApiBase
 	 */
 	public function cancel_trade()
 	{
-//		if(!$_POST['order']){
-//			return rtn(-1,lang('cont_empty'));
-//		}
-//		$Order = new Order();
-//		Db::startTrans();
-//		try{
-//			if(!$Order->cancel_trade($_POST['order'],$this->userInfo)){
-//				throw new Exception('fail_cancel');
-//			}
-//			Db::commit();
-//			return rtn(1,lang('os_success'));
-//		}catch (\Exception $e){
-//			Db::rollback();
-//			return rtn(-1,lang($e->getMessage()));
-//		}
         if(!$_POST['order']){
             return rtn(0,lang('os_success'));
         }

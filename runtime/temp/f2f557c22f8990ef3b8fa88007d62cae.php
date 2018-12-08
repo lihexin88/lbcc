@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:67:"D:\phpStudy\WWW\lbcc\public/../application/admin\view\news\add.html";i:1544148474;s:59:"D:\phpStudy\WWW\lbcc\application\admin\view\common\top.html";i:1522230592;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\header.html";i:1522231280;s:63:"D:\phpStudy\WWW\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:62:"D:\phpStudy\WWW\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:5:{s:71:"D:\wamp64\www\lbcc\public/../application/admin\view\config\setting.html";i:1543643762;s:57:"D:\wamp64\www\lbcc\application\admin\view\common\top.html";i:1522230592;s:60:"D:\wamp64\www\lbcc\application\admin\view\common\header.html";i:1522231280;s:61:"D:\wamp64\www\lbcc\application\admin\view\common\sidebar.html";i:1522231178;s:60:"D:\wamp64\www\lbcc\application\admin\view\common\bottom.html";i:1490663526;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -35,7 +35,8 @@ select{
   width: auto;
 }
 </style>
-</head><body class="no-skin">
+</head>
+<body class="no-skin">
 <div id="navbar" class="navbar navbar-default">
   <div class="navbar-container" id="navbar-container">
   <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar"> <span class="sr-only">Toggle sidebar</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
@@ -55,9 +56,7 @@ select{
     </div>
   </div>
 </div>
-<div class="main-container" id="main-container"> 
-  <!-- #section:basics/sidebar --> 
-  <div id="sidebar" class="sidebar ">
+<div class="main-container" id="main-container"> <div id="sidebar" class="sidebar ">
   <div class="sidebar-shortcuts" id="sidebar-shortcuts">
     <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
       <button class="btn btn-success">
@@ -95,137 +94,91 @@ select{
   <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
     <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
   </div>
-</div> 
-  <!-- /section:basics/sidebar -->
+</div>
   <div class="main-content">
-    <div class="main-content-inner"> 
-      <!-- #section:basics/content.breadcrumbs -->
+    <div class="main-content-inner">
       <div class="breadcrumbs" id="breadcrumbs">
         <ul class="breadcrumb">
           <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="<?php echo url('Index/index'); ?>"><?php echo config('WEB_SITE_NAME'); ?></a> </li>
-          <li> <a href="<?php echo url('index'); ?>">资讯管理</a> </li>
+          <li> <a href="<?php echo url('index'); ?>">系统设置</a> </li>
           <li class="active"><?php echo $pagename; ?></li>
         </ul>
-        <!-- /.breadcrumb --> 
       </div>
-      <!-- /section:basics/content.breadcrumbs -->
       <div class="page-content">
         <div class="page-header">
-          <h1> <?php echo $pagename; ?> </h1>
+          <h1> <?php echo $pagename; ?> <small> <i class="ace-icon fa fa-angle-double-right"></i> 添加后台所有的配置项 </small> <a class="btn btn-sm btn-success" style="float:right; margin-right:10px;" href="<?php echo url('add'); ?>" >新增配置</a></h1>
         </div>
-          <!-- 添加用户 -->
-          <div class="row">
-            <div class="col-xs-12">
-              <form class="form-horizontal form-post" role="form" method="post">
-                <div class="form-group">
-                  <label class="col-sm-3 control-label no-padding-right">当前发布版本： </label>
-                  	<div class="col-sm-1">
-                      <select name="lang" class="form-control">
-                          <option value="cn">中文</option>
-                          <option value="en">英文</option>
-                      </select>
-                     </div>
-                 </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label no-padding-right"> 新闻标题 </label>
-                  <div class="col-sm-9">
-                    <input name="title" type="text" class="col-xs-10 col-sm-5" placeholder="请填写新闻标题" value="" />
-                  </div>
+        <!-- /.page-header -->
+        <div class="row">
+          <div class="col-xs-12"> 
+            <!-- PAGE CONTENT BEGINS -->
+            <div class="row">
+              <div class="col-xs-12">
+                <table id="sample-table-1" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th class="center">排序</th>
+                      <th>配置名称</th>
+                      <th>配置描述</th>
+                      <th>配置模块</th>
+                      <th>配置类型</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if(is_array($info['list']) || $info['list'] instanceof \think\Collection || $info['list'] instanceof \think\Paginator): $i = 0; $__LIST__ = $info['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
+                      <tr>
+                        <td class="center"><?php echo $i; ?></td>
+                        <td><?php echo $vo['key']; ?></td>
+                        <td><?php echo $vo['info']; ?></td>
+                        <td><?php echo $vo['urlTxt']; ?></td>
+                        <td><?php echo $vo['typeTxt']; ?></td>
+                        <td>
+                        <div class="action-buttons">
+                        <a class="green" href="<?php echo url('edit',array('id'=>$vo['id'])); ?>" title="修改配置"> <i class="ace-icon fa fa-pencil bigger-130"></i> </a> 
+                        </div>
+                        </td>
+                      </tr>
+                    <?php endforeach; endif; else: echo "" ;endif; ?>
+                  </tbody>
+                </table>
+                <div style="width:100%;margin: 0 auto; text-align:center;">
+                  <ul class="pagination" >
+                    <?php echo $info['page']; ?>
+                  </ul>
                 </div>
-                 <div class="form-group">
-                  <label class="col-sm-3 control-label no-padding-right"> 新闻内容 </label>
-                  <br>
-                  <div class="col-sm-10 col-lg-5" style="padding-right: 0px;">
-                  <script id="container" name="content" text="text/plain"></script>
-                </div>
-                </div>
-                <div class="space-4"></div>
-                <div class="alert alert-danger" style="display:none;"></div>
-                <div class="clearfix form-actions">
-                  <div class="col-md-offset-3 col-md-9">
-                  <input name="id" class="hidden" type="text" value="<?php echo $info['id']; ?>">
-                    <button class="btn btn-info" type="submit" id="btn"> <i class="ace-icon fa fa-check bigger-110"></i> 保存 </button>
-                  </div>
-                </div>
-              </form>
+              </div>
+              <!-- /.span --> 
             </div>
+            <!-- /.row --> 
+            <!-- PAGE CONTENT ENDS --> 
           </div>
+          <!-- /.col --> 
+        </div>
+        <!-- /.row --> 
       </div>
+      <!-- /.page-content --> 
     </div>
   </div>
   <!-- /.main-content -->
+  
   <div class="footer">
-    <div class="footer-inner">
+    <div class="footer-inner"> 
+      <!-- #section:basics/footer -->
       <div class="footer-content"> <span class="bigger-120"> <span class="blue bolder"><?php echo config('WEB_SITE_NAME'); ?> </span><?php echo WEB_VERSION; ?>版 </span></div>
+      <!-- /section:basics/footer --> 
     </div>
   </div>
-  <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i> </a> </div>
+  <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a> </div>
 <!-- /.main-container --> 
+
 <!-- basic scripts --> 
 <script type="text/javascript">if($(window).width()<1024)  $("#sidebar").addClass('menu-min');</script>
 <script src="/static/ace/js/bootstrap.js"></script>
 <script src="/static/ace/js/ace/ace.js"></script> 
 <script src="/static/ace/js/ace/ace.sidebar.js"></script> 
-
-<link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
-
-<script src="/static/layui/layui.js"></script>
-<script src="/js/jquery-1.11.0.min.js" type="text/javascript"></script>
-<script type="text/javascript" src="/static/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" src="/static/ueditor/ueditor.all.js"></script>
-<script type="text/javascript">
-    $(document).ready(function (){
-        var ue = UE.getEditor('container');
-    });
-</script>
-<!-- 上传单图片 -->
-<script>
-layui.use('upload', function(){
-  var upload = layui.upload;
-  //执行实例
-  var uploadInst = upload.render({
-    elem: '#test1' //绑定元素
-    ,url: "<?php echo url('News/upload'); ?>" //上传接口
-    ,data: {type: 'news'}
-    ,done: function(res){
-      // console.log(res)
-      //上传完毕回调
-      if(res.status == 0){
-        layer.msg(res.info, {icon: res.status,time: 1500});
-      }else{
-        // 显示img里边的图片
-        $('#url-view').show();
-        //返回路径
-        $("input[name=pic]").val(res.msg);
-        //给IMG返回路径
-        $("img[name=pic]").attr("src",res.msg)
-      }
-    }
-  });
-});
-</script>
-<script type="text/javascript">
-$('a[href="/Admin/News/index.html"]').parents().filter('li').addClass('open active');
-//提交表单
-$(".form-post").find('button:submit').click(function() {
-  $.post("<?php echo url('add'); ?>", $(".form-post").serialize()).success(function(data) {
-    $('#btn').text('正在保存').attr('disabled', "true");
-    if (data.status === 0) {
-      $(".form-post .alert").text(data.info).show();
-      setTimeout(function() {
-        $('#btn').text('保存').removeAttr('disabled');
-        $(".form-post .alert").empty().hide();
-      },
-      1000);
-    }else{
-      setTimeout(function() {
-        location.href = data.url;
-      },
-      1000);
-    }
-  });
-  return false;
-});
-</script> 
 </body>
 </html>
+<script>
+    $('a[href="/Admin/Config/setting.html"]').parents().filter('li').addClass('open active');
+</script>
