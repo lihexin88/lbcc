@@ -717,7 +717,7 @@ class User extends ApiBase
 		$web_url = Config::get(['key'=>'WEBSITE']);
 		$user = $this->userInfo;
 		$Invitation['img'] = $web_url['value'].$user['invitation_img'];
-		$Invitation['inv_code']  = $user['invitation_code'];
+		$Invitation['inv_code']  = $web_url['value'].$user['invitation_code'];
 		return rtn(1,lang('os_success'),$Invitation);
 	}
 
