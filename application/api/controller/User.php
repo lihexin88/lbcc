@@ -491,7 +491,9 @@ class User extends ApiBase
     	$guess_account = GuessAccount::get_guess_account($this->userInfo);
 		if($guess_account['code'] == -1){
 			return rtn(-1,lang('guess_account_error'));
-		}else{
+		}else if($guess_account['code'] == 2){
+            return rtn(-1,lang('guess_account_init'));
+        }else{
 			return rtn(1,lang('guess_account_success'),$guess_account);
 		}
     }
@@ -642,6 +644,9 @@ class User extends ApiBase
 		if(!($_POST['phone_code'] == $_SESSION['think']['authcode']['code'])){
 			return rtn(-1,lang('phone_error'));
 		}
+        $user = $this->userInfo;
+        $typeCode = input('typeCode');
+        db('phone_code')->where('phone',$user['account'])->where('type',$typeCode)->delete();
 		$_SESSION['think']['authcode']['auth'] = true;
 		return rtn(1,lang('os_success'),$_SESSION);
 	}

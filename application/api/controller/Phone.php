@@ -219,11 +219,12 @@ class Phone extends controller
             if($return['status'] === 0) {
                 return rtn(-1,$return['info']);
             }else{
-                return rtn(0,lang("success"),$return['info']);   
+                return rtn(0,lang("success"),$return['info']);
             }
- 
+
         }
     }
+
 
     /**
      * 网站文档

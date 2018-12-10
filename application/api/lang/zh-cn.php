@@ -92,6 +92,7 @@ return [
     'bank_card'                                              =>'银行卡',
     'weixin'                                                 =>'微信',
     'zhifubao'                                               =>'支付宝',
+    'guess_account_init'                                     =>'无账户信息，请充值',
 
 
 

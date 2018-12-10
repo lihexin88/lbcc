@@ -94,7 +94,7 @@ class GuessAccount extends Model
 			->field('u.account,g.*')
 			->where(['uid'=>$user['id']])->find();
 		if(!$guess_account){
-			return ['code'=>-1];
+			return ['code'=>2];
 		}else{
 			return ['code'=>1,'data'=>$guess_account];
 		}
