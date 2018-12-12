@@ -91,12 +91,22 @@ class GuessRecode extends Model
 	static public function get_recode($user)
 	{
 		$guess_recode = self::where(['uid'=>$user['id']])->select();
+		$guess_recode_return = null;
 		foreach ($guess_recode as $k=>$v){
-		    $guess_recode[$k]['dir'] = lang($v['dir']==0?"red":"blue");
-		    $guess_recode[$k]['announce'] = lang($v['announce']==0?"not_lottery":"lotteryed");
-		    $guess_recode[$k]['right'] = lang($v['right'] == 1?"win":"not_win");
+		    $guess_recode_return[$k]['dir'] = lang($v['dir']==0?"red":"blue");
+		    if($v['right'] == 1){
+                $guess_recode_return[$k]['right'] = lang("win");
+            }else if($v['right'] == 0) {
+                $guess_recode_return[$k]['right'] = lang("not_win");
+            }else{
+                $guess_recode_return[$k]['right'] = lang("not_lottery");
+            }
+            $guess_recode_return[$k]['right'] = lang($v['right'] == 1?"win":"not_win");
+            $guess_recode_return[$k]['number'] = $v['number'];
+            $guess_recode_return[$k]['update_time'] = $v['update_time'];
+            $guess_recode_return[$k]['right_status'] = $v['right']===null?2:$v['right'];
         }
-		return $guess_recode;
+		return $guess_recode_return;
 	}
 
 	/**
